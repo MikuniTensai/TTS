@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <title>TTS Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            flex-direction: column;
+        }
+        .menu-container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .menu-button {
+            display: block;
+            width: 250px;
+            padding: 15px;
+            margin: 15px auto;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .menu-button:hover {
+            background-color: #ddd;
+        }
+        .menu-button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            color: #888;
+            border-color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <h1>TTS Game</h1>
+        <a href="game-mode.html" class="menu-button">Play</a>
+        <div class="menu-button disabled">Play With Time</div>
+        <div class="menu-button disabled">Leaderboard</div>
+    </div>
+</body>
+</html>

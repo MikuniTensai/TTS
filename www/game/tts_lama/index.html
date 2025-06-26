@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, please refer to the docs:
+            https://cordova.apache.org/docs/en/latest/
+        Some notes:
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        <link rel="stylesheet" href="style.css">
+        <title>TTS Lama - Level Selection</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background-color: #f0f0f0;
+                flex-direction: column;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+            .level-container {
+                text-align: center;
+                width: 100%;
+                max-width: 600px;
+            }
+            .back-button {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                font-size: 1.5em;
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #333;
+            }
+            h1 {
+                font-size: 2.2em;
+                margin-bottom: 30px;
+                color: #333;
+            }
+            .coming-soon {
+                font-size: 1.5em;
+                color: #666;
+                margin-top: 50px;
+                padding: 30px;
+                border: 2px dashed #ccc;
+                border-radius: 15px;
+                background-color: #f9f9f9;
+            }
+            .description {
+                font-size: 1.1em;
+                color: #777;
+                margin-top: 20px;
+                line-height: 1.5;
+            }
+        </style>
+    </head>
+    <body>
+        <button class="back-button" onclick="window.location.href='../../game-mode.html'">&larr;</button>
+        
+        <div class="level-container">
+            <h1>TTS Lama</h1>
+            
+            <div class="coming-soon">
+                <div>🚧 Segera Hadir 🚧</div>
+                <div class="description">
+                    Mode TTS Lama dengan gameplay klasik<br>
+                    sedang dalam pengembangan.<br><br>
+                    Fitur yang akan tersedia:<br>
+                    • Submit manual untuk setiap kata<br>
+                    • Hint terbatas<br>
+                    • Grid puzzle yang lebih kompleks<br>
+                    • Sistem scoring berbeda
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
