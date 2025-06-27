@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/index.css">
     <title>TTS Game</title>
     <style>
         body {
@@ -48,11 +49,29 @@
     </style>
 </head>
 <body>
-    <div class="menu-container">
-        <h1>TTS Game</h1>
-        <a href="game-mode.html" class="menu-button">Play</a>
-        <div class="menu-button disabled">Play With Time</div>
-        <div class="menu-button disabled">Leaderboard</div>
+    <div class="app">
+        <div id="main-menu">
+            <div class="menu-container">
+                <h1>TTS Game</h1>
+                <a href="level-select.html" class="menu-button">Play</a>
+                <a href="leaderboard.html" class="menu-button">Leaderboard</a>
+            </div>
+        </div>
+
+        <div id="leaderboard-container" class="hidden">
+            <!-- Leaderboard content will be loaded here -->
+        </div>
     </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="js/firebase-init.js"></script>
+
+    <script src="cordova.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

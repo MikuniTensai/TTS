@@ -28,23 +28,84 @@
             * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
                 * Enable inline JS: add 'unsafe-inline' to default-src
         -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta http-equiv="Content-Security-Policy" content="
+            default-src 'self';
+            script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com;
+            style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+            font-src 'self' https://fonts.gstatic.com;
+            connect-src 'self' wss://*.firebaseio.com https://*.firebaseio.com https://www.googleapis.com;
+            img-src 'self' data: content:;
+            media-src *;
+            frame-src 'self' https://*.firebaseapp.com https://*.google.com;
+        ">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover, user-scalable=no">
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="style.css">
+        <link rel="manifest" href="manifest.json">
+        <meta name="theme-color" content="#4a90e2">
         <title>TTS Game</title>
     </head>
     <body>
+        <div class="offline-indicator" id="offline-indicator">
+            📡 Mode Offline
+        </div>
         <div class="game-container">
             <div class="top-bar">
                 <button class="back-button">&larr;</button>
                 <h2>Level <span id="level-number">1</span></h2>
+                <button class="settings-button" onclick="toggleSettings()">⚙️</button>
+            </div>
+            
+            <!-- Settings Panel -->
+            <div id="settings-panel" class="settings-panel hidden">
+                <div class="settings-content">
+                    <h3>Pengaturan</h3>
+                    <div class="setting-item">
+                        <label>Tema:</label>
+                        <select id="theme-select">
+                            <option value="default">Default</option>
+                            <option value="dark">Dark Mode</option>
+                            <option value="colorful">Colorful</option>
+                            <option value="ocean">Ocean</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Ukuran Font:</label>
+                        <select id="font-size-select">
+                            <option value="small">Kecil</option>
+                            <option value="medium">Sedang</option>
+                            <option value="large">Besar</option>
+                            <option value="xlarge">Sangat Besar</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="sound-toggle"> Suara
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="vibration-toggle"> Getaran
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="high-contrast-toggle"> Kontras Tinggi
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="auto-submit-toggle"> Auto Submit
+                        </label>
+                    </div>
+                    <button onclick="toggleSettings()" class="close-settings">Tutup</button>
+                </div>
             </div>
 
             <div class="found-words-container">
-                <p>Kata Ditemukan:</p>
+                <p>Kata Ditemukan: <span id="score-display">Skor: 0</span></p>
                 <div id="found-words"></div>
             </div>
 
@@ -65,7 +126,17 @@
             </div>
         </div>
 
-        <script src="../cordova.js"></script>
-        <script src="main.js"></script>
+        <!-- Firebase SDKs - WAJIB ADA SEBELUM firebase-init.js -->
+        <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+        <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+        <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+        <!-- Scripts Game - `defer` ensures they load in order -->
+        <script defer src="../../js/firebase-init.js"></script>
+        <script defer src="kbbi.js"></script>
+        <script defer src="themes.js"></script>
+        <script defer src="sound.js"></script>
+        <script defer src="animations.js"></script>
+        <script defer src="main.js"></script>
     </body>
 </html>

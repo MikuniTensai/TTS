@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/leaderboard.css">
+    <title>Leaderboard</title>
+</head>
+<body>
+    <div class="leaderboard-app">
+        <div class="top-bar">
+            <a href="index.html" class="back-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M11.828 12l4.243 4.243-1.414 1.414L9 12l5.657-5.657 1.414 1.414L11.828 12z"></path></svg>
+            </a>
+            <h1>Leaderboard</h1>
+            <div class="user-profile">
+                <span id="user-nickname">Loading...</span>
+                <button id="edit-nickname-btn">✏️</button>
+            </div>
+        </div>
+        <div id="leaderboard-list">
+            <div class="loading">Memuat data...</div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Scripts -->
+    <script src="js/firebase-init.js"></script>
+    <script src="js/leaderboard.js"></script>
+</body>
+</html> 

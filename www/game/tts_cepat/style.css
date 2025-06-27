@@ -22,30 +22,53 @@
 
 :root {
     --grid-size: 25;
-    --cell-size: min(8vw, 40px);
-    --cell-gap: 2px;
+    --cell-size: min(calc((100vw - 80px) / 12), 35px);
+    --cell-gap: 1px;
+    --font-size: 1em;
+    --tile-size: clamp(16px, 4vw, 30px);
+    --input-height: clamp(30px, 6vw, 40px);
+    --input-font-size: clamp(0.9em, 3vw, 1.2em);
+    
+    /* Theme colors */
+    --theme-background: #f0f8ff;
+    --theme-gridBackground: #e0e0e0;
+    --theme-gridBorder: #ccc;
+    --theme-letterBox: #fff;
+    --theme-letterBoxBorder: #999;
+    --theme-revealedBox: #a0d8a0;
+    --theme-letterTile: #4a90e2;
+    --theme-letterTileUsed: #666;
+    --theme-letterTileText: #fff;
+    --theme-foundWord: #a0d8a0;
+    --theme-currentWord: #333;
+    --theme-button: #4a90e2;
+    --theme-buttonText: #fff;
+    --theme-text: #333;
+    --theme-font-primary: Arial, sans-serif;
 }
 
 body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-    background-color:#E4E4E4;
-    background-image:linear-gradient(to bottom, #A7A7A7 0%, #E4E4E4 51%);
-    font-family: Arial, sans-serif;
-    font-size:12px;
-    height:100vh;
-    margin:0px;
-    padding:0px;
+    background: var(--theme-background);
+    font-family: var(--theme-font-primary);
+    font-size: calc(12px * var(--font-size));
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+    margin: 0;
+    padding: 0;
     /* Padding to avoid the "unsafe" areas behind notches in the screen */
     padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
-    text-transform:uppercase;
-    width:100%;
+    text-transform: uppercase;
+    width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
-    background-color: #f0f8ff;
+    align-items: stretch;
     user-select: none;
+    color: var(--theme-text);
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 /* Portrait layout (default) */
@@ -124,12 +147,13 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
-    max-width: 500px;
     height: 100%;
-    padding: 10px;
+    padding: 8px 12px;
     box-sizing: border-box;
+    overflow-y: auto;
+    gap: 8px;
 }
 
 .top-bar {
@@ -138,7 +162,8 @@ h1 {
     justify-content: center;
     width: 100%;
     position: relative;
-    margin-bottom: 5px;
+    min-height: 48px;
+    flex-shrink: 0;
 }
 
 .back-button {
@@ -148,18 +173,44 @@ h1 {
     background: none;
     border: none;
     cursor: pointer;
+    color: var(--theme-text);
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background-color: rgba(0,0,0,0.1);
+}
+
+.settings-button {
+    position: absolute;
+    right: 10px;
+    font-size: 1.2em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--theme-text);
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.settings-button:hover {
+    background-color: rgba(0,0,0,0.1);
 }
 
 .top-bar h2 {
-    font-size: 1.8em;
+    font-size: clamp(1.2em, 4vw, 1.8em);
+    margin: 0;
 }
 
 .found-words-container {
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
-    min-height: 50px;
-    font-size: 1.2em;
+    min-height: 40px;
+    font-size: clamp(0.9em, 3vw, 1.2em);
+    flex-shrink: 0;
 }
 
 #found-words {
@@ -171,20 +222,27 @@ h1 {
 
 #found-words span {
     background-color: #a0d8a0;
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-size: 1em;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: clamp(0.8em, 2.5vw, 1em);
     font-weight: bold;
 }
 
 #grid-container {
     display: grid;
-    grid-template-columns: repeat(var(--grid-size), var(--cell-size));
-    grid-template-rows: repeat(var(--grid-size), var(--cell-size));
     gap: var(--cell-gap);
-    border: 2px solid #ccc;
-    padding: 5px;
-    background-color: #e0e0e0;
+    border: 2px solid var(--theme-gridBorder);
+    padding: 8px;
+    background-color: var(--theme-gridBackground);
+    width: calc(100% - 24px);
+    margin: 0 12px;
+    border-radius: 8px;
+    flex: 1;
+    min-height: 0;
+    justify-self: center;
+    align-self: center;
+    max-height: 60vh;
+    overflow: hidden;
 }
 
 .grid-cell {
@@ -193,10 +251,11 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: calc(var(--cell-size) * 0.6);
+    font-size: clamp(10px, calc(var(--cell-size) * 0.6), 20px);
     text-transform: uppercase;
     font-weight: bold;
-    color: #333;
+    color: var(--theme-text);
+    border-radius: 2px;
 }
 
 .grid-cell.background {
@@ -215,51 +274,69 @@ h1 {
 }
 
 .word-input-container {
-    height: 40px;
-    margin: 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px dashed #ccc;
-    width: 90%;
-    min-height: 40px;
-    border-radius: 10px;
+    border: 2px dashed var(--theme-gridBorder);
+    width: calc(100% - 40px);
+    min-height: var(--input-height, 35px);
+    height: var(--input-height, 35px);
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin: 0 20px;
+    padding: 0 8px;
+    box-sizing: border-box;
 }
 
 #current-word {
-    font-size: 1.5em;
+    font-size: var(--input-font-size, clamp(1em, 3.5vw, 1.3em));
     font-weight: bold;
-    letter-spacing: 5px;
+    letter-spacing: clamp(1px, 0.8vw, 4px);
+    color: var(--theme-currentWord);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .letter-bank-container {
-    margin: 10px 0;
     width: 100%;
     display: flex;
     justify-content: center;
+    flex-shrink: 0;
+    padding: 0 35px;
+    box-sizing: border-box;
 }
 
 #letter-bank {
     display: flex;
-    gap: 10px;
+    gap: var(--tile-gap, clamp(1px, 0.5vw, 3px));
     justify-content: center;
-    width: 90%;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: visible;
+    align-items: center;
+    /* Ensure no scrolling by using exact calculations */
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .letter-tile {
-    flex: 1;
-    max-width: 60px;
+    min-width: var(--tile-size);
+    max-width: var(--tile-size);
+    width: var(--tile-size);
     aspect-ratio: 1 / 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2.2em;
+    font-size: clamp(1em, calc(var(--tile-size) * 0.4), 1.8em);
     font-weight: bold;
-    background-color: #fff;
-    border: 2px solid #333;
-    border-radius: 10px;
+    background-color: var(--theme-letterTile);
+    color: var(--theme-letterTileText);
+    border: 2px solid var(--theme-letterBoxBorder);
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .letter-tile:hover {
@@ -275,17 +352,22 @@ h1 {
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
+    gap: clamp(8px, 3vw, 15px);
+    flex-shrink: 0;
+    width: calc(100% - 24px);
+    margin: 0 12px;
+    flex-wrap: wrap;
 }
 
 .action-buttons button {
-    padding: 12px 24px;
-    font-size: 1.1em;
+    padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px);
+    font-size: clamp(0.9em, 3vw, 1.1em);
     font-weight: bold;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 2px solid;
     cursor: pointer;
+    min-width: clamp(60px, 20vw, 100px);
+    transition: all 0.2s ease;
 }
 
 #submit-button {
@@ -298,4 +380,464 @@ h1 {
     background-color: #f0f0f0;
     color: #333;
     border-color: #ccc;
+}
+
+/* Settings Panel */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh; /* Dynamic viewport height */
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+
+.settings-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.settings-content {
+    background: var(--theme-background);
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.settings-panel:not(.hidden) .settings-content {
+    transform: scale(1);
+}
+
+.settings-content h3 {
+    margin-top: 0;
+    color: var(--theme-text);
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.setting-item {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting-item label {
+    color: var(--theme-text);
+    font-size: calc(1em * var(--font-size));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.setting-item select {
+    padding: 8px;
+    border: 1px solid var(--theme-gridBorder);
+    border-radius: 5px;
+    background: var(--theme-letterBox);
+    color: var(--theme-text);
+    font-size: calc(1em * var(--font-size));
+}
+
+.setting-item input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-left: 8px;
+}
+
+.close-settings {
+    width: 100%;
+    padding: 12px;
+    background: var(--theme-button);
+    color: var(--theme-buttonText);
+    border: none;
+    border-radius: 8px;
+    font-size: calc(1.1em * var(--font-size));
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+
+.close-settings:hover {
+    opacity: 0.9;
+}
+
+/* Score Display */
+#score-display {
+    float: right;
+    font-weight: bold;
+    color: var(--theme-button);
+    font-size: clamp(0.9em, 3vw, 1.1em);
+}
+
+/* Dynamic grid sizing based on content */
+.grid-dynamic {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media (max-height: 600px) {
+    .game-container {
+        gap: 4px;
+    }
+    
+    .top-bar {
+        min-height: 40px;
+    }
+    
+    .found-words-container {
+        min-height: 30px;
+    }
+    
+    .word-input-container {
+        min-height: var(--input-height, 30px);
+        height: var(--input-height, 30px);
+    }
+    
+    :root {
+        --input-height: clamp(25px, 5vw, 30px);
+        --input-font-size: clamp(0.8em, 2.5vw, 1em);
+    }
+    
+    #grid-container {
+        max-height: 50vh;
+        padding: 6px;
+    }
+    
+    .action-buttons button {
+        padding: 6px 12px;
+    }
+}
+
+@media (max-height: 500px) {
+    .game-container {
+        gap: 2px;
+        padding: 4px 12px;
+    }
+    
+    #grid-container {
+        max-height: 40vh;
+        padding: 4px;
+    }
+    
+    .letter-tile {
+        min-width: var(--tile-size);
+        max-width: var(--tile-size);
+        width: var(--tile-size);
+    }
+    
+    :root {
+        --tile-size: clamp(14px, 3.5vw, 25px);
+    }
+    
+    .found-words-container {
+        min-height: 25px;
+        font-size: clamp(0.8em, 2.5vw, 1em);
+    }
+    
+    #found-words span {
+        padding: 2px 6px;
+        font-size: clamp(0.7em, 2vw, 0.9em);
+    }
+}
+
+/* Very small screens */
+@media (max-height: 400px) {
+    .game-container {
+        gap: 1px;
+        padding: 2px 8px;
+    }
+    
+    .top-bar {
+        min-height: 35px;
+    }
+    
+    .top-bar h2 {
+        font-size: clamp(1em, 3vw, 1.4em);
+    }
+    
+    #grid-container {
+        max-height: 35vh;
+        padding: 2px;
+    }
+    
+    .word-input-container {
+        min-height: var(--input-height, 25px);
+        height: var(--input-height, 25px);
+    }
+    
+    :root {
+        --input-height: clamp(20px, 4vw, 25px);
+        --input-font-size: clamp(0.7em, 2vw, 0.9em);
+    }
+    
+    #current-word {
+        font-size: clamp(1em, 3vw, 1.2em);
+    }
+    
+    .letter-tile {
+        min-width: var(--tile-size);
+        max-width: var(--tile-size);
+        width: var(--tile-size);
+        font-size: clamp(0.9em, calc(var(--tile-size) * 0.35), 1.4em);
+    }
+    
+    :root {
+        --tile-size: clamp(12px, 3vw, 22px);
+    }
+    
+    .action-buttons button {
+        padding: 4px 8px;
+        font-size: clamp(0.8em, 2.5vw, 1em);
+        min-width: clamp(50px, 15vw, 80px);
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+    .game-container {
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .left-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .right-panel {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    #grid-container {
+        max-height: 80vh;
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* High Contrast Mode */
+.high-contrast {
+    --theme-background: #000;
+    --theme-gridBackground: #111;
+    --theme-gridBorder: #fff;
+    --theme-letterBox: #222;
+    --theme-letterBoxBorder: #fff;
+    --theme-revealedBox: #004400;
+    --theme-letterTile: #fff;
+    --theme-letterTileUsed: #666;
+    --theme-letterTileText: #000;
+    --theme-foundWord: #00ff00;
+    --theme-currentWord: #fff;
+    --theme-button: #fff;
+    --theme-buttonText: #000;
+    --theme-text: #fff;
+}
+
+/* Update existing elements to use theme variables */
+#grid-container {
+    border-color: var(--theme-gridBorder);
+    background-color: var(--theme-gridBackground);
+    /* Ensure grid never overflows */
+    contain: layout style;
+    will-change: transform;
+}
+
+.grid-cell {
+    color: var(--theme-text);
+}
+
+.grid-cell.background {
+    background-color: var(--theme-gridBackground);
+    border-color: var(--theme-gridBorder);
+}
+
+.grid-cell.letter-box {
+    background-color: var(--theme-letterBox);
+    border-color: var(--theme-letterBoxBorder);
+}
+
+.grid-cell.revealed {
+    background-color: var(--theme-revealedBox);
+}
+
+#current-word {
+    color: var(--theme-currentWord);
+}
+
+.letter-tile {
+    background-color: var(--theme-letterTile);
+    color: var(--theme-letterTileText);
+    border-color: var(--theme-letterBoxBorder);
+}
+
+.letter-tile:hover {
+    opacity: 0.8;
+}
+
+.letter-tile.used {
+    background-color: var(--theme-letterTileUsed);
+    color: var(--theme-text);
+}
+
+#found-words span {
+    background-color: var(--theme-foundWord);
+    color: var(--theme-text);
+}
+
+.action-buttons button {
+    background-color: var(--theme-button);
+    color: var(--theme-buttonText);
+    border-color: var(--theme-gridBorder);
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+    .settings-content {
+        padding: 16px;
+        width: calc(100% - 32px);
+        margin: 16px;
+        max-height: calc(100vh - 32px);
+        max-height: calc(100dvh - 32px);
+    }
+    
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    
+    .setting-item select {
+        width: 100%;
+    }
+    
+    .settings-content h3 {
+        font-size: clamp(1.2em, 4vw, 1.5em);
+        margin-bottom: 16px;
+    }
+}
+
+/* Touch improvements */
+@media (hover: none) and (pointer: coarse) {
+    .back-button, .settings-button {
+        padding: 12px;
+        font-size: 1.3em;
+    }
+    
+    .letter-tile {
+        padding: 12px;
+        font-size: calc(var(--cell-size) * 0.5);
+    }
+    
+    .action-buttons button {
+        padding: 15px 20px;
+        font-size: calc(1.1em * var(--font-size));
+    }
+}
+
+/* Animations */
+.grid-cell {
+    transition: all 0.3s ease;
+}
+
+.grid-cell.revealed {
+    animation: revealCell 0.3s ease-out forwards;
+}
+
+.letter-tile {
+    transition: all 0.2s ease;
+}
+
+.letter-tile:active {
+    transform: scale(0.95);
+}
+
+.found-words-container {
+    transition: all 0.3s ease;
+}
+
+#found-words span {
+    animation: fadeInUp 0.3s ease-out;
+    transition: all 0.2s ease;
+}
+
+#found-words span:hover {
+    transform: scale(1.05);
+}
+
+/* Swipe gesture support */
+.game-container {
+    touch-action: manipulation;
+}
+
+/* Bonus word indicator */
+.bonus-word {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.bonus-word::after {
+    content: "+1";
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    font-size: 0.7em;
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Offline indicator */
+.offline-indicator {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff4757;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: clamp(0.8em, 2.5vw, 0.9em);
+    z-index: 999;
+    display: none;
+    max-width: calc(100vw - 40px);
+    text-align: center;
+}
+
+.offline-indicator.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateX(-50%) translateY(-100%); }
+    to { transform: translateX(-50%) translateY(0); }
 }
