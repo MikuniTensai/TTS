@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/leaderboard.css">
+    <link rel="stylesheet" href="css/account.css">
+    <title>Account Management</title>
+</head>
+<body>
+    <div class="account-app">
+        <div class="top-bar">
+            <a href="index.html" class="back-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M11.828 12l4.243 4.243-1.414 1.414L9 12l5.657-5.657 1.414 1.414L11.828 12z"></path>
+                </svg>
+            </a>
+            <h1>Account</h1>
+            <div class="user-profile">
+                <span id="user-nickname">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Initial Loading State -->
+        <div id="initial-loading" class="loading-overlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p>Initializing account...</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                    If this takes too long, please refresh the page
+                </p>
+            </div>
+        </div>
+
+        <div class="account-content">
+            <!-- User Info Section -->
+            <div class="account-section">
+                <h2>Informasi Akun</h2>
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Score:</span>
+                        <span id="total-score" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Level Tertinggi:</span>
+                        <span id="highest-level" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Level Selesai:</span>
+                        <span id="completed-levels" class="stat-value">0</span>
+                    </div>
+                </div>
+                <button id="edit-nickname-btn" class="action-button secondary">
+                    ✏️ Edit Nickname
+                </button>
+            </div>
+
+            <!-- Data Management Section -->
+            <div class="account-section">
+                <h2>Backup & Restore</h2>
+                <p class="section-description">
+                    Pindahkan data game Anda ke device lain atau buat backup untuk keamanan.
+                </p>
+                
+                <div class="backup-actions">
+                    <button id="export-btn" class="action-button primary">
+                        📤 Export & Reset Account
+                    </button>
+                    <button id="import-btn" class="action-button primary">
+                        📥 Import Data
+                    </button>
+                    <button id="download-backup-btn" class="action-button secondary">
+                        💾 Download Backup File
+                    </button>
+                </div>
+                
+                <div class="warning-box" style="margin-top: 15px;">
+                    ⚠️ <strong>PERINGATAN:</strong> Export akan membuat akun baru yang kosong dan menonaktifkan akun ini. Pastikan simpan kode export dengan aman!
+                </div>
+            </div>
+
+            <!-- Data Validation Section -->
+            <div class="account-section">
+                <h2>Data Status</h2>
+                <div id="data-status" class="data-status">
+                    <span class="status-loading">Checking data integrity...</span>
+                </div>
+                <button id="validate-data-btn" class="action-button secondary">
+                    🔍 Validate Data
+                </button>
+            </div>
+
+            <!-- User Management Section -->
+            <div class="account-section">
+                <h2>User Management</h2>
+                <p class="section-description">
+                    Kelola duplikasi user dan bersihkan data yang tidak aktif.
+                </p>
+                
+                <div class="backup-actions">
+                    <button id="find-duplicates-btn" class="action-button secondary">
+                        🔍 Find Duplicate Users
+                    </button>
+                    <button id="cleanup-inactive-btn" class="action-button secondary">
+                        🧹 Cleanup Inactive Users
+                    </button>
+                </div>
+                
+                <div id="duplicate-status" class="data-status" style="margin-top: 15px; display: none;">
+                    <span class="status-info">Ready to check for duplicates</span>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="account-section danger-zone">
+                <h2>Danger Zone</h2>
+                <p class="section-description">
+                    Tindakan ini tidak dapat dibatalkan. Pastikan Anda sudah membuat backup.
+                </p>
+                <button id="reset-progress-btn" class="action-button danger">
+                    🗑️ Reset Game Progress
+                </button>
+                <button id="delete-account-btn" class="action-button danger">
+                    ⚠️ Delete Account Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Export Modal -->
+        <div id="export-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Export Data</h3>
+                    <button class="modal-close" onclick="closeModal('export-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Kode export Anda:</p>
+                    <div class="export-code-container">
+                        <textarea id="export-code" readonly></textarea>
+                        <button id="copy-export-code" class="copy-button">📋 Copy</button>
+                    </div>
+                    <div class="export-instructions">
+                        <h4>Cara menggunakan:</h4>
+                        <ol>
+                            <li>Copy kode di atas</li>
+                            <li>Install game di device baru</li>
+                            <li>Buka menu Account → Import Data</li>
+                            <li>Paste kode dan klik Import</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Modal -->
+        <div id="import-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Import Data</h3>
+                    <button class="modal-close" onclick="closeModal('import-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Masukkan kode export:</p>
+                    <textarea id="import-code" placeholder="Paste kode export di sini..."></textarea>
+                    <div class="import-warning">
+                        <p><strong>⚠️ Perhatian:</strong></p>
+                        <p>Data yang diimpor akan digabung dengan data saat ini. Skor dan progress tertinggi akan dipertahankan.</p>
+                    </div>
+                    
+                    <div class="import-options">
+                        <label>
+                            <input type="checkbox" id="cleanup-old-user" checked>
+                            Hapus data user lama setelah import (recommended)
+                        </label>
+                    </div>
+                    
+                    <div class="import-options">
+                        <label>
+                            <input type="checkbox" id="cleanup-old-user" checked>
+                            Hapus data user lama setelah import (recommended)
+                        </label>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button id="import-execute-btn" class="action-button primary">Import Data</button>
+                        <button onclick="closeModal('import-modal')" class="action-button secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p id="loading-message">Processing...</p>
+            </div>
+        </div>
+
+        <!-- Message Area -->
+        <div id="message-area" class="message-area"></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Scripts -->
+    <script src="js/firebase-init.js"></script>
+    <script src="js/account-manager.js"></script>
+    <script src="js/account.js"></script>
+    
+    <!-- Debug console for troubleshooting -->
+    <script>
+        // Add debug console for development
+        window.addEventListener('load', () => {
+            console.log('=== ACCOUNT PAGE DEBUG ===');
+            console.log('Firebase available:', typeof firebase !== 'undefined');
+            console.log('window.auth available:', typeof window.auth !== 'undefined');
+            console.log('window.db available:', typeof window.db !== 'undefined');
+            console.log('Current user:', window.auth?.currentUser?.uid || 'None');
+            console.log('========================');
+        });
+    </script>
+</body>
+</html> 

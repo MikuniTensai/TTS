@@ -62,6 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScore = 0;
     let bonusWords = [];
     let isLevelAlreadyCompleted = false; // Track if level was already completed
+    let shuffleCount = 2;
+    let hintCount = 1;
+    let inventory = { shuffle: 0, hint: 0 }; // Player inventory
     
     // Initialize managers
     const themeManager = new ThemeManager();
@@ -91,6 +94,183 @@ document.addEventListener('DOMContentLoaded', () => {
         const levelHeader = document.querySelector('.top-bar h2');
         if (levelHeader && isLevelAlreadyCompleted) {
             levelHeader.innerHTML = `Level <span id="level-number">${levelData.id}</span> <span style="color: #4CAF50; font-size: 0.8em;">✓ Selesai</span>`;
+        }
+    }
+
+    function updateActionButtonsUI() {
+        const shuffleButton = document.getElementById('shuffle-button');
+        const hintButton = document.getElementById('hint-button');
+
+        // Update Shuffle Button
+        shuffleButton.textContent = `Acak (${shuffleCount})`;
+        if (shuffleCount <= 0) {
+            shuffleButton.disabled = true;
+            shuffleButton.classList.add('disabled');
+        } else {
+            shuffleButton.disabled = false;
+            shuffleButton.classList.remove('disabled');
+        }
+
+        // Update Hint Button
+        hintButton.textContent = `Hint (${hintCount})`;
+        if (hintCount <= 0) {
+            hintButton.disabled = true;
+            hintButton.classList.add('disabled');
+        } else {
+            hintButton.disabled = false;
+            hintButton.classList.remove('disabled');
+        }
+    }
+
+    function toggleInventoryPopup() {
+        const popup = document.getElementById('inventory-popup');
+        if (popup) {
+            popup.classList.toggle('hidden');
+            if (!popup.classList.contains('hidden')) {
+                updateInventoryPopup(); // Update content when opening
+            }
+        }
+    }
+
+    function updateInventoryBadge() {
+        const badge = document.getElementById('inventory-badge');
+        if (!badge) return;
+
+        const totalItems = (inventory.shuffle || 0) + (inventory.hint || 0);
+        if (totalItems > 0) {
+            badge.textContent = totalItems;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    function loadInventory() {
+        try {
+            const savedInventory = JSON.parse(localStorage.getItem('tts-inventory') || '{}');
+            inventory = {
+                shuffle: savedInventory.shuffle || 0,
+                hint: savedInventory.hint || 0
+            };
+            updateInventoryBadge();
+        } catch (error) {
+            console.error('Error loading inventory:', error);
+        }
+    }
+
+    function updateInventoryDisplay() {
+        // This function is deprecated and replaced by updateInventoryPopup
+        updateInventoryPopup();
+    }
+    
+    function updateInventoryPopup() {
+        const inventoryContainer = document.getElementById('popup-inventory-items');
+        if (!inventoryContainer) return;
+
+        if (inventory.shuffle === 0 && inventory.hint === 0) {
+            inventoryContainer.innerHTML = '<div class="popup-empty">Inventory Anda kosong.</div>';
+            return;
+        }
+
+        let inventoryHTML = '';
+
+        if (inventory.shuffle > 0) {
+            inventoryHTML += `
+                <div class="popup-inventory-item">
+                    <span>🔀 Extra Shuffle</span>
+                    <span>x ${inventory.shuffle}</span>
+                    <button class="use-item-button" onclick="useInventoryItem('shuffle')">Gunakan</button>
+                </div>
+            `;
+        }
+
+        if (inventory.hint > 0) {
+            inventoryHTML += `
+                <div class="popup-inventory-item">
+                    <span>💡 Extra Hint</span>
+                    <span>x ${inventory.hint}</span>
+                    <button class="use-item-button" onclick="useInventoryItem('hint')">Gunakan</button>
+                </div>
+            `;
+        }
+        
+        inventoryContainer.innerHTML = inventoryHTML || '<div class="popup-empty">Inventory Anda kosong.</div>';
+    }
+
+    function useInventoryItem(itemType) {
+        if (inventory[itemType] <= 0) {
+            return;
+        }
+
+        if (itemType === 'shuffle') {
+            shuffleCount++;
+            inventory.shuffle--;
+            renderLetterBank();
+            soundManager.playSound('click');
+            showInventoryMessage('🔀 Extra Shuffle digunakan!');
+        } else if (itemType === 'hint') {
+            hintCount++;
+            inventory.hint--;
+            showInventoryMessage('💡 Extra Hint digunakan!');
+        }
+
+        // Update localStorage
+        localStorage.setItem('tts-inventory', JSON.stringify(inventory));
+        
+        // Update displays
+        updateInventoryPopup();
+        updateInventoryBadge();
+        updateActionButtonsUI();
+
+        // Update Firebase in background
+        updateInventoryInFirebase().catch(err => {
+            console.error('Failed to update inventory in Firebase:', err);
+        });
+    }
+
+    function showInventoryMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message;
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            z-index: 1500;
+            font-weight: bold;
+            font-size: 0.9em;
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        setTimeout(() => {
+            if (document.body.contains(messageDiv)) {
+                document.body.removeChild(messageDiv);
+            }
+        }, 2000);
+    }
+
+    async function updateInventoryInFirebase() {
+        try {
+            if (window.ensureUserDataStructure) {
+                await window.ensureUserDataStructure();
+                
+                const db = firebase.firestore();
+                const userRef = db.collection('users').doc(window.currentUserId);
+                
+                await userRef.update({
+                    inventory: inventory,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                console.log('✅ Inventory updated in Firebase');
+            }
+        } catch (error) {
+            console.error('Error updating inventory in Firebase:', error);
         }
     }
 
@@ -142,6 +322,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add completion indicator to the level display
             updateLevelDisplay();
             
+            // Reset counts for new level
+            shuffleCount = 2;
+            hintCount = 1;
+            updateActionButtonsUI();
+
+            // Load inventory
+            loadInventory();
+
             renderGrid();
             renderLetterBank();
             updateFoundWordsUI();
@@ -429,6 +617,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function useHint() {
+        if (hintCount <= 0) return; // Exit if no hints left
+
         const remainingWords = levelData.words.filter(w => !foundWords.includes(w));
         if (remainingWords.length === 0) {
             alert("Semua kata telah ditemukan!");
@@ -452,6 +642,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cellElement) {
                 cellElement.textContent = levelData.grid[hintCoord.r][hintCoord.c];
                 cellElement.classList.add('revealed');
+                
+                hintCount--; // Decrement only on successful hint
+                updateActionButtonsUI();
             }
         } else {
             alert("Tidak ada petunjuk lagi.");
@@ -482,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (foundWords.length === levelData.words.length) {
             // Only save score if this is the first time completing the level
             if (!isLevelAlreadyCompleted) {
-                saveCompletedLevel(currentLevelId);
+            saveCompletedLevel(currentLevelId);
                 saveScore(currentLevelId, currentScore);
                 
                 // --- UI UPDATE ---
@@ -845,8 +1038,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Event Listeners
     shuffleButton.addEventListener('click', () => {
+        if (shuffleCount <= 0) return;
+        shuffleCount--;
         renderLetterBank();
         soundManager.playSound('click');
+        updateActionButtonsUI();
     });
     
     clearButton.addEventListener('click', () => {
@@ -983,6 +1179,10 @@ document.addEventListener('DOMContentLoaded', () => {
             location.reload();
         }
     };
+    
+    // Make useInventoryItem and toggleInventoryPopup globally accessible
+    window.useInventoryItem = useInventoryItem;
+    window.toggleInventoryPopup = toggleInventoryPopup;
     
     // Initial Load
     loadLevel(getLevelFromURL());

@@ -54,14 +54,26 @@ async function createUserProfileIfNeeded(user) {
     const userSnapshot = await userRef.get();
     
     if (!userSnapshot.exists) {
-        const randomNumber = Math.floor(1000 + Math.random() * 9000);
-        const defaultNickname = `Pemain${randomNumber}`;
+        let defaultNickname;
         
-        // Create user profile with default score 0
+        // Generate unique nickname
+        if (window.accountManager) {
+            // Use account manager to generate unique nickname
+            defaultNickname = await window.accountManager.generateUniqueNickname('Pemain');
+        } else {
+            // Fallback to random number
+            const randomNumber = Math.floor(1000 + Math.random() * 9000);
+            defaultNickname = `Pemain${randomNumber}`;
+        }
+        
+        // Create user profile with default score 0 and empty inventory
         await userRef.set({
             nickname: defaultNickname,
             totalScore: 0,
             highestLevelCompleted: 0,
+            inventory: { shuffle: 0, hint: 0 },
+            active: true,
+            migrated: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -212,6 +224,15 @@ window.getCurrentUser = getCurrentUser;
 window.getCurrentUserId = getCurrentUserId;
 window.submitScoreToLeaderboard = submitScoreToLeaderboard;
 
+// Set current user ID globally when authenticated
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        window.currentUserId = user.uid;
+    } else {
+        window.currentUserId = null;
+    }
+});
+
 // Utility function to get current user's data
 async function getCurrentUserData() {
     const user = getCurrentUser();
@@ -232,13 +253,17 @@ async function ensureUserDataStructure() {
     if (userDoc.exists) {
         const userData = userDoc.data();
         
-        // Check if user needs migration (missing score fields)
-        if (userData.totalScore === undefined || userData.highestLevelCompleted === undefined) {
+        // Check if user needs migration (missing score fields, inventory, or new fields)
+        if (userData.totalScore === undefined || userData.highestLevelCompleted === undefined || 
+            !userData.inventory || userData.active === undefined || userData.migrated === undefined) {
             console.log("🔄 Migrating user data structure...");
             
             await userRef.update({
                 totalScore: userData.totalScore || 0,
                 highestLevelCompleted: userData.highestLevelCompleted || 0,
+                inventory: userData.inventory || { shuffle: 0, hint: 0 },
+                active: userData.active !== undefined ? userData.active : true,
+                migrated: userData.migrated !== undefined ? userData.migrated : false,
                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
             });
             
@@ -249,4 +274,9 @@ async function ensureUserDataStructure() {
 
 // Make utility functions available globally
 window.getCurrentUserData = getCurrentUserData;
-window.ensureUserDataStructure = ensureUserDataStructure; 
+window.ensureUserDataStructure = ensureUserDataStructure;
+
+// Make Firebase instances available globally for account page
+window.auth = auth;
+window.db = db;
+window.firebase = firebase; 

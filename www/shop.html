@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <title>Shop - TTS Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            min-height: 100vh;
+        }
+        .shop-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .score-display {
+            text-align: center;
+            font-size: 1.2em;
+            color: #4a90e2;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .shop-items {
+            display: grid;
+            gap: 15px;
+        }
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+            transition: all 0.2s;
+        }
+        .shop-item:hover {
+            border-color: #4a90e2;
+            background: #f0f8ff;
+        }
+        .item-info {
+            flex-grow: 1;
+        }
+        .item-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+        .item-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .item-price {
+            background: #4a90e2;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .buy-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .buy-button:hover {
+            background: #45a049;
+        }
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .inventory-display {
+            margin-top: 30px;
+            padding: 15px;
+            background: #e8f4fd;
+            border-radius: 10px;
+        }
+        .inventory-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .inventory-items {
+            display: flex;
+            gap: 15px;
+        }
+        .inventory-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            text-align: center;
+            min-width: 80px;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #f44336;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #4CAF50;
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html'">&larr;</button>
+    
+    <div class="shop-container">
+        <h1>🛒 Shop</h1>
+        <div class="score-display" id="score-display">
+            Total Score: <span id="total-score">0</span>
+        </div>
+        
+        <div id="message-area"></div>
+        
+        <div class="shop-items">
+            <div class="shop-item">
+                <div class="item-info">
+                    <div class="item-name">🔀 Extra Shuffle</div>
+                    <div class="item-description">Tambahan 1 kali acak untuk level</div>
+                </div>
+                <div class="item-price">10 Poin</div>
+                <button class="buy-button" onclick="buyItem('shuffle', 10)">Beli</button>
+            </div>
+            
+            <div class="shop-item">
+                <div class="item-info">
+                    <div class="item-name">💡 Extra Hint</div>
+                    <div class="item-description">Tambahan 1 kali petunjuk untuk level</div>
+                </div>
+                <div class="item-price">15 Poin</div>
+                <button class="buy-button" onclick="buyItem('hint', 15)">Beli</button>
+            </div>
+        </div>
+        
+        <div class="inventory-display">
+            <div class="inventory-title">📦 Inventory Anda:</div>
+            <div class="inventory-items" id="inventory-items">
+                <div class="loading">Memuat...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="js/firebase-init.js"></script>
+    <script src="js/shop.js"></script>
+</body>
+</html> 

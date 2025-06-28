@@ -31,17 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Convert to array and sort manually for more control
+            // Convert to array and filter out inactive users manually
             const users = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                users.push({
-                    id: doc.id,
-                    nickname: data.nickname || 'Anonim',
-                    totalScore: data.totalScore || 0,
-                    highestLevelCompleted: data.highestLevelCompleted || 0,
-                    isCurrentUser: doc.id === currentUserId
-                });
+                // Only show active users (filter out exported/migrated users)
+                if (data.active === true && data.migrated !== true) {
+                    users.push({
+                        id: doc.id,
+                        nickname: data.nickname || 'Anonim',
+                        totalScore: data.totalScore || 0,
+                        highestLevelCompleted: data.highestLevelCompleted || 0,
+                        isCurrentUser: doc.id === currentUserId
+                    });
+                }
             });
             
             // Sort by totalScore desc, then by highestLevelCompleted desc
@@ -147,26 +150,64 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to handle nickname editing
     async function editNickname(userId) {
-        const currentNickname = userNicknameSpan.textContent;
-        const newNickname = prompt("Masukkan nama panggilan baru:", currentNickname);
+        try {
+            const currentNickname = userNicknameSpan.textContent;
+            let newNickname = prompt("Masukkan nama panggilan baru:", currentNickname);
 
-        if (newNickname && newNickname.trim() !== '' && newNickname.trim() !== currentNickname) {
-            const finalNickname = newNickname.trim().slice(0, 20); // Limit to 20 chars
-            try {
-                // Update nickname in /users collection
-                await db.collection('users').doc(userId).update({ 
-                    nickname: finalNickname,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                userNicknameSpan.textContent = finalNickname;
-                // Refresh leaderboard to show new name
-                fetchLeaderboard();
-                alert("Nama panggilan berhasil diperbarui!");
-            } catch (error) {
-                console.error("Error updating nickname:", error);
-                alert("Gagal memperbarui nama panggilan.");
+            if (!newNickname || newNickname.trim() === '' || newNickname.trim() === currentNickname) {
+                return;
             }
+
+            // Trim and validate length
+            newNickname = newNickname.trim();
+            if (newNickname.length < 3 || newNickname.length > 20) {
+                alert("Nama panggilan harus 3-20 karakter!");
+                return;
+            }
+            
+            // Validate characters (alphanumeric + underscore only)
+            if (!/^[a-zA-Z0-9_]+$/.test(newNickname)) {
+                alert("Nama panggilan hanya boleh berisi huruf, angka, dan underscore!");
+                return;
+            }
+
+            // Check if nickname is unique (using account manager if available)
+            if (window.accountManager) {
+                const isUnique = await window.accountManager.checkNicknameUnique(newNickname, userId);
+                
+                if (!isUnique) {
+                    // Generate suggestions
+                    const suggestion = await window.accountManager.generateUniqueNickname(newNickname);
+                    
+                    const usesSuggestion = confirm(
+                        `❌ Nama "${newNickname}" sudah digunakan!\n\n` +
+                        `💡 Saran: "${suggestion}"\n\n` +
+                        `Gunakan saran ini?`
+                    );
+                    
+                    if (usesSuggestion) {
+                        newNickname = suggestion;
+                    } else {
+                        alert("Perubahan nama dibatalkan.");
+                        return;
+                    }
+                }
+            }
+
+            // Update nickname in /users collection
+            await db.collection('users').doc(userId).update({ 
+                nickname: newNickname,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            userNicknameSpan.textContent = newNickname;
+            // Refresh leaderboard to show new name
+            fetchLeaderboard();
+            alert("✅ Nama panggilan berhasil diperbarui!");
+            
+        } catch (error) {
+            console.error("Error updating nickname:", error);
+            alert("Gagal memperbarui nama panggilan: " + error.message);
         }
     }
 

@@ -55,7 +55,13 @@
             <div class="top-bar">
                 <button class="back-button">&larr;</button>
                 <h2>Level <span id="level-number">1</span></h2>
-                <button class="settings-button" onclick="toggleSettings()">⚙️</button>
+                <div class="top-bar-buttons">
+                    <button class="inventory-button" onclick="toggleInventoryPopup()">
+                        📦
+                        <span id="inventory-badge" class="badge hidden"></span>
+                    </button>
+                    <button class="settings-button" onclick="toggleSettings()">⚙️</button>
+                </div>
             </div>
             
             <!-- Settings Panel -->
@@ -113,6 +119,7 @@
 
             <div class="word-input-container">
                 <div id="current-word"></div>
+                <button id="clear-button">Hapus</button>
             </div>
 
             <div class="letter-bank-container">
@@ -122,7 +129,19 @@
             <div class="action-buttons">
                 <button id="shuffle-button">Acak</button>
                 <button id="hint-button">Hint</button>
-                <button id="clear-button">Hapus</button>
+            </div>
+        </div>
+
+        <!-- Inventory Popup -->
+        <div id="inventory-popup" class="popup-container hidden">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <h3>Inventory Anda</h3>
+                    <button class="close-popup" onclick="toggleInventoryPopup()">&times;</button>
+                </div>
+                <div id="popup-inventory-items" class="popup-body">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
             </div>
         </div>
 
