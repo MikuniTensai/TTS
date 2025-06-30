@@ -36,6 +36,7 @@
             text-decoration: none;
             color: #333;
             font-weight: bold;
+            position: relative;
         }
         .menu-button:hover {
             background-color: #ddd;
@@ -45,6 +46,26 @@
             cursor: not-allowed;
             color: #888;
             border-color: #aaa;
+        }
+        .event-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -56,6 +77,10 @@
                 <a href="level-select.html" class="menu-button">Play</a>
                 <a href="shop.html" class="menu-button">Shop</a>
                 <a href="leaderboard.html" class="menu-button">Leaderboard</a>
+                <a href="event.html" class="menu-button" id="event-menu">
+                    Event
+                    <span id="event-notification" class="event-notification" style="display: none;">!</span>
+                </a>
                 <a href="account.html" class="menu-button">Account</a>
             </div>
         </div>

@@ -58,6 +58,114 @@ body {
     padding: 0;
 }
 
+/* Category Tabs */
+.category-tabs {
+    display: flex;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #666;
+}
+
+.tab-btn.active {
+    background-color: #fff;
+    color: #0056b3;
+    border-bottom: 3px solid #0056b3;
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: #e9ecef;
+}
+
+/* Podium Styles */
+#podium-container {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.podium-item {
+    text-align: center;
+    border-radius: 12px;
+    padding: 15px 10px;
+    min-width: 100px;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.podium-item:hover {
+    transform: translateY(-5px);
+}
+
+.first-place {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #333;
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+.second-place {
+    background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+    color: #333;
+    box-shadow: 0 6px 20px rgba(192, 192, 192, 0.4);
+}
+
+.third-place {
+    background: linear-gradient(135deg, #CD7F32, #B8860B);
+    color: white;
+    box-shadow: 0 6px 20px rgba(205, 127, 50, 0.4);
+}
+
+.podium-rank {
+    font-size: 2em;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.podium-nickname {
+    font-weight: 700;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.podium-score {
+    font-size: 1.1em;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.podium-item.is-user {
+    border: 3px solid #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8) !important;
+}
+
+.podium-item.is-user .podium-nickname::after {
+    content: " 👑";
+}
+
+/* Regular Leaderboard List */
 #leaderboard-list {
     padding: 20px;
 }
@@ -121,4 +229,32 @@ body {
     padding: 40px;
     font-size: 1.2em;
     color: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .podium {
+        gap: 5px;
+    }
+    
+    .podium-item {
+        min-width: 80px;
+        padding: 12px 8px;
+    }
+    
+    .podium-rank {
+        font-size: 1.5em;
+    }
+    
+    .podium-nickname {
+        font-size: 0.8em;
+    }
+    
+    .podium-score {
+        font-size: 1em;
+    }
+    
+    .first-place {
+        transform: scale(1.05);
+    }
 } 

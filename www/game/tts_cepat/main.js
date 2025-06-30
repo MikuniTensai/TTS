@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => {
                         alert('Selamat! Anda telah mencapai level tertinggi. Nantikan pembaruan selanjutnya!');
                         setTimeout(() => {
-                            window.location.href = '../level-select.html';
+                            window.location.href = '../../level-select.html';
                         }, 1000);
                     }, 500);
                 } else {
@@ -316,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
             levelData = await response.json();
             currentLevelId = levelData.id;
             foundWords = [];
+            bonusWords = [];
             isLevelAlreadyCompleted = isLevelCompleted(levelId); // Check if level was already completed
             levelNumberElement.textContent = levelData.id;
             
@@ -334,18 +335,19 @@ document.addEventListener('DOMContentLoaded', () => {
             renderLetterBank();
             updateFoundWordsUI();
             clearInput();
+            
         } catch (error) {
+            console.error("Error loading level:", error);
             if (levelId > 1) {
                 // Fallback for Android devices
                 setTimeout(() => {
                     alert('Selamat! Anda telah mencapai level tertinggi. Nantikan pembaruan selanjutnya!');
                     setTimeout(() => {
-                        window.location.href = '../level-select.html';
+                        window.location.href = '../../level-select.html';
                     }, 1000);
                 }, 500);
                 return;
             }
-            console.error("Error loading level:", error);
             gridContainer.innerHTML = `<p style="color: red;">Gagal memuat level.</p>`;
         }
     }
@@ -888,35 +890,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // KBBI bonus check function
     function checkKBBIBonus(word) {
-        console.log(`=== KBBI Bonus Check for "${word}" ===`);
-        console.log("Word length:", word.length);
-        
         if (word.length < 3) {
-            console.log("❌ Word too short (< 3 letters)");
+            console.log("Word too short for KBBI check");
             return;
         }
 
-        let isBonusWord = false;
+        console.log("=== KBBI Check ===");
+        console.log("Checking word:", word);
+        console.log("KBBI Database exists?", typeof window.KBBI_DATABASE_SET !== 'undefined');
         
-        // Check if it's a Set (ideal) or an Array (fallback)
-        if (window.KBBI_DATABASE_SET && typeof window.KBBI_DATABASE_SET.has === 'function') {
-            console.log("✓ Using KBBI_DATABASE_SET (Set)");
-            isBonusWord = window.KBBI_DATABASE_SET.has(word);
-            console.log("Set contains word?", isBonusWord);
-        } else if (Array.isArray(window.KBBI_DATABASE)) {
-            console.log("✓ Using KBBI_DATABASE (Array)");
-            isBonusWord = window.KBBI_DATABASE.includes(word);
-            console.log("Array contains word?", isBonusWord);
-        } else {
-            console.log("❌ No KBBI database available!");
-            return;
-        }
-
-        console.log("Already in bonus words?", bonusWords.includes(word));
-        console.log("In level answers?", levelData.words.includes(word));
-        
-        if (isBonusWord && !bonusWords.includes(word) && !levelData.words.includes(word)) {
-            console.log("🎉 BONUS WORD FOUND! Adding bonus...");
+        // Check if word exists in KBBI database
+        if (window.KBBI_DATABASE_SET && window.KBBI_DATABASE_SET.has(word)) {
+            console.log("✅ Word found in KBBI!");
+            
+            // Don't add duplicate bonus words
+            if (bonusWords.includes(word)) {
+                console.log("❌ Already found this bonus word");
+                return;
+            }
+            
             bonusWords.push(word);
             
             // Only add score if level wasn't already completed
@@ -1037,17 +1029,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Event Listeners
-    shuffleButton.addEventListener('click', () => {
-        if (shuffleCount <= 0) return;
-        shuffleCount--;
-        renderLetterBank();
-        soundManager.playSound('click');
-        updateActionButtonsUI();
-    });
-    
     clearButton.addEventListener('click', () => {
         clearInput();
         soundManager.playSound('click');
+    });
+    
+    shuffleButton.addEventListener('click', () => {
+        shuffleLetters();
     });
     
     hintButton.addEventListener('click', () => {
@@ -1245,4 +1233,12 @@ function loadSettingsUI() {
     autoSubmitToggle.addEventListener('change', (e) => {
         settingsManager.updateSetting('autoSubmit', e.target.checked);
     });
+}
+
+function shuffleLetters() {
+    if (shuffleCount <= 0) return;
+    shuffleCount--;
+    renderLetterBank();
+    soundManager.playSound('click');
+    updateActionButtonsUI();
 }

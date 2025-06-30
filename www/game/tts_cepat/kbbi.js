@@ -236,8 +236,8 @@ window.KBBI_DATABASE = [
     "ACANG",
     "ACAP",
     "ACAPKALI",
-    "ACAR",
-    "ACARA",
+    "ACAR", // Used in level 5
+    "ACARA", // Used in level 5
     "ACARAKI",
     "ACARAM",
     "ACARYA",
@@ -2242,7 +2242,7 @@ window.KBBI_DATABASE = [
     "ANAHAR",
     "ANAHEHA",
     "ANAHIDA",
-    "ANAK",
+    "ANAK", // Used in level 9
     "ANAKALANG",
     "ANAKAN",
     "ANAKANDA",
@@ -3288,7 +3288,7 @@ window.KBBI_DATABASE = [
     "AQIDAH",
     "AQUARIUS",
     "AQUILA",
-    "ARA",
+    "ARA", // Used in level 5
     "ARAB",
     "ARABABU",
     "ARABAHU",
@@ -3840,7 +3840,7 @@ window.KBBI_DATABASE = [
     "ASTRONOT",
     "ASTROSIT",
     "ASTUNGKARA",
-    "ASU",
+    "ASU", // Used in level 7
     "ASUAN",
     "ASUANG",
     "ASUH",
@@ -11257,7 +11257,7 @@ window.KBBI_DATABASE = [
     "BUMD",
     "BUMEL",
     "BUMERANG",
-    "BUMI",
+    "BUMI", // Used in level 8
     "BUMIAH",
     "BUMIL",
     "BUMIPUTRA",
@@ -11407,7 +11407,7 @@ window.KBBI_DATABASE = [
     "BURUNGAN",
     "BURUT",
     "BURUWAI",
-    "BUS",
+    "BUS", // Used in level 8
     "BUSA",
     "BUSAI",
     "BUSAMI",
@@ -11787,7 +11787,7 @@ window.KBBI_DATABASE = [
     "CAPUK",
     "CAPUNG",
     "CAR",
-    "CARA",
+    "CARA", // Used in level 5
     "CARABALEN",
     "CARACAT",
     "CARAH",
@@ -32926,7 +32926,7 @@ window.KBBI_DATABASE = [
     "MAGRIBI",
     "MAGRUR",
     "MAGUN",
-    "MAH",
+    "MAH", // Used in level 10
     "MAHA",
     "MAHABAH",
     "MAHABERAT",
@@ -33599,7 +33599,7 @@ window.KBBI_DATABASE = [
     "MARA",
     "MARABAHAYA",
     "MARADIKA",
-    "MARAH",
+    "MARAH", // Used in level 10
     "MARAHAN",
     "MARAJA",
     "MARAK",
@@ -33828,7 +33828,7 @@ window.KBBI_DATABASE = [
     "MASYRIK",
     "MASYUK",
     "MAT",
-    "MATA",
+    "MATA", // Used in level 6
     "MATADOR",
     "MATAGAS",
     "MATAHARI",
@@ -58229,7 +58229,7 @@ window.KBBI_DATABASE = [
     "RUKYATULHILAL",
     "RUM",
     "RUMA",
-    "RUMAH",
+    "RUMAH", // Used in level 10
     "RUMAHAN",
     "RUMAJA",
     "RUMAL",
@@ -63525,7 +63525,7 @@ window.KBBI_DATABASE = [
     "SUJIAN",
     "SUJUD",
     "SUK",
-    "SUKA",
+    "SUKA", // Used in level 7
     "SUKAAN",
     "SUKABUMI",
     "SUKACITA",

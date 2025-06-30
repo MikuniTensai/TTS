@@ -38,20 +38,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
 }
 
 .stat-label {
-    font-weight: 500;
-    color: #555;
+    color: #666;
+    font-size: 0.9em;
 }
 
 .stat-value {
     font-weight: bold;
-    color: #2196F3;
-    font-size: 1.1em;
+    color: #333;
 }
 
 /* Action Buttons */
@@ -437,4 +439,15 @@
     font-size: 0.9em;
     color: #8b6914;
     text-align: center;
+}
+
+.account-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.account-actions button {
+    flex: 1;
+    min-width: 120px;
 } 

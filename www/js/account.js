@@ -5,10 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalScoreSpan = document.getElementById('total-score');
     const highestLevelSpan = document.getElementById('highest-level');
     const completedLevelsSpan = document.getElementById('completed-levels');
+    const whatsappNumberSpan = document.getElementById('whatsapp-number');
     const dataStatusDiv = document.getElementById('data-status');
     
     // Buttons
     const editNicknameBtn = document.getElementById('edit-nickname-btn');
+    const editWhatsappBtn = document.getElementById('edit-whatsapp-btn');
     const exportBtn = document.getElementById('export-btn');
     const importBtn = document.getElementById('import-btn');
     const downloadBackupBtn = document.getElementById('download-backup-btn');
@@ -76,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     editNicknameBtn.addEventListener('click', editNickname);
+    editWhatsappBtn.addEventListener('click', editWhatsapp);
     exportBtn.addEventListener('click', exportData);
     importBtn.addEventListener('click', () => openModal('import-modal'));
     downloadBackupBtn.addEventListener('click', downloadBackup);
@@ -86,6 +89,51 @@ document.addEventListener('DOMContentLoaded', () => {
     cleanupInactiveBtn.addEventListener('click', cleanupInactiveUsers);
     copyExportCodeBtn.addEventListener('click', copyExportCode);
     importExecuteBtn.addEventListener('click', executeImport);
+
+    // Edit WhatsApp number
+    async function editWhatsapp() {
+        try {
+            const user = await waitForAuth();
+            if (!user) {
+                throw new Error('User not authenticated');
+            }
+
+            // Get current WhatsApp number
+            const userDoc = await window.db.collection('users').doc(user.uid).get();
+            const currentNumber = userDoc.exists ? (userDoc.data().whatsappNumber || '') : '';
+
+            // Prompt for new number
+            const newNumber = prompt('Masukkan nomor WhatsApp:', currentNumber);
+            
+            // Validate input
+            if (newNumber === null) return; // User cancelled
+            
+            // Basic validation
+            const cleanNumber = newNumber.trim().replace(/[^0-9+]/g, '');
+            if (cleanNumber === '') {
+                showMessage('Nomor WhatsApp tidak valid', 'error');
+                return;
+            }
+
+            showLoading('Menyimpan nomor WhatsApp...');
+
+            // Update in Firebase
+            await window.db.collection('users').doc(user.uid).update({
+                whatsappNumber: cleanNumber,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Update UI
+            whatsappNumberSpan.textContent = cleanNumber || '-';
+            showMessage('Nomor WhatsApp berhasil diperbarui', 'success');
+
+        } catch (error) {
+            console.error('Error updating WhatsApp number:', error);
+            showMessage('Gagal memperbarui nomor WhatsApp', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
 
     // Load user data and display
     async function loadUserData() {
@@ -125,11 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 userNicknameSpan.textContent = userData.nickname || 'Unknown';
                 totalScoreSpan.textContent = userData.totalScore || 0;
                 highestLevelSpan.textContent = userData.highestLevelCompleted || 0;
+                whatsappNumberSpan.textContent = userData.whatsappNumber || '-';
             } else {
                 // Fallback to defaults if no Firebase data
                 userNicknameSpan.textContent = 'Unknown';
                 totalScoreSpan.textContent = '0';
                 highestLevelSpan.textContent = '0';
+                whatsappNumberSpan.textContent = '-';
             }
             
             // Load from localStorage
@@ -140,16 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
             hideLoading();
             
         } catch (error) {
-            console.error('❌ Error loading user data:', error);
-            showMessage('Failed to load user data: ' + error.message, 'error');
-            
-            // Show fallback data
-            userNicknameSpan.textContent = 'Error Loading';
-            totalScoreSpan.textContent = '0';
-            highestLevelSpan.textContent = '0';
-            const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
-            completedLevelsSpan.textContent = completedLevels.length;
-            
+            console.error('Failed to load user data:', error);
+            showMessage('Failed to load user data', 'error');
             hideLoading();
         }
     }

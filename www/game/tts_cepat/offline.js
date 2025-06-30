@@ -136,7 +136,8 @@ class OfflineManager {
 
     getAvailableOfflineLevels() {
         const levels = [];
-        for (let i = 1; i <= 15; i++) {
+        // Only check first 100 levels (15000 files exist but only 100 are active)
+        for (let i = 1; i <= 100; i++) {
             if (this.isLevelCached(i)) {
                 levels.push(i);
             }
@@ -222,26 +223,34 @@ class PWAManager {
 // Category and progression system
 class CategoryManager {
     constructor() {
+        // Only organize first 100 levels (15000 files exist but only 100 are active)
         this.categories = {
-            'basic': {
-                name: 'Dasar',
-                description: 'Kata-kata dasar sehari-hari',
-                levels: [1, 2, 3, 4, 5],
+            'pemula': {
+                name: 'Pemula',
+                description: 'Kata-kata dasar untuk pemula',
+                levels: Array.from({length: 25}, (_, i) => i + 1), // Levels 1-25
                 unlocked: true
             },
-            'intermediate': {
+            'dasar': {
+                name: 'Dasar',
+                description: 'Kata-kata dasar sehari-hari',
+                levels: Array.from({length: 25}, (_, i) => i + 26), // Levels 26-50
+                unlocked: false,
+                requirement: 10 // Need to complete 10 levels from pemula
+            },
+            'menengah': {
                 name: 'Menengah',
                 description: 'Kata-kata yang lebih menantang',
-                levels: [6, 7, 8, 9, 10],
+                levels: Array.from({length: 25}, (_, i) => i + 51), // Levels 51-75
                 unlocked: false,
-                requirement: 3 // Need to complete 3 levels from basic
+                requirement: 30 // Need to complete 30 levels total
             },
-            'advanced': {
+            'lanjut': {
                 name: 'Lanjut',
                 description: 'Kata-kata tingkat lanjut',
-                levels: [11, 12, 13, 14, 15],
+                levels: Array.from({length: 25}, (_, i) => i + 76), // Levels 76-100
                 unlocked: false,
-                requirement: 7 // Need to complete 7 levels total
+                requirement: 60 // Need to complete 60 levels total
             }
         };
     }
@@ -258,15 +267,20 @@ class CategoryManager {
     updateCategoryUnlocks() {
         const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
         
-        // Unlock intermediate if 3+ basic levels completed
-        const basicCompleted = completedLevels.filter(level => level <= 5).length;
-        if (basicCompleted >= 3) {
-            this.categories.intermediate.unlocked = true;
+        // Unlock dasar if 10+ pemula levels completed
+        const pemulaCompleted = completedLevels.filter(level => level <= 25).length;
+        if (pemulaCompleted >= 10) {
+            this.categories.dasar.unlocked = true;
         }
         
-        // Unlock advanced if 7+ total levels completed
-        if (completedLevels.length >= 7) {
-            this.categories.advanced.unlocked = true;
+        // Unlock menengah if 30+ total levels completed
+        if (completedLevels.length >= 30) {
+            this.categories.menengah.unlocked = true;
+        }
+        
+        // Unlock lanjut if 60+ total levels completed
+        if (completedLevels.length >= 60) {
+            this.categories.lanjut.unlocked = true;
         }
     }
 

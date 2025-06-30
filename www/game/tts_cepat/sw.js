@@ -1,5 +1,14 @@
 // Service Worker for TTS Game
-const CACHE_NAME = 'tts-game-v1';
+const CACHE_NAME = 'tts-game-v4';
+
+// Generate level file URLs - Only cache first 100 levels for performance
+// (15000 level files exist but only first 100 are active)
+const levelFiles = [];
+for (let i = 1; i <= 100; i++) {
+    const levelNumber = i.toString().padStart(6, '0');
+    levelFiles.push(`./levels/level_${levelNumber}.json`);
+}
+
 const urlsToCache = [
     './',
     './game.html',
@@ -10,13 +19,10 @@ const urlsToCache = [
     './themes.js',
     './animations.js',
     './offline.js',
+    './sound.js',
     '../cordova.js',
-    // Add level files
-    './levels/level_000001.json',
-    './levels/level_000002.json',
-    './levels/level_000003.json',
-    './levels/level_000004.json',
-    './levels/level_000005.json'
+    // Add first 100 level files
+    ...levelFiles
 ];
 
 // Install event - cache resources

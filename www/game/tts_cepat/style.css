@@ -353,34 +353,36 @@ h1 {
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: clamp(8px, 3vw, 15px);
-    flex-shrink: 0;
-    width: calc(100% - 24px);
-    margin: 0 12px;
-    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 10px;
 }
 
 .action-buttons button {
-    padding: 12px 20px;
-    font-size: 1.1em;
+    flex: 1;
+    padding: 10px 15px;
+    font-size: var(--input-font-size);
+    background-color: var(--theme-button);
+    color: var(--theme-buttonText);
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background-color: #4a90e2;
-    color: white;
-    font-weight: bold;
-    transition: background-color 0.2s, transform 0.1s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: opacity 0.2s, transform 0.2s;
+    min-width: 80px;
+    max-width: 120px;
+    white-space: nowrap;
 }
 
 .action-buttons button.disabled {
-    background-color: #BDBDBD;
+    opacity: 0.5;
     cursor: not-allowed;
-    opacity: 0.7;
+    pointer-events: none;
 }
 
 .action-buttons button:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
 }
 
 /* Inventory Styles */

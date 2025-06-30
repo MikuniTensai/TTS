@@ -20,7 +20,7 @@
         .level-container {
             text-align: center;
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
         }
         .back-button {
             position: absolute;
@@ -39,30 +39,33 @@
         }
         .levels-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            max-width: 500px;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            max-width: 700px;
             margin: 0 auto;
         }
         .level-button {
             width: 100%;
             aspect-ratio: 1;
-            font-size: 1.2em;
+            font-size: 0.9em;
             cursor: pointer;
             border: 2px solid #333;
-            border-radius: 15px;
+            border-radius: 8px;
             background-color: #fff;
             text-decoration: none;
             color: #333;
             font-weight: bold;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            min-height: 50px;
+            min-width: 50px;
         }
         .level-button:hover {
             background-color: #ddd;
+            transform: scale(1.05);
         }
         .level-button.locked {
             background-color: #ccc;
@@ -72,6 +75,7 @@
         }
         .level-button.locked:hover {
             background-color: #ccc;
+            transform: none;
         }
         .level-button.completed {
             background-color: #a0d8a0;
@@ -81,14 +85,47 @@
             background-color: #90c890;
         }
         .lock-icon {
-            font-size: 1.5em;
+            font-size: 1.2em;
         }
         .check-icon {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 2px;
+            right: 2px;
             color: #4CAF50;
-            font-size: 1em;
+            font-size: 0.8em;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .levels-grid {
+                grid-template-columns: repeat(8, 1fr);
+                gap: 6px;
+                max-width: 100%;
+            }
+            .level-button {
+                font-size: 0.8em;
+                min-height: 40px;
+                min-width: 40px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .levels-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 5px;
+            }
+            .level-button {
+                font-size: 0.7em;
+                min-height: 35px;
+                min-width: 35px;
+                border-radius: 6px;
+            }
+            .check-icon {
+                font-size: 0.7em;
+            }
+            .lock-icon {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -105,7 +142,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const levelsGrid = document.getElementById('levels-grid');
-            const maxLevels = 15; // Adjust this based on how many levels you want to show
+            const maxLevels = 100; // Only show first 100 levels (15000 files exist but only 100 are active)
             
             // Get completed levels from localStorage
             const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
@@ -120,12 +157,12 @@
                 
                 if (isCompleted) {
                     levelButton.classList.add('completed');
-                    levelButton.innerHTML = `Level ${i}<span class="check-icon">✓</span>`;
+                    levelButton.innerHTML = `${i}<span class="check-icon">✓</span>`;
                     levelButton.addEventListener('click', () => {
                         window.location.href = `game/tts_cepat/index.html?level=${i}`;
                     });
                 } else if (isUnlocked) {
-                    levelButton.textContent = `Level ${i}`;
+                    levelButton.textContent = `${i}`;
                     levelButton.addEventListener('click', () => {
                         window.location.href = `game/tts_cepat/index.html?level=${i}`;
                     });

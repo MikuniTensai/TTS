@@ -72,6 +72,7 @@ async function createUserProfileIfNeeded(user) {
             totalScore: 0,
             highestLevelCompleted: 0,
             inventory: { shuffle: 0, hint: 0 },
+            whatsappNumber: '',
             active: true,
             migrated: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
