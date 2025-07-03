@@ -236,8 +236,8 @@ window.KBBI_DATABASE = [
     "ACANG",
     "ACAP",
     "ACAPKALI",
-    "ACAR", // Used in level 5
-    "ACARA", // Used in level 5
+    "ACAR", // Level 1
+    "ACARA",
     "ACARAKI",
     "ACARAM",
     "ACARYA",
@@ -1818,7 +1818,7 @@ window.KBBI_DATABASE = [
     "AMALIAH",
     "AMALO",
     "AMAM",
-    "AMAN",
+    "AMAN", // Level 2
     "AMANAH",
     "AMANAT",
     "AMANATUN",
@@ -2061,7 +2061,7 @@ window.KBBI_DATABASE = [
     "AMILOPSIN",
     "AMILOSA",
     "AMILUM",
-    "AMIN",
+    "AMIN", //Level 7
     "AMINA",
     "AMINASE",
     "AMINISASI",
@@ -2608,7 +2608,7 @@ window.KBBI_DATABASE = [
     "ANHIDRIDA",
     "ANHIDRIT",
     "ANHIDROSIS",
-    "ANI",
+    "ANI", //Level 4
     "ANIAN",
     "ANIAYA",
     "ANIBENU",
@@ -3288,8 +3288,8 @@ window.KBBI_DATABASE = [
     "AQIDAH",
     "AQUARIUS",
     "AQUILA",
-    "ARA", // Used in level 5
-    "ARAB",
+    "ARA", // Level 1
+    "ARAB", // Level 1
     "ARABABU",
     "ARABAHU",
     "ARABAN",
@@ -3310,7 +3310,7 @@ window.KBBI_DATABASE = [
     "ARAKNOFOBIA",
     "ARAKNOID",
     "ARAL",
-    "ARAM",
+    "ARAM", // Level 3
     "ARAMA",
     "ARAMBA",
     "ARAMBASI",
@@ -4312,7 +4312,7 @@ window.KBBI_DATABASE = [
     "BABURU",
     "BABURUA",
     "BABUT",
-    "BACA",
+    "BACA", //Level 1
     "BACAAN",
     "BACAH",
     "BACAK",
@@ -4484,7 +4484,7 @@ window.KBBI_DATABASE = [
     "BAIR",
     "BAIRI",
     "BAIS",
-    "BAIT",
+    "BAIT", //Level 4
     "BAITA",
     "BAITULHARAM",
     "BAITULLAH",
@@ -5320,7 +5320,7 @@ window.KBBI_DATABASE = [
     "BATON",
     "BATONET",
     "BATRAKOFOBIA",
-    "BATU",
+    "BATU", // Level 4
     "BATUA",
     "BATUAN",
     "BATUBARA",
@@ -9889,7 +9889,7 @@ window.KBBI_DATABASE = [
     "BETIBETI",
     "BETIK",
     "BETIMBANG",
-    "BETINA",
+    "BETINA", //Level 4
     "BETING",
     "BETINGA",
     "BETIS",
@@ -10121,7 +10121,7 @@ window.KBBI_DATABASE = [
     "BIMSUH",
     "BIMTEK",
     "BIN",
-    "BINA",
+    "BINA", //Level 4
     "BINAAN",
     "BINABUTAN",
     "BINAHONG",
@@ -11182,7 +11182,7 @@ window.KBBI_DATABASE = [
     "BUJUT",
     "BUJUTIS",
     "BUK",
-    "BUKA",
+    "BUKA", //Level 3
     "BUKAAN",
     "BUKAN",
     "BUKANKAH",
@@ -11198,7 +11198,7 @@ window.KBBI_DATABASE = [
     "BUKLET",
     "BUKONG",
     "BUKTI",
-    "BUKU",
+    "BUKU", // Level 2
     "BUKUNG",
     "BUKUR",
     "BUKUSENTRIS",
@@ -11430,7 +11430,7 @@ window.KBBI_DATABASE = [
     "BUSUR",
     "BUSUT",
     "BUT",
-    "BUTA",
+    "BUTA", // Level 4
     "BUTADIENA",
     "BUTAH",
     "BUTAKALA",
@@ -11787,7 +11787,7 @@ window.KBBI_DATABASE = [
     "CAPUK",
     "CAPUNG",
     "CAR",
-    "CARA", // Used in level 5
+    "CARA", // Level 1
     "CARABALEN",
     "CARACAT",
     "CARAH",
@@ -19581,7 +19581,7 @@ window.KBBI_DATABASE = [
     "GURJEM",
     "GURNADUR",
     "GUROA",
-    "GURU",
+    "GURU", // Level 2
     "GURUB",
     "GURUH",
     "GURUK",
@@ -21142,7 +21142,7 @@ window.KBBI_DATABASE = [
     "IKAL",
     "IKALAN",
     "IKAMAH",
-    "IKAN",
+    "IKAN", //Level 7
     "IKANAN",
     "IKAPI",
     "IKASI",
@@ -21257,7 +21257,7 @@ window.KBBI_DATABASE = [
     "IMAMAH",
     "IMAMAT",
     "IMAMOLOGI",
-    "IMAN",
+    "IMAN", // Level 5
     "IMANEN",
     "IMANENSI",
     "IMANG",
@@ -23920,7 +23920,7 @@ window.KBBI_DATABASE = [
     "KAMFER",
     "KAMFOR",
     "KAMHAR",
-    "KAMI",
+    "KAMI", //Level 7
     "KAMIKAZE",
     "KAMIL",
     "KAMILMUKAMIL",
@@ -30145,7 +30145,7 @@ window.KBBI_DATABASE = [
     "KUCURAN",
     "KUCUT",
     "KUD",
-    "KUDA",
+    "KUDA", // Level 2
     "KUDAI",
     "KUDANG",
     "KUDANGAN",
@@ -32012,7 +32012,7 @@ window.KBBI_DATABASE = [
     "LILITAN",
     "LILIURAN",
     "LILLAHI",
-    "LIMA",
+    "LIMA", // Level 5
     "LIMAI",
     "LIMAN",
     "LIMAR",
@@ -33011,7 +33011,7 @@ window.KBBI_DATABASE = [
     "MAIESIOFILIA",
     "MAILOT",
     "MAIMUN",
-    "MAIN",
+    "MAIN", //Level 7
     "MAINAN",
     "MAIR",
     "MAIRASI",
@@ -33065,7 +33065,7 @@ window.KBBI_DATABASE = [
     "MAKALAH",
     "MAKALANGKANG",
     "MAKAM",
-    "MAKAN",
+    "MAKAN", //Level 2
     "MAKANAN",
     "MAKANTAH",
     "MAKANTUH",
@@ -33256,7 +33256,7 @@ window.KBBI_DATABASE = [
     "MALEOLUS",
     "MALESIA",
     "MALFUNGSI",
-    "MALI",
+    "MALI", // Level 5
     "MALIGAI",
     "MALIGI",
     "MALIH",
@@ -33474,14 +33474,14 @@ window.KBBI_DATABASE = [
     "MANGUT",
     "MANHAJ",
     "MANHWA",
-    "MANI",
+    "MANI", // Level 5
     "MANIA",
     "MANIAFOBIA",
     "MANIAK",
     "MANIFES",
     "MANIFESTASI",
     "MANIFESTO",
-    "MANIK",
+    "MANIK", // Level 7
     "MANIKAM",
     "MANIKEBU",
     "MANIKIN",
@@ -33650,7 +33650,7 @@ window.KBBI_DATABASE = [
     "MARHAENISME",
     "MARHUM",
     "MARHUMAH",
-    "MARI",
+    "MARI", // Level 3
     "MARIA",
     "MARIHUANA",
     "MARIKAN",
@@ -45560,7 +45560,7 @@ window.KBBI_DATABASE = [
     "NALIH",
     "NALURI",
     "NALURIAH",
-    "NAMA",
+    "NAMA", // Level 2
     "NAMABALU",
     "NAMASKARA",
     "NAMATAD",
@@ -47497,7 +47497,7 @@ window.KBBI_DATABASE = [
     "PAKSINA",
     "PAKTA",
     "PAKTER",
-    "PAKU",
+    "PAKU", //Level 3
     "PAKUH",
     "PAKUK",
     "PAKUNCEN",
@@ -49651,7 +49651,7 @@ window.KBBI_DATABASE = [
     "PEMBUJANGAN",
     "PEMBUJUK",
     "PEMBUJUKAN",
-    "PEMBUKA",
+    "PEMBUKA", //Level 3
     "PEMBUKAAN",
     "PEMBUKTIAN",
     "PEMBUKUAN",
@@ -56847,7 +56847,7 @@ window.KBBI_DATABASE = [
     "RARAS",
     "RARAWAT",
     "RAS",
-    "RASA",
+    "RASA", // Level 3
     "RASAI",
     "RASAM",
     "RASAMALA",
@@ -56898,7 +56898,7 @@ window.KBBI_DATABASE = [
     "RATIFIKASI",
     "RATING",
     "RATNA",
-    "RATU",
+    "RATU", //Level 6
     "RATUMBANUA",
     "RATUN",
     "RATUS",
@@ -58220,7 +58220,7 @@ window.KBBI_DATABASE = [
     "RUKIAT",
     "RUKIYAH",
     "RUKO",
-    "RUKU",
+    "RUKU", // Level 2
     "RUKUH",
     "RUKUK",
     "RUKUN",
@@ -58332,7 +58332,7 @@ window.KBBI_DATABASE = [
     "RURALISASI",
     "RURUH",
     "RURUT",
-    "RUSA",
+    "RUSA", //Level 6
     "RUSAK",
     "RUSH",
     "RUSIA",
@@ -59205,7 +59205,7 @@ window.KBBI_DATABASE = [
     "SATROFIT",
     "SATRON",
     "SATRU",
-    "SATU",
+    "SATU", //level 6
     "SATUAN",
     "SATURASI",
     "SATURNUS",
@@ -63838,7 +63838,7 @@ window.KBBI_DATABASE = [
     "SURALOKA",
     "SURAM",
     "SURAMADU",
-    "SURAT",
+    "SURAT", //Level 6
     "SURATAN",
     "SURATI",
     "SURAU",
@@ -64154,7 +64154,7 @@ window.KBBI_DATABASE = [
     "TABOT",
     "TABRAK",
     "TABRAKAN",
-    "TABU",
+    "TABU", // Level 4
     "TABUH",
     "TABUHAN",
     "TABULAHAN",
@@ -64948,7 +64948,7 @@ window.KBBI_DATABASE = [
     "TARGET",
     "TARHIB",
     "TARHIM",
-    "TARI",
+    "TARI", // Level 3
     "TARIAN",
     "TARIB",
     "TARIF",
@@ -69051,7 +69051,7 @@ window.KBBI_DATABASE = [
     "TUARANG",
     "TUAS",
     "TUAT",
-    "TUBA",
+    "TUBA", // Level 4
     "TUBAGUS",
     "TUBAN",
     "TUBE",
@@ -69930,7 +69930,7 @@ window.KBBI_DATABASE = [
     "URAP",
     "URAPAN",
     "URAS",
-    "URAT",
+    "URAT", //Level 6
     "URBAN",
     "URBANISASI",
     "URBANISME",

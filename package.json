@@ -1,23 +1,43 @@
 {
   "name": "io.dreamworks.tts",
   "displayName": "TTS",
-  "version": "1.0.0",
-  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "version": "1.0.3",
+  "description": "TTS Game - Text to Speech Word Game",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cordova build android",
+    "serve": "cordova serve",
+    "prepare": "cordova prepare android",
+    "clean": "cordova clean"
   },
   "keywords": [
-    "ecosystem:cordova"
+    "ecosystem:cordova",
+    "tts",
+    "game",
+    "android"
   ],
-  "author": "Apache Cordova Team",
+  "author": "Dreamworks Team",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "cordova-android": "^14.0.1"
-  },
   "cordova": {
     "platforms": [
       "android"
-    ]
+    ],
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-splashscreen": {}
+    }
+  },
+  "dependencies": {
+    "cordova-plugin-device": "^2.1.0",
+    "cordova-plugin-network-information": "^3.0.0",
+    "cordova-plugin-splashscreen": "^6.0.2",
+    "cordova-plugin-whitelist": "^1.3.5"
+  },
+  "devDependencies": {
+    "cordova": "^12.0.0",
+    "cordova-android": "^14.0.1"
   }
 }
