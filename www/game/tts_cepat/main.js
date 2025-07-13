@@ -70,17 +70,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeManager = new ThemeManager();
     const settingsManager = new SettingsManager();
     const animationManager = new AnimationManager();
-    const soundManager = new SoundManager();
+    // soundManager is already initialized globally in sound.js
     
     // Apply initial settings
     settingsManager.applySettings();
     animationManager.setSoundEnabled(settingsManager.getSetting('soundEnabled'));
     animationManager.setVibrationEnabled(settingsManager.getSetting('vibrationEnabled'));
+    
+    // Ensure soundManager gets the correct setting
+    const soundEnabled = settingsManager.getSetting('soundEnabled');
+    console.log('Sound setting from settingsManager:', soundEnabled);
+    soundManager.setSoundEnabled(soundEnabled);
+    console.log('SoundManager soundEnabled after setting:', soundManager.soundEnabled);
 
+    // Utility function to ensure consistent level ID handling
+    function normalizeLevel(levelId) {
+        const parsed = parseInt(levelId, 10);
+        const minLevel = window.TTS_CONFIG?.MIN_LEVEL_ID || 1;
+        if (isNaN(parsed) || parsed < minLevel) {
+            console.warn(`Invalid level ID: ${levelId}, defaulting to ${minLevel}`);
+            return minLevel;
+        }
+        return parsed;
+    }
+    
     // Get level from URL parameter
     function getLevelFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
-        return parseInt(urlParams.get('level')) || 1;
+        const levelParam = urlParams.get('level');
+        return normalizeLevel(levelParam || 1);
     }
 
     // Check if level is already completed
@@ -251,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.body.contains(messageDiv)) {
                 document.body.removeChild(messageDiv);
             }
-        }, 2000);
+        }, window.TTS_CONFIG?.NOTIFICATION_DURATION || 3000);
     }
 
     async function updateInventoryInFirebase() {
@@ -274,25 +292,120 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Save completed level to localStorage
+    // Sync score from Firebase to localStorage to ensure consistency after shop purchases
+    async function syncScoreFromFirebase() {
+        try {
+            if (!window.currentUserId || !window.db) {
+                console.log('Firebase not ready, skipping score sync');
+                return;
+            }
+
+            console.log('🔄 Syncing score from Firebase...');
+            const userRef = window.db.collection('users').doc(window.currentUserId);
+            const userDoc = await userRef.get();
+            
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                const firebaseScore = userData.totalScore || 0;
+                
+                // Get current localStorage score
+                const localScore = calculateTotalScore();
+                
+                console.log(`Firebase score: ${firebaseScore}, Local score: ${localScore}`);
+                
+                // If Firebase score is different (likely after shop purchase), update localStorage
+                if (firebaseScore !== localScore && firebaseScore >= 0) {
+                    console.log('🔄 Score mismatch detected, updating localStorage from Firebase');
+                    
+                    // Calculate the difference and adjust localStorage scores proportionally
+                    const scoreDifference = firebaseScore - localScore;
+                    
+                    if (scoreDifference !== 0) {
+                        // Get current scores from localStorage
+                        let scores = {};
+                        try {
+                            const scoresData = localStorage.getItem('tts-scores');
+                            if (scoresData) {
+                                scores = JSON.parse(scoresData);
+                            }
+                        } catch (parseError) {
+                            console.error('Error parsing scores:', parseError);
+                            scores = {};
+                        }
+                        
+                        // If we have a negative difference (shop purchase), subtract from the highest level score
+                        if (scoreDifference < 0 && Object.keys(scores).length > 0) {
+                            // Find the level with the highest score to deduct from
+                            let highestScoreLevel = null;
+                            let highestScore = 0;
+                            
+                            Object.entries(scores).forEach(([levelId, score]) => {
+                                const numScore = Number(score);
+                                if (numScore > highestScore) {
+                                    highestScore = numScore;
+                                    highestScoreLevel = levelId;
+                                }
+                            });
+                            
+                            if (highestScoreLevel && highestScore >= Math.abs(scoreDifference)) {
+                                scores[highestScoreLevel] = highestScore + scoreDifference; // scoreDifference is negative
+                                localStorage.setItem('tts-scores', JSON.stringify(scores));
+                                console.log(`✅ Deducted ${Math.abs(scoreDifference)} points from level ${highestScoreLevel}`);
+                            }
+                        }
+                        // If positive difference, add to a special "bonus" entry
+                        else if (scoreDifference > 0) {
+                            scores['bonus'] = (scores['bonus'] || 0) + scoreDifference;
+                            localStorage.setItem('tts-scores', JSON.stringify(scores));
+                            console.log(`✅ Added ${scoreDifference} bonus points`);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error syncing score from Firebase:', error);
+        }
+    }
+
+    // Save completed level to localStorage with proper validation
     function saveCompletedLevel(levelId) {
-        console.log(`=== Saving Completed Level ===`);
-        console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
-        
-        const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
-        console.log("Current completed levels before save:", completedLevels);
-        
-        // Ensure levelId is a number for consistent storage
-        const numLevelId = Number(levelId);
-        console.log(`Converted Level ID: ${numLevelId}`);
-        
-        if (!completedLevels.includes(numLevelId)) {
-            completedLevels.push(numLevelId);
-            localStorage.setItem('tts-completed-levels', JSON.stringify(completedLevels));
-            console.log(`✅ Level ${numLevelId} saved as completed`);
-            console.log("Updated completed levels:", completedLevels);
-        } else {
-            console.log(`Level ${numLevelId} already marked as completed`);
+        try {
+            console.log(`=== Saving Completed Level ===`);
+            console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
+            
+            // Normalize level ID to ensure consistency
+            const numLevelId = normalizeLevel(levelId);
+            console.log(`Normalized Level ID: ${numLevelId}`);
+            
+            // Validate and parse localStorage data
+            let completedLevels;
+            try {
+                completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
+                if (!Array.isArray(completedLevels)) {
+                    console.warn('Completed levels data is not an array, resetting to empty array');
+                    completedLevels = [];
+                }
+            } catch (parseError) {
+                console.error('Error parsing completed levels from localStorage:', parseError);
+                completedLevels = [];
+            }
+            
+            console.log("Current completed levels before save:", completedLevels);
+            
+            if (!completedLevels.includes(numLevelId)) {
+                completedLevels.push(numLevelId);
+                try {
+                    localStorage.setItem('tts-completed-levels', JSON.stringify(completedLevels));
+                    console.log(`✅ Level ${numLevelId} saved as completed`);
+                    console.log("Updated completed levels:", completedLevels);
+                } catch (storageError) {
+                    console.error('Error saving to localStorage:', storageError);
+                }
+            } else {
+                console.log(`Level ${numLevelId} already marked as completed`);
+            }
+        } catch (error) {
+            console.error('Error in saveCompletedLevel:', error);
         }
     }
 
@@ -541,17 +654,77 @@ document.addEventListener('DOMContentLoaded', () => {
         currentWordContainer.textContent = currentInput.map(item => item.letter).join('');
     }
 
+    // Cache DOM elements to improve performance
+    let cachedUsedTiles = null;
+    let lastUsedTilesUpdate = 0;
+    const CACHE_DURATION = window.TTS_CONFIG?.DOM_CACHE_DURATION || 1000; // Cache duration from config
+    
     function clearInput() {
-        currentInput = [];
-        updateCurrentWordUI();
-        document.querySelectorAll('.letter-tile.used').forEach(t => t.classList.remove('used'));
+        try {
+            currentInput = [];
+            updateCurrentWordUI();
+            
+            // Use cached tiles if available and recent
+            const now = Date.now();
+            if (cachedUsedTiles && (now - lastUsedTilesUpdate) < CACHE_DURATION) {
+                cachedUsedTiles.forEach(tile => {
+                    if (tile && tile.classList) {
+                        tile.classList.remove('used');
+                    }
+                });
+            } else {
+                // Refresh cache
+                const usedTiles = document.querySelectorAll('.letter-tile.used');
+                cachedUsedTiles = Array.from(usedTiles);
+                lastUsedTilesUpdate = now;
+                
+                cachedUsedTiles.forEach(tile => {
+                    if (tile && tile.classList) {
+                        tile.classList.remove('used');
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error in clearInput:', error);
+            // Fallback to simple clear
+            currentInput = [];
+            if (typeof updateCurrentWordUI === 'function') {
+                updateCurrentWordUI();
+            }
+        }
+    }
+
+    // Input validation and sanitization
+    function validateAndSanitizeInput(input) {
+        if (!input || !Array.isArray(input)) {
+            console.warn('Invalid input provided to validateAndSanitizeInput');
+            return '';
+        }
+        
+        const word = input.map(item => {
+            if (!item || typeof item.letter !== 'string') {
+                console.warn('Invalid letter item:', item);
+                return '';
+            }
+            return item.letter.toUpperCase().trim();
+        }).join('');
+        
+        // Sanitize: only allow alphabetic characters
+        return word.replace(/[^A-Z]/g, '');
     }
 
     function handleSubmit() {
-        const word = currentInput.map(item => item.letter).join('');
-        if (word.length === 0) return;
+        try {
+            const word = validateAndSanitizeInput(currentInput);
+            if (word.length === 0) return;
 
-        if (levelData.words.includes(word) && !foundWords.includes(word)) {
+            // Validate levelData exists
+            if (!levelData || !Array.isArray(levelData.words)) {
+                console.error('Level data is invalid or missing');
+                return;
+            }
+
+            if (levelData.words.includes(word) && !foundWords.includes(word)) {
             foundWords.push(word);
             
             // Only add score if level wasn't already completed
@@ -571,18 +744,32 @@ document.addEventListener('DOMContentLoaded', () => {
             checkWinCondition();
             clearInput();
             
-            soundManager.playSound('success');
-        } else {
-            // Check for KBBI bonus
-            checkKBBIBonus(word);
-            
-            // Wrong word animation
-            animationManager.shakeElement(currentWordContainer);
-            soundManager.playSound('error');
-            // Add some feedback for wrong word
-            currentWordContainer.classList.add('shake');
-            setTimeout(() => currentWordContainer.classList.remove('shake'), 500);
-            clearInput();
+                soundManager.playSound('success');
+            } else {
+                // Check for KBBI bonus
+                checkKBBIBonus(word);
+                
+                // Wrong word animation
+                if (animationManager && typeof animationManager.shakeElement === 'function') {
+                    animationManager.shakeElement(currentWordContainer);
+                }
+                if (soundManager && typeof soundManager.playSound === 'function') {
+                    soundManager.playSound('error');
+                }
+                // Add some feedback for wrong word
+                if (currentWordContainer) {
+                    currentWordContainer.classList.add('shake');
+                    setTimeout(() => {
+                        if (currentWordContainer) {
+                            currentWordContainer.classList.remove('shake');
+                        }
+                    }, 500);
+                }
+                clearInput();
+            }
+        } catch (error) {
+            console.error('Error in handleSubmit:', error);
+            clearInput(); // Ensure UI is reset even on error
         }
     }
     
@@ -691,7 +878,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             animationManager.levelComplete();
             
-            // Show the next level prompt immediately.
+            // Show the next level prompt after animation
+            const overlayDelay = window.TTS_CONFIG?.LOADING_OVERLAY_DELAY || 500;
             setTimeout(() => {
                 const nextLevel = parseInt(currentLevelId, 10) + 1;
                 let message;
@@ -711,7 +899,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     window.location.href = '../../level-select.html';
                 }
-            }, 500); // A small delay for the win animation to be appreciated.
+            }, overlayDelay); // Delay for the win animation to be appreciated
         }
     }
     
@@ -755,13 +943,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Add retry mechanism for failed submissions
+    // Add flag to prevent race conditions in retry mechanism
+    let isRetryInProgress = false;
+    
     async function retryFailedSubmissions() {
+        if (isRetryInProgress) {
+            console.log("Retry already in progress, skipping...");
+            return;
+        }
+        
+        isRetryInProgress = true;
         console.log("🔄 Checking for failed submissions to retry...");
         
         try {
-            // Check if there are scores to submit
-            const scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
-            const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
+            // Validate localStorage data
+            let scores, completedLevels;
+            try {
+                scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
+                completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
+            } catch (parseError) {
+                console.error('Error parsing localStorage data:', parseError);
+                return;
+            }
             
             if (Object.keys(scores).length === 0 || completedLevels.length === 0) {
                 console.log("No data to retry");
@@ -781,6 +984,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Retry submission error:", error);
+        } finally {
+            isRetryInProgress = false;
         }
     }
     
@@ -818,6 +1023,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
         
         // Slide out and remove
+        const notificationDuration = window.TTS_CONFIG?.NOTIFICATION_DURATION || 3000;
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
@@ -825,43 +1031,81 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, notificationDuration);
     }
 
     async function updateGlobalLeaderboard() {
         try {
             console.log("=== Starting leaderboard update ===");
             
-            // Get current scores and levels from localStorage
-            const scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
-            const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
+            // Get current scores and levels from localStorage with validation
+            let scores = {};
+            let completedLevels = [];
+            
+            try {
+                const scoresData = localStorage.getItem('tts-scores');
+                const levelsData = localStorage.getItem('tts-completed-levels');
+                
+                if (scoresData) {
+                    const parsedScores = JSON.parse(scoresData);
+                    if (typeof parsedScores === 'object' && parsedScores !== null) {
+                        scores = parsedScores;
+                    } else {
+                        console.warn('Scores data is not a valid object, using empty object');
+                    }
+                }
+                
+                if (levelsData) {
+                    const parsedLevels = JSON.parse(levelsData);
+                    if (Array.isArray(parsedLevels)) {
+                        completedLevels = parsedLevels;
+                    } else {
+                        console.warn('Completed levels data is not an array, using empty array');
+                    }
+                }
+            } catch (parseError) {
+                console.error('Error parsing localStorage data:', parseError);
+                // Continue with empty data rather than failing completely
+            }
             
             console.log("Local scores:", scores);
             console.log("Completed levels:", completedLevels);
             
-            // Debug: Check individual score values
+            // Debug: Check individual score values with normalization
             console.log("=== Score Details ===");
             Object.entries(scores).forEach(([levelId, score]) => {
-                console.log(`Level ${levelId}: ${score} (type: ${typeof score})`);
+                const normalizedLevel = normalizeLevel(levelId);
+                console.log(`Level ${levelId} -> ${normalizedLevel}: ${score} (type: ${typeof score})`);
             });
             
-            // Calculate totals with more detailed logging
+            // Calculate totals with validation and normalization
             let totalScore = 0;
-            Object.values(scores).forEach(score => {
+            Object.entries(scores).forEach(([levelId, score]) => {
+                const normalizedLevel = normalizeLevel(levelId);
                 const numScore = Number(score);
-                console.log(`Processing score: ${score} -> ${numScore} (valid: ${!isNaN(numScore)})`);
+                console.log(`Processing level ${normalizedLevel}, score: ${score} -> ${numScore} (valid: ${!isNaN(numScore) && numScore >= 0})`);
                 if (!isNaN(numScore) && numScore >= 0) {
                     totalScore += numScore;
                 }
             });
             
-            const highestLevel = completedLevels.length > 0 ? Math.max(...completedLevels) : 0;
+            // Find highest completed level with validation
+            let highestLevel = 0;
+            if (completedLevels.length > 0) {
+                const validLevels = completedLevels
+                    .map(level => normalizeLevel(level))
+                    .filter(level => level > 0);
+                
+                if (validLevels.length > 0) {
+                    highestLevel = Math.max(...validLevels);
+                }
+            }
             
             console.log("=== Final Calculations ===");
             console.log("Total score calculated:", totalScore);
             console.log("Highest level completed:", highestLevel);
             
-            // Validate data
+            // Validate final data
             if (totalScore < 0 || highestLevel < 0) {
                 throw new Error(`Invalid data: score=${totalScore}, level=${highestLevel}`);
             }
@@ -874,6 +1118,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Submit to Firebase using the helper function from firebase-init.js
+            if (typeof window.submitScoreToLeaderboard !== 'function') {
+                throw new Error('Firebase submission function not available');
+            }
+            
             console.log("Submitting to Firebase...");
             await window.submitScoreToLeaderboard(totalScore, highestLevel);
             
@@ -884,14 +1132,31 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("❌ Leaderboard update failed:", error);
             console.error("Error type:", error.constructor.name);
             console.error("Error message:", error.message);
+            
+            // Store failed submission for retry with error handling
+            try {
+                const failedSubmissions = JSON.parse(localStorage.getItem('tts-failed-submissions') || '[]');
+                failedSubmissions.push({
+                    timestamp: Date.now(),
+                    scores: localStorage.getItem('tts-scores'),
+                    completedLevels: localStorage.getItem('tts-completed-levels'),
+                    error: error.message
+                });
+                localStorage.setItem('tts-failed-submissions', JSON.stringify(failedSubmissions));
+                console.log('Stored failed submission for retry');
+            } catch (storageError) {
+                console.error('Error storing failed submission:', storageError);
+            }
+            
             return false;
         }
     }
 
     // KBBI bonus check function
     function checkKBBIBonus(word) {
-        if (word.length < 3) {
-            console.log("Word too short for KBBI check");
+        const minWordLength = window.TTS_CONFIG?.MIN_WORD_LENGTH || 3;
+        if (word.length < minWordLength) {
+            console.log(`Word too short for KBBI check (minimum: ${minWordLength})`);
             return;
         }
 
@@ -964,14 +1229,15 @@ document.addEventListener('DOMContentLoaded', () => {
             { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
         ], { duration: 300, easing: 'ease-out' });
         
-                setTimeout(() => {
+        const bonusMessageDuration = (window.TTS_CONFIG?.NOTIFICATION_DURATION || 3000) - 1000; // Slightly shorter than notifications
+        setTimeout(() => {
             message.animate([
                 { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
                 { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' }
             ], { duration: 300 }).onfinish = () => {
                 message.remove();
             };
-        }, 2000);
+        }, bonusMessageDuration);
     }
     
     function updateScoreDisplay() {
@@ -987,45 +1253,128 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function saveScore(levelId, score) {
-        console.log(`=== Saving Score ===`);
-        console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
-        console.log(`Score: ${score} (type: ${typeof score})`);
-        
-        const scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
-        console.log("Current scores before save:", scores);
-        
-        // Ensure levelId is a string for consistent storage
-        const levelKey = String(levelId);
-        const numScore = Number(score);
-        
-        console.log(`Converted - Level key: ${levelKey}, Score: ${numScore}`);
-        
-        if (!scores[levelKey] || scores[levelKey] < numScore) {
-            scores[levelKey] = numScore;
-            localStorage.setItem('tts-scores', JSON.stringify(scores));
-            console.log(`✅ Score saved successfully for level ${levelKey}: ${numScore}`);
-            console.log("Updated scores:", scores);
-        } else {
-            console.log(`Score not saved - existing score ${scores[levelKey]} is higher than or equal to ${numScore}`);
+        try {
+            console.log(`=== Saving Score ===`);
+            console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
+            console.log(`Score: ${score} (type: ${typeof score})`);
+            
+            // Normalize and validate inputs
+            const normalizedLevel = normalizeLevel(levelId);
+            const numScore = Number(score);
+            
+            const maxScore = window.TTS_CONFIG?.MAX_SCORE_VALUE || 999999;
+            if (isNaN(numScore) || numScore < 0 || numScore > maxScore) {
+                console.error(`Invalid score: ${score} (must be between 0 and ${maxScore})`);
+                return;
+            }
+            
+            console.log(`Normalized Level: ${normalizedLevel}, Score: ${numScore}`);
+            
+            // Get and validate existing scores
+            let scores = {};
+            try {
+                const scoresData = localStorage.getItem('tts-scores');
+                if (scoresData) {
+                    const parsedScores = JSON.parse(scoresData);
+                    if (typeof parsedScores === 'object' && parsedScores !== null) {
+                        scores = parsedScores;
+                    } else {
+                        console.warn('Existing scores data is not valid, using empty object');
+                    }
+                }
+            } catch (parseError) {
+                console.error('Error parsing existing scores:', parseError);
+                scores = {};
+            }
+            
+            console.log("Current scores before save:", scores);
+            
+            // Use normalized level as string key for consistent storage
+            const levelKey = String(normalizedLevel);
+            
+            if (!scores[levelKey] || scores[levelKey] < numScore) {
+                scores[levelKey] = numScore;
+                try {
+                    localStorage.setItem('tts-scores', JSON.stringify(scores));
+                    console.log(`✅ Score saved successfully for level ${levelKey}: ${numScore}`);
+                    console.log("Updated scores:", scores);
+                } catch (storageError) {
+                    console.error('Error saving scores to localStorage:', storageError);
+                }
+            } else {
+                console.log(`Score not saved - existing score ${scores[levelKey]} is higher than or equal to ${numScore}`);
+            }
+        } catch (error) {
+            console.error('Error in saveScore:', error);
         }
     }
     
     function loadScore(levelId) {
-        const scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
-        return scores[levelId] || 0;
+        try {
+            // Normalize level ID for consistent lookup
+            const normalizedLevel = normalizeLevel(levelId);
+            const levelKey = String(normalizedLevel);
+            
+            // Get and validate scores data
+            let scores = {};
+            try {
+                const scoresData = localStorage.getItem('tts-scores');
+                if (scoresData) {
+                    const parsedScores = JSON.parse(scoresData);
+                    if (typeof parsedScores === 'object' && parsedScores !== null) {
+                        scores = parsedScores;
+                    }
+                }
+            } catch (parseError) {
+                console.error('Error parsing scores in loadScore:', parseError);
+            }
+            
+            const score = scores[levelKey] || 0;
+            console.log(`Loading score for level ${normalizedLevel}: ${score}`);
+            return score;
+        } catch (error) {
+            console.error('Error in loadScore:', error);
+            return 0;
+        }
     }
 
-    // Calculate total cumulative score from all completed levels
+    // Calculate total cumulative score from all completed levels with validation
     function calculateTotalScore() {
-        const scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
-        let total = 0;
-        Object.values(scores).forEach(score => {
-            const numScore = Number(score);
-            if (!isNaN(numScore)) {
-                total += numScore;
+        try {
+            // Get and validate scores data
+            let scores = {};
+            try {
+                const scoresData = localStorage.getItem('tts-scores');
+                if (scoresData) {
+                    const parsedScores = JSON.parse(scoresData);
+                    if (typeof parsedScores === 'object' && parsedScores !== null) {
+                        scores = parsedScores;
+                    } else {
+                        console.warn('Scores data is not a valid object in calculateTotalScore');
+                    }
+                }
+            } catch (parseError) {
+                console.error('Error parsing scores in calculateTotalScore:', parseError);
             }
-        });
-        return total;
+            
+            let total = 0;
+            Object.entries(scores).forEach(([levelId, score]) => {
+                const normalizedLevel = normalizeLevel(levelId);
+                const numScore = Number(score);
+                if (!isNaN(numScore) && numScore >= 0) {
+                    total += numScore;
+                    console.log(`Adding to total - Level ${normalizedLevel}: ${numScore}`);
+                } else {
+                    console.warn(`Invalid score for level ${levelId}: ${score}`);
+                }
+            });
+            
+            console.log(`Total calculated score: ${total}`);
+            return total;
+        } catch (error) {
+            console.error('Error in calculateTotalScore:', error);
+            return 0;
+        }
     }
     
     // Event Listeners
@@ -1036,6 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     shuffleButton.addEventListener('click', () => {
         shuffleLetters();
+        soundManager.playSound('click');
     });
     
     hintButton.addEventListener('click', () => {
@@ -1046,6 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     backButton.addEventListener('click', () => {
         window.location.href = '../../level-select.html';
+        soundManager.playSound('click');
     });
     
     // Settings event listeners
@@ -1109,14 +1460,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Initialize score display
-    const levelId = getLevelFromURL();
-    isLevelAlreadyCompleted = isLevelCompleted(levelId);
+    async function initializeGame() {
+        const levelId = getLevelFromURL();
+        isLevelAlreadyCompleted = isLevelCompleted(levelId);
+        
+        // Sync score from Firebase first, then calculate from localStorage
+        await syncScoreFromFirebase();
+        currentScore = calculateTotalScore();
+        updateScoreDisplay();
+    }
     
-    // Start with total cumulative score from all completed levels
-    currentScore = calculateTotalScore();
-    updateScoreDisplay();
+    // Call async initialization
+    initializeGame();
+    
+    // Re-sync score and themes when user returns to the game (e.g., after shopping)
+    document.addEventListener('visibilitychange', async () => {
+        if (!document.hidden) {
+            console.log('🔄 Page became visible, re-syncing score and themes...');
+            await syncScoreFromFirebase();
+            currentScore = calculateTotalScore();
+            updateScoreDisplay();
+            
+            // Reload owned themes
+            if (themeManager && themeManager.loadOwnedThemes) {
+                await themeManager.loadOwnedThemes();
+            }
+        }
+    });
+    
+    // Additional sync on window focus as backup
+    window.addEventListener('focus', async () => {
+        console.log('🔄 Window focused, re-syncing score and themes...');
+        await syncScoreFromFirebase();
+        currentScore = calculateTotalScore();
+        updateScoreDisplay();
+        
+        // Reload owned themes
+        if (themeManager && themeManager.loadOwnedThemes) {
+            await themeManager.loadOwnedThemes();
+        }
+    });
     
     // Auto-retry failed submissions after game loads
+    const retryDelay = window.TTS_CONFIG?.RETRY_DELAY || 3000;
     setTimeout(async () => {
         try {
             console.log("🔄 Auto-retry checking for pending submissions...");
@@ -1131,26 +1517,66 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Auto-retry error:", error);
         }
-    }, 3000); // Wait 3 seconds for Firebase to initialize
+    }, retryDelay); // Wait for Firebase to initialize
     
-    // Debug functions for testing localStorage data
+    // Debug functions for testing localStorage data with validation
     window.debugLocalStorage = function() {
         console.log("=== LOCAL STORAGE DEBUG ===");
-        const scores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
-        const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
+        
+        // Get and validate data
+        let scores = {};
+        let completedLevels = [];
+        
+        try {
+            const scoresData = localStorage.getItem('tts-scores');
+            const levelsData = localStorage.getItem('tts-completed-levels');
+            
+            if (scoresData) {
+                const parsedScores = JSON.parse(scoresData);
+                if (typeof parsedScores === 'object' && parsedScores !== null) {
+                    scores = parsedScores;
+                } else {
+                    console.warn('Scores data is not a valid object');
+                }
+            }
+            
+            if (levelsData) {
+                const parsedLevels = JSON.parse(levelsData);
+                if (Array.isArray(parsedLevels)) {
+                    completedLevels = parsedLevels;
+                } else {
+                    console.warn('Completed levels data is not an array');
+                }
+            }
+        } catch (parseError) {
+            console.error('Error parsing localStorage data:', parseError);
+        }
         
         console.log("Scores:", scores);
         console.log("Completed Levels:", completedLevels);
         
-        // Calculate totals
+        // Calculate totals with normalization
         let totalScore = 0;
         Object.entries(scores).forEach(([levelId, score]) => {
+            const normalizedLevel = normalizeLevel(levelId);
             const numScore = Number(score);
-            console.log(`Level ${levelId}: ${score} -> ${numScore}`);
-            if (!isNaN(numScore)) totalScore += numScore;
+            console.log(`Level ${levelId} -> ${normalizedLevel}: ${score} -> ${numScore} (valid: ${!isNaN(numScore) && numScore >= 0})`);
+            if (!isNaN(numScore) && numScore >= 0) {
+                totalScore += numScore;
+            }
         });
         
-        const highestLevel = completedLevels.length > 0 ? Math.max(...completedLevels) : 0;
+        // Find highest level with validation
+        let highestLevel = 0;
+        if (completedLevels.length > 0) {
+            const validLevels = completedLevels
+                .map(level => normalizeLevel(level))
+                .filter(level => level > 0);
+            
+            if (validLevels.length > 0) {
+                highestLevel = Math.max(...validLevels);
+            }
+        }
         
         console.log("=== CALCULATED TOTALS ===");
         console.log("Total Score:", totalScore);
@@ -1166,6 +1592,51 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("✅ Game data cleared");
             location.reload();
         }
+    };
+    
+    // Debug function to check score synchronization
+    window.debugScoreSync = async function() {
+        console.log("=== SCORE SYNC DEBUG ===");
+        
+        // Check localStorage
+        const localScores = JSON.parse(localStorage.getItem('tts-scores') || '{}');
+        const localTotal = Object.values(localScores).reduce((total, score) => total + Number(score), 0);
+        console.log("📱 localStorage scores:", localScores);
+        console.log("📱 localStorage total:", localTotal);
+        
+        // Check Firebase
+        if (window.currentUserId && window.db) {
+            try {
+                const userRef = window.db.collection('users').doc(window.currentUserId);
+                const userDoc = await userRef.get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    console.log("🔥 Firebase userData:", userData);
+                    console.log("🔥 Firebase totalScore:", userData.totalScore || 0);
+                } else {
+                    console.log("🔥 No Firebase document found");
+                }
+            } catch (error) {
+                console.error("🔥 Firebase error:", error);
+            }
+        } else {
+            console.log("🔥 Firebase not ready");
+        }
+        
+        // Check current game state
+        console.log("🎮 Current game score:", currentScore);
+        
+        return { localScores, localTotal, currentScore };
+    };
+    
+    // Force sync function for debugging
+    window.forceScoreSync = async function() {
+        console.log("🔄 Forcing score sync...");
+        await syncScoreFromFirebase();
+        currentScore = calculateTotalScore();
+        updateScoreDisplay();
+        console.log("✅ Force sync completed. New score:", currentScore);
     };
     
     // Make useInventoryItem and toggleInventoryPopup globally accessible
@@ -1189,10 +1660,41 @@ function toggleSettings() {
     }
 }
 
+// Listen for sound pack and animation effects changes to reload settings
+document.addEventListener('DOMContentLoaded', () => {
+    // Listen for sound pack changes
+    document.addEventListener('soundPackChanged', () => {
+        const panel = document.getElementById('settings-panel');
+        if (panel && !panel.classList.contains('hidden')) {
+            loadSettingsUI();
+        }
+    });
+    
+    // Listen for animation effects changes
+    document.addEventListener('animationEffectsChanged', () => {
+        const panel = document.getElementById('settings-panel');
+        if (panel && !panel.classList.contains('hidden')) {
+            loadSettingsUI();
+        }
+    });
+    
+    // Listen for storage changes (when items are purchased)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'tts-sound-packs' || e.key === 'tts-animation-effects') {
+            const panel = document.getElementById('settings-panel');
+            if (panel && !panel.classList.contains('hidden')) {
+                setTimeout(() => loadSettingsUI(), 100); // Small delay to ensure data is loaded
+            }
+        }
+    });
+});
+
 function loadSettingsUI() {
     const themeSelect = document.getElementById('theme-select');
     const fontSizeSelect = document.getElementById('font-size-select');
     const soundToggle = document.getElementById('sound-toggle');
+    const soundPackSelect = document.getElementById('sound-pack-select');
+    const animationEffectsSelect = document.getElementById('animation-effects-select');
     const vibrationToggle = document.getElementById('vibration-toggle');
     const highContrastToggle = document.getElementById('high-contrast-toggle');
     const autoSubmitToggle = document.getElementById('auto-submit-toggle');
@@ -1201,10 +1703,60 @@ function loadSettingsUI() {
     const themeManager = window.themeManager || new ThemeManager();
     const settingsManager = window.settingsManager || new SettingsManager();
     
+    // Update theme options to show only owned themes
+    const availableThemes = themeManager.getAvailableThemes();
+    themeSelect.innerHTML = '';
+    availableThemes.forEach(theme => {
+        const option = document.createElement('option');
+        option.value = theme.key;
+        option.textContent = theme.name;
+        themeSelect.appendChild(option);
+    });
+    
+    // Update sound pack options to show only owned sound packs
+    if (window.soundPackManager) {
+        const availableSoundPacks = window.soundPackManager.getAvailablePacks();
+        soundPackSelect.innerHTML = '';
+        availableSoundPacks.forEach(pack => {
+            const option = document.createElement('option');
+            option.value = pack.key;
+            option.textContent = pack.name;
+            soundPackSelect.appendChild(option);
+        });
+    }
+    
+    // Update animation effects options to show only owned effects
+    if (window.animationEffectsManager) {
+        const availableEffects = window.animationEffectsManager.getAvailableEffectPacks();
+        animationEffectsSelect.innerHTML = '';
+        
+        // Always add default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = 'default';
+        defaultOption.textContent = 'Default Effects';
+        animationEffectsSelect.appendChild(defaultOption);
+        
+        // Add owned effects
+        availableEffects.forEach(effect => {
+            if (effect.key !== 'default') {
+                const option = document.createElement('option');
+                option.value = effect.key;
+                option.textContent = effect.name;
+                animationEffectsSelect.appendChild(option);
+            }
+        });
+    }
+    
     // Load current values
     themeSelect.value = themeManager.getCurrentTheme();
     fontSizeSelect.value = settingsManager.getSetting('fontSize');
     soundToggle.checked = settingsManager.getSetting('soundEnabled');
+    if (window.soundPackManager) {
+        soundPackSelect.value = window.soundPackManager.getActivePack();
+    }
+    if (window.animationEffectsManager) {
+        animationEffectsSelect.value = window.animationEffectsManager.getActiveEffectPack();
+    }
     vibrationToggle.checked = settingsManager.getSetting('vibrationEnabled');
     highContrastToggle.checked = settingsManager.getSetting('highContrast');
     autoSubmitToggle.checked = settingsManager.getSetting('autoSubmit');
@@ -1221,6 +1773,18 @@ function loadSettingsUI() {
     soundToggle.addEventListener('change', (e) => {
         settingsManager.updateSetting('soundEnabled', e.target.checked);
     });
+    
+    if (soundPackSelect && window.soundPackManager) {
+        soundPackSelect.addEventListener('change', (e) => {
+            window.soundPackManager.setActivePack(e.target.value);
+        });
+    }
+    
+    if (animationEffectsSelect && window.animationEffectsManager) {
+        animationEffectsSelect.addEventListener('change', (e) => {
+            window.animationEffectsManager.setActiveEffectPack(e.target.value);
+        });
+    }
     
     vibrationToggle.addEventListener('change', (e) => {
         settingsManager.updateSetting('vibrationEnabled', e.target.checked);

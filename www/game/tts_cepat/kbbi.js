@@ -1347,7 +1347,7 @@ window.KBBI_DATABASE = [
     "ALAK",
     "ALAKRIMA",
     "ALALIA",
-    "ALAM",
+    "ALAM", //Level 17
     "ALAMA",
     "ALAMAH",
     "ALAMAI",
@@ -1807,7 +1807,7 @@ window.KBBI_DATABASE = [
     "AMAI",
     "AMAK",
     "AMAKSOFOBIA",
-    "AMAL",
+    "AMAL", //Level 18
     "AMALAKA",
     "AMALAKI",
     "AMALAN",
@@ -1818,11 +1818,11 @@ window.KBBI_DATABASE = [
     "AMALIAH",
     "AMALO",
     "AMAM",
-    "AMAN", // Level 2
+    "AMAN", // Level 2 , 17 dan 18
     "AMANAH",
     "AMANAT",
     "AMANATUN",
-    "AMANDEL",
+    "AMANDEL", //Level 18
     "AMANDEMEN",
     "AMANE",
     "AMANG",
@@ -2242,7 +2242,7 @@ window.KBBI_DATABASE = [
     "ANAHAR",
     "ANAHEHA",
     "ANAHIDA",
-    "ANAK", // Used in level 9
+    "ANAK", // Used in level 9 & 19
     "ANAKALANG",
     "ANAKAN",
     "ANAKANDA",
@@ -2336,7 +2336,7 @@ window.KBBI_DATABASE = [
     "ANCUR",
     "ANCUT",
     "AND.",
-    "ANDA",
+    "ANDA", //Level 11
     "ANDAI",
     "ANDAIAN",
     "ANDAIKAN",
@@ -2418,9 +2418,9 @@ window.KBBI_DATABASE = [
     "ANDUNG",
     "ANDUR",
     "ANDURABIAN",
-    "ANEH",
+    "ANEH", // Level 12
     "ANEHE",
-    "ANEKA",
+    "ANEKA", // Level 12
     "ANEKDOT",
     "ANEKDOTAL",
     "ANEKSASI",
@@ -3555,7 +3555,7 @@ window.KBBI_DATABASE = [
     "ARUI",
     "ARUK",
     "ARUM",
-    "ARUMBA",
+    "ARUMBA", //Level 16
     "ARUN",
     "ARUNA",
     "ARUNG",
@@ -3662,10 +3662,10 @@ window.KBBI_DATABASE = [
     "ASHABULKAHFI",
     "ASHAR",
     "ASI",
-    "ASIA",
+    "ASIA", //Level 13
     "ASIAFILI",
     "ASIAFILIA",
-    "ASIAN",
+    "ASIAN", //Level 14
     "ASIATIKOSIDA",
     "ASIBILAN",
     "ASIBILASI",
@@ -3693,8 +3693,8 @@ window.KBBI_DATABASE = [
     "ASIMTOMATIS",
     "ASIMTOT",
     "ASIMUS",
-    "ASIN",
-    "ASINAN",
+    "ASIN", //Level 13 & 14
+    "ASINAN", //Level 14
     "ASINDETON",
     "ASING",
     "ASINKRON",
@@ -5060,7 +5060,7 @@ window.KBBI_DATABASE = [
     "BAPTIS",
     "BAQA",
     "BAR",
-    "BARA",
+    "BARA", //Level 16
     "BARAAT",
     "BARABADAN",
     "BARABEA",
@@ -13087,7 +13087,7 @@ window.KBBI_DATABASE = [
     "DAMPRATAN",
     "DAMPUNG",
     "DAN",
-    "DANA",
+    "DANA", // Level 11 & 19
     "DANAU",
     "DANAWA",
     "DANDA",
@@ -15692,7 +15692,7 @@ window.KBBI_DATABASE = [
     "EMANOMETER",
     "EMANSIPASI",
     "EMANSIPATIF",
-    "EMAS",
+    "EMAS", //Level 15
     "EMASKULASI",
     "EMAT",
     "EMB",
@@ -15773,8 +15773,8 @@ window.KBBI_DATABASE = [
     "EMOLIEN",
     "EMOLUMEN",
     "EMONG",
-    "EMOSI",
-    "EMOSIONAL",
+    "EMOSI", // Level 15
+    "EMOSIONAL", //Level 15
     "EMOSIONALISME",
     "EMOTIF",
     "EMOTIKON",
@@ -15835,7 +15835,7 @@ window.KBBI_DATABASE = [
     "EMUMU",
     "EMUT",
     "EN",
-    "ENAK",
+    "ENAK", //Level 12
     "ENAKAN",
     "ENAM",
     "ENAMEL",
@@ -18862,7 +18862,7 @@ window.KBBI_DATABASE = [
     "GIGITAN",
     "GIGOLO",
     "GIGU",
-    "GILA",
+    "GILA", //level 20
     "GILANG",
     "GILAP",
     "GILAPAN",
@@ -23532,7 +23532,7 @@ window.KBBI_DATABASE = [
     "KADIT",
     "KADIV",
     "KADMIUM",
-    "KADO",
+    "KADO", // Level 19
     "KADOFOR",
     "KADOK",
     "KADOLOG",
@@ -23609,7 +23609,7 @@ window.KBBI_DATABASE = [
     "KAIMAT",
     "KAIMBULAWA",
     "KAIMO",
-    "KAIN",
+    "KAIN", // Level 20
     "KAING",
     "KAINIT",
     "KAINOFOBIA",
@@ -23672,7 +23672,7 @@ window.KBBI_DATABASE = [
     "KAKUMINAL",
     "KAKUS",
     "KAL",
-    "KALA",
+    "KALA", //Level 20
     "KALAARUM",
     "KALABENDA",
     "KALABENDU",
@@ -23681,7 +23681,7 @@ window.KBBI_DATABASE = [
     "KALADUTA",
     "KALAH",
     "KALAI",
-    "KALAJENGKING",
+    "KALAJENGKING", //Level 20
     "KALAK",
     "KALAKA",
     "KALAKAI",
@@ -23751,7 +23751,7 @@ window.KBBI_DATABASE = [
     "KALERO",
     "KALESA",
     "KALET",
-    "KALI",
+    "KALI", //Level 20
     "KALIABO",
     "KALIAN",
     "KALIBER",
@@ -26398,7 +26398,7 @@ window.KBBI_DATABASE = [
     "KEMUTUL",
     "KEMUTUN",
     "KEN",
-    "KENA",
+    "KENA", //Level 12
     "KENABIAN",
     "KENAF",
     "KENAIFAN",
@@ -28360,7 +28360,7 @@ window.KBBI_DATABASE = [
     "KINGKIP",
     "KINGKIT",
     "KINGKONG",
-    "KINI",
+    "KINI", //Level 20
     "KININE",
     "KINJA",
     "KINJAT",
@@ -30819,7 +30819,7 @@ window.KBBI_DATABASE = [
     "LALU",
     "LALUAN",
     "LAM",
-    "LAMA",
+    "LAMA", //Level 17 & 18
     "LAMAHOLOT",
     "LAMAK",
     "LAMAN",
@@ -31555,7 +31555,7 @@ window.KBBI_DATABASE = [
     "LEMMA",
     "LEMO",
     "LEMOLANG",
-    "LEMON",
+    "LEMON", //Level 15
     "LEMOT",
     "LEMPAH",
     "LEMPAI",
@@ -33343,7 +33343,7 @@ window.KBBI_DATABASE = [
     "MAMUJU",
     "MAMUT",
     "MAN",
-    "MANA",
+    "MANA", //Level 17
     "MANADO",
     "MANAGEMEN",
     "MANAGER",
@@ -33596,7 +33596,7 @@ window.KBBI_DATABASE = [
     "MAPUR",
     "MAQUIS",
     "MAR",
-    "MARA",
+    "MARA", //Level 16
     "MARABAHAYA",
     "MARADIKA",
     "MARAH", // Used in level 10
@@ -45492,7 +45492,7 @@ window.KBBI_DATABASE = [
     "NABIRE",
     "NABU",
     "NACO",
-    "NADA",
+    "NADA", // Level 11 , 18 & 19
     "NADAM",
     "NADAR",
     "NADE",
@@ -45514,7 +45514,7 @@ window.KBBI_DATABASE = [
     "NAFTALENA",
     "NAFTENA",
     "NAFTOL",
-    "NAGA",
+    "NAGA", //Level 20
     "NAGAM",
     "NAGARA",
     "NAGARI",
@@ -45526,7 +45526,7 @@ window.KBBI_DATABASE = [
     "NAHAS",
     "NAHDIYIN",
     "NAHI",
-    "NAHKODA",
+    "NAHKODA", //Level 19
     "NAHU",
     "NAHWU",
     "NAIB",
@@ -45560,7 +45560,7 @@ window.KBBI_DATABASE = [
     "NALIH",
     "NALURI",
     "NALURIAH",
-    "NAMA", // Level 2
+    "NAMA", // Level 2 & 18
     "NAMABALU",
     "NAMASKARA",
     "NAMATAD",
@@ -46151,7 +46151,7 @@ window.KBBI_DATABASE = [
     "NOBAT",
     "NOBELIUM",
     "NOBUK",
-    "NODA",
+    "NODA", //Level 19
     "NODIS",
     "NODUL",
     "NODULA",
@@ -56612,13 +56612,13 @@ window.KBBI_DATABASE = [
     "RALIP",
     "RALLENTANDO",
     "RAM",
-    "RAMA",
+    "RAMA", //Level 16
     "RAMADAN",
     "RAMADHAN",
     "RAMAH",
     "RAMAI",
     "RAMAL",
-    "RAMALAN",
+    "RAMALAN", //Level 17
     "RAMANDA",
     "RAMANIA",
     "RAMAS",
@@ -58665,11 +58665,11 @@ window.KBBI_DATABASE = [
     "SALIH",
     "SALIHAH",
     "SALIK",
-    "SALIM",
+    "SALIM", //Level 15
     "SALIMETER",
-    "SALIN",
+    "SALIN", //Level 13
     "SALINA",
-    "SALINAN",
+    "SALINAN", //Level 13
     "SALINDIA",
     "SALINDRA",
     "SALING",
@@ -61655,7 +61655,7 @@ window.KBBI_DATABASE = [
     "SIAK",
     "SIAKAP",
     "SIAKON",
-    "SIAL",
+    "SIAL", //Level 15
     "SIALAN",
     "SIALANG",
     "SIALIT",

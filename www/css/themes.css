@@ -1,0 +1,407 @@
+/* Default Theme */
+.grid-cell.revealed {
+    background: #4CAF50 !important;
+    color: white !important;
+    border: 2px solid #388E3C !important;
+    font-weight: bold !important;
+}
+
+/* Dark Mode Theme */
+.theme-dark {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .game-container {
+    background: linear-gradient(135deg, #2c2c2c, #1a1a1a) !important;
+    border: 2px solid #444 !important;
+}
+
+.theme-dark .letter-grid {
+    background: #333 !important;
+    border: 2px solid #555 !important;
+}
+
+.theme-dark .letter-cell {
+    background: #444 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #666 !important;
+}
+
+.theme-dark .letter-cell:hover {
+    background: #555 !important;
+}
+
+.theme-dark .letter-cell.selected {
+    background: #0066cc !important;
+    color: white !important;
+}
+
+.theme-dark .grid-cell.revealed {
+    background: #2E7D32 !important;
+    color: white !important;
+    border: 2px solid #4CAF50 !important;
+}
+
+.theme-dark .word-input {
+    background: #333 !important;
+    color: #e0e0e0 !important;
+    border: 2px solid #555 !important;
+}
+
+.theme-dark .control-button {
+    background: #444 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #666 !important;
+}
+
+.theme-dark .control-button:hover {
+    background: #555 !important;
+}
+
+.theme-dark .score-display {
+    background: #333 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.theme-dark .found-words {
+    background: #333 !important;
+    border: 1px solid #555 !important;
+}
+
+.theme-dark .found-word {
+    background: #444 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #666 !important;
+}
+
+/* Colorful Theme */
+.theme-colorful {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 10s ease infinite !important;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.theme-colorful .game-container {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 3px solid #ff6b6b !important;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3) !important;
+}
+
+.theme-colorful .letter-grid {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    border: 2px solid #ff6b6b !important;
+}
+
+.theme-colorful .letter-cell {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #333 !important;
+    border: 2px solid #ff6b6b !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .letter-cell:hover {
+    background: #feca57 !important;
+    transform: scale(1.05) !important;
+    transition: all 0.2s ease !important;
+}
+
+.theme-colorful .letter-cell.selected {
+    background: #45b7d1 !important;
+    color: white !important;
+    box-shadow: 0 0 10px rgba(69, 183, 209, 0.5) !important;
+}
+
+.theme-colorful .grid-cell.revealed {
+    background: #FF9800 !important;
+    color: white !important;
+    border: 2px solid #F57C00 !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .word-input {
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .word-input::placeholder {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.theme-colorful .control-button {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .control-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .score-display {
+    background: linear-gradient(135deg, #45b7d1, #96ceb4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .found-words {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #ff6b6b !important;
+}
+
+.theme-colorful .found-word {
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+/* Minimalist Theme */
+.theme-minimalist {
+    background-color: #fafafa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .game-container {
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .letter-grid {
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+}
+
+.theme-minimalist .letter-cell {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .letter-cell:hover {
+    background: #f5f5f5 !important;
+}
+
+.theme-minimalist .letter-cell.selected {
+    background: #333 !important;
+    color: white !important;
+}
+
+.theme-minimalist .grid-cell.revealed {
+    background: #E0E0E0 !important;
+    color: #212529 !important;
+    border: 2px solid #BDBDBD !important;
+    font-weight: 500 !important;
+}
+
+.theme-minimalist .word-input {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .control-button {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .control-button:hover {
+    background: #f5f5f5 !important;
+}
+
+.theme-minimalist .score-display {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .found-words {
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+}
+
+.theme-minimalist .found-word {
+    background: #f5f5f5 !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+/* Theme transition animations */
+.theme-transition {
+    transition: all 0.3s ease !important;
+}
+
+.theme-transition * {
+    transition: all 0.3s ease !important;
+}
+
+/* Theme Selector Styles */
+.theme-selector {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-selector h3 {
+    margin: 0 0 15px 0;
+    color: inherit;
+    font-size: 1.1em;
+}
+
+.theme-option {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.theme-option:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.theme-option.active {
+    background: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}
+
+/* Dark theme adjustments for theme selector */
+.theme-dark .theme-selector {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: #555;
+}
+
+.theme-dark .theme-option {
+    background: #444;
+    color: #e0e0e0;
+}
+
+.theme-dark .theme-option:hover {
+    background: #555;
+}
+
+/* Colorful theme adjustments for theme selector */
+.theme-colorful .theme-selector {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ff6b6b;
+}
+
+.theme-colorful .theme-option {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+    color: white;
+}
+
+.theme-colorful .theme-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Minimalist theme adjustments for theme selector */
+.theme-minimalist .theme-selector {
+    background: white;
+    border: 1px solid #e0e0e0;
+}
+
+.theme-minimalist .theme-option {
+    background: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    font-weight: 300;
+}
+
+.theme-minimalist .theme-option:hover {
+    background: #f5f5f5;
+}
+
+/* Additional Minimalist Theme Styles */
+body.minimalist {
+    background: #ffffff;
+    color: #333333;
+}
+
+body.minimalist .grid-cell {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    color: #495057;
+}
+
+body.minimalist .grid-cell.revealed {
+    background: #E0E0E0;
+    color: #212529;
+    border: 2px solid #BDBDBD;
+}
+
+body.minimalist input {
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    color: #495057;
+}
+
+body.minimalist button {
+    background: #6c757d;
+    color: #ffffff;
+    border: 1px solid #6c757d;
+}
+
+body.minimalist button:hover {
+    background: #5a6268;
+    border-color: #545b62;
+}
+
+body.minimalist .score {
+    color: #495057;
+}
+
+body.minimalist .found-word {
+    color: #28a745;
+}
+
+body.minimalist .game-container {
+    background: #ffffff;
+}
+
+body.minimalist .top-bar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+body.minimalist .letter-tile {
+    background: #6c757d;
+    color: #ffffff;
+    border: 1px solid #6c757d;
+}
+
+body.minimalist .letter-tile.used {
+    background: #adb5bd;
+    color: #6c757d;
+}

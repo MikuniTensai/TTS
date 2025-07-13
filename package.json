@@ -27,7 +27,10 @@
       "cordova-plugin-whitelist": {},
       "cordova-plugin-device": {},
       "cordova-plugin-network-information": {},
-      "cordova-plugin-splashscreen": {}
+      "cordova-plugin-splashscreen": {},
+      "emi-indo-cordova-plugin-admob": {
+        "ADMOB_APP_ID": "ca-app-pub-8770525488772470~9010728347"
+      }
     }
   },
   "dependencies": {
@@ -38,6 +41,7 @@
   },
   "devDependencies": {
     "cordova": "^12.0.0",
-    "cordova-android": "^14.0.1"
+    "cordova-android": "^14.0.1",
+    "emi-indo-cordova-plugin-admob": "^2.0.0"
   }
 }

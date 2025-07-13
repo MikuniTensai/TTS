@@ -66,12 +66,13 @@ async function createUserProfileIfNeeded(user) {
             defaultNickname = `Pemain${randomNumber}`;
         }
         
-        // Create user profile with default score 0 and empty inventory
+        // Create user profile with default score 0, empty inventory, and default themes
         await userRef.set({
             nickname: defaultNickname,
             totalScore: 0,
             highestLevelCompleted: 0,
             inventory: { shuffle: 0, hint: 0 },
+            themes: { dark: false, colorful: false, minimalist: false, activeTheme: 'default' },
             whatsappNumber: '',
             active: true,
             migrated: false,
@@ -254,15 +255,16 @@ async function ensureUserDataStructure() {
     if (userDoc.exists) {
         const userData = userDoc.data();
         
-        // Check if user needs migration (missing score fields, inventory, or new fields)
+        // Check if user needs migration (missing score fields, inventory, themes, or new fields)
         if (userData.totalScore === undefined || userData.highestLevelCompleted === undefined || 
-            !userData.inventory || userData.active === undefined || userData.migrated === undefined) {
+            !userData.inventory || !userData.themes || userData.active === undefined || userData.migrated === undefined) {
             console.log("🔄 Migrating user data structure...");
             
             await userRef.update({
                 totalScore: userData.totalScore || 0,
                 highestLevelCompleted: userData.highestLevelCompleted || 0,
                 inventory: userData.inventory || { shuffle: 0, hint: 0 },
+                themes: userData.themes || { dark: false, colorful: false, minimalist: false, activeTheme: 'default' },
                 active: userData.active !== undefined ? userData.active : true,
                 migrated: userData.migrated !== undefined ? userData.migrated : false,
                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
@@ -280,4 +282,4 @@ window.ensureUserDataStructure = ensureUserDataStructure;
 // Make Firebase instances available globally for account page
 window.auth = auth;
 window.db = db;
-window.firebase = firebase; 
+window.firebase = firebase;

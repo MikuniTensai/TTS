@@ -3,6 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const noEventsDiv = document.getElementById('no-events');
     const refreshBtn = document.getElementById('refresh-btn');
 
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            soundManager.playSound('click');
+            // existing refresh logic if any
+        });
+    }
+
     let lastEventCheck = localStorage.getItem('lastEventCheck') || '0';
     let hasNewEvents = false;
 
@@ -297,17 +304,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Refresh button functionality
-    refreshBtn.addEventListener('click', () => {
-        fetchEvents();
-        refreshBtn.style.transform = 'rotate(360deg)';
-        setTimeout(() => {
-            refreshBtn.style.transform = 'rotate(0deg)';
-        }, 500);
-    });
+refreshBtn.addEventListener('click', () => {
+    soundManager.playSound('click');
+    fetchEvents();
+    refreshBtn.style.transform = 'rotate(360deg)';
+    setTimeout(() => {
+        refreshBtn.style.transform = 'rotate(0deg)';
+    }, 500);
+});
 
     // Initial load
     fetchEvents();
 
     // Auto refresh every 5 minutes
     setInterval(fetchEvents, 5 * 60 * 1000);
-}); 
+});

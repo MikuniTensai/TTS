@@ -47,8 +47,33 @@
 
     <!-- Scripts -->
     <script src="js/firebase-init.js"></script>
+    <script src="js/sound.js"></script>
     <script src="js/event.js"></script>
+    
+    <script>
+        // Add click sound to buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const backButton = document.querySelector('.back-button');
+            const refreshButton = document.querySelector('.refresh-button');
+            
+            if (backButton) {
+                backButton.addEventListener('click', () => {
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                });
+            }
+            
+            if (refreshButton) {
+                refreshButton.addEventListener('click', () => {
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                });
+            }
+        });
+    </script>
     
 
 </body>
-</html> 
+</html>

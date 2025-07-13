@@ -1,0 +1,318 @@
+/* Animation Effects CSS - Different animation effect packs */
+
+/* CSS Custom Properties for dynamic effects */
+:root {
+    --particle-color: #ffd700;
+    --animation-duration: 0.6s;
+    --bounce-intensity: 1.2;
+    --glow-color: #4a90e2;
+    --shadow-intensity: 0.3;
+}
+
+/* Classic Effects */
+.effect-classic {
+    --particle-color: #ffd700;
+    --animation-duration: 0.8s;
+    --bounce-intensity: 1.3;
+    --glow-color: #d4af37;
+}
+
+.effect-classic .grid-cell.revealed {
+    animation: classicReveal var(--animation-duration) ease-out;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.effect-classic .letter-tile {
+    transition: all 0.3s ease;
+}
+
+.effect-classic .letter-tile:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+@keyframes classicReveal {
+    0% {
+        transform: scale(0.5) rotate(-180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(var(--bounce-intensity)) rotate(-90deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+/* Neon Effects */
+.effect-neon {
+    --particle-color: #00ffff;
+    --animation-duration: 0.6s;
+    --bounce-intensity: 1.5;
+    --glow-color: #00ffff;
+}
+
+.effect-neon .grid-cell.revealed {
+    animation: neonReveal var(--animation-duration) ease-out;
+    box-shadow: 
+        0 0 5px var(--glow-color),
+        0 0 10px var(--glow-color),
+        0 0 15px var(--glow-color);
+    border: 2px solid var(--glow-color);
+}
+
+.effect-neon .letter-tile {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.effect-neon .letter-tile:hover {
+    transform: scale(1.2);
+    box-shadow: 
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 30px #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.effect-neon .found-word {
+    text-shadow: 0 0 10px var(--glow-color);
+    animation: neonPulse 2s ease-in-out infinite;
+}
+
+@keyframes neonReveal {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+        box-shadow: 0 0 0 var(--glow-color);
+    }
+    50% {
+        transform: scale(var(--bounce-intensity));
+        opacity: 0.9;
+        box-shadow: 
+            0 0 20px var(--glow-color),
+            0 0 40px var(--glow-color);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 
+            0 0 5px var(--glow-color),
+            0 0 10px var(--glow-color),
+            0 0 15px var(--glow-color);
+    }
+}
+
+@keyframes neonPulse {
+    0%, 100% {
+        text-shadow: 0 0 5px var(--glow-color);
+    }
+    50% {
+        text-shadow: 
+            0 0 10px var(--glow-color),
+            0 0 20px var(--glow-color);
+    }
+}
+
+/* Minimal Effects */
+.effect-minimal {
+    --particle-color: #666666;
+    --animation-duration: 0.4s;
+    --bounce-intensity: 1.1;
+    --glow-color: #888888;
+}
+
+.effect-minimal .grid-cell.revealed {
+    animation: minimalReveal var(--animation-duration) ease-out;
+    border: 1px solid #ddd;
+}
+
+.effect-minimal .letter-tile {
+    transition: all 0.2s ease;
+    border-radius: 2px;
+}
+
+.effect-minimal .letter-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes minimalReveal {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Explosive Effects */
+.effect-explosive {
+    --particle-color: #ff4444;
+    --animation-duration: 1.2s;
+    --bounce-intensity: 2.0;
+    --glow-color: #ff4444;
+}
+
+.effect-explosive .grid-cell.revealed {
+    animation: explosiveReveal var(--animation-duration) ease-out;
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+}
+
+.effect-explosive .letter-tile {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.effect-explosive .letter-tile:hover {
+    transform: scale(1.3) rotate(10deg);
+    box-shadow: 
+        0 10px 25px rgba(255, 68, 68, 0.4),
+        0 0 20px rgba(255, 68, 68, 0.6);
+}
+
+.effect-explosive .found-word {
+    animation: explosivePulse 1s ease-in-out;
+}
+
+@keyframes explosiveReveal {
+    0% {
+        transform: scale(0.1) rotate(-360deg);
+        opacity: 0;
+        box-shadow: 0 0 0 var(--glow-color);
+    }
+    25% {
+        transform: scale(1.8) rotate(-180deg);
+        opacity: 0.7;
+        box-shadow: 0 0 30px var(--glow-color);
+    }
+    50% {
+        transform: scale(0.8) rotate(-90deg);
+        opacity: 0.9;
+    }
+    75% {
+        transform: scale(var(--bounce-intensity)) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+    }
+}
+
+@keyframes explosivePulse {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.2);
+    }
+    50% {
+        transform: scale(0.9);
+    }
+    75% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Enhanced particle effects for different packs */
+.effect-classic .particle {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffd700;
+}
+
+.effect-neon .particle {
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 
+        0 0 4px #00ffff,
+        0 0 8px #00ffff;
+}
+
+.effect-minimal .particle {
+    background: #666666;
+    border-radius: 2px;
+}
+
+.effect-explosive .particle {
+    background: radial-gradient(circle, #ff4444, #ff6666);
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ff4444;
+}
+
+/* Success overlay enhancements for different effects */
+.effect-classic .success-overlay {
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1), rgba(0, 0, 0, 0.8));
+}
+
+.effect-neon .success-overlay {
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.1), rgba(0, 0, 0, 0.9));
+}
+
+.effect-minimal .success-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.effect-explosive .success-overlay {
+    background: radial-gradient(circle, rgba(255, 68, 68, 0.1), rgba(0, 0, 0, 0.8));
+}
+
+/* Button hover effects for different packs */
+.effect-classic button:hover {
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.effect-neon button:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    border: 1px solid #00ffff;
+}
+
+.effect-minimal button:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.effect-explosive button:hover {
+    box-shadow: 0 4px 20px rgba(255, 68, 68, 0.4);
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .effect-explosive .letter-tile:hover {
+        transform: scale(1.2) rotate(5deg);
+    }
+    
+    .effect-neon .letter-tile:hover {
+        transform: scale(1.1);
+    }
+    
+    .effect-classic .letter-tile:hover {
+        transform: scale(1.05) rotate(3deg);
+    }
+}
+
+/* Accessibility - Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .effect-classic .grid-cell.revealed,
+    .effect-neon .grid-cell.revealed,
+    .effect-minimal .grid-cell.revealed,
+    .effect-explosive .grid-cell.revealed {
+        animation: none;
+        transition: opacity 0.3s ease;
+    }
+    
+    .effect-classic .letter-tile:hover,
+    .effect-neon .letter-tile:hover,
+    .effect-minimal .letter-tile:hover,
+    .effect-explosive .letter-tile:hover {
+        transform: none;
+    }
+}

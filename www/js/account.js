@@ -77,18 +77,18 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeAccount();
 
     // Event Listeners
-    editNicknameBtn.addEventListener('click', editNickname);
-    editWhatsappBtn.addEventListener('click', editWhatsapp);
-    exportBtn.addEventListener('click', exportData);
-    importBtn.addEventListener('click', () => openModal('import-modal'));
-    downloadBackupBtn.addEventListener('click', downloadBackup);
-    validateDataBtn.addEventListener('click', validateData);
-    resetProgressBtn.addEventListener('click', resetProgress);
-    deleteAccountBtn.addEventListener('click', deleteAccount);
-    findDuplicatesBtn.addEventListener('click', findDuplicateUsers);
-    cleanupInactiveBtn.addEventListener('click', cleanupInactiveUsers);
-    copyExportCodeBtn.addEventListener('click', copyExportCode);
-    importExecuteBtn.addEventListener('click', executeImport);
+    editNicknameBtn.addEventListener('click', () => { soundManager.playSound('click'); editNickname(); });
+    editWhatsappBtn.addEventListener('click', () => { soundManager.playSound('click'); editWhatsapp(); });
+    exportBtn.addEventListener('click', () => { soundManager.playSound('click'); exportData(); });
+    importBtn.addEventListener('click', () => { soundManager.playSound('click'); openModal('import-modal'); });
+    downloadBackupBtn.addEventListener('click', () => { soundManager.playSound('click'); downloadBackup(); });
+    validateDataBtn.addEventListener('click', () => { soundManager.playSound('click'); validateData(); });
+    resetProgressBtn.addEventListener('click', () => { soundManager.playSound('click'); resetProgress(); });
+    deleteAccountBtn.addEventListener('click', () => { soundManager.playSound('click'); deleteAccount(); });
+    findDuplicatesBtn.addEventListener('click', () => { soundManager.playSound('click'); findDuplicateUsers(); });
+    cleanupInactiveBtn.addEventListener('click', () => { soundManager.playSound('click'); cleanupInactiveUsers(); });
+    copyExportCodeBtn.addEventListener('click', () => { soundManager.playSound('click'); copyExportCode(); });
+    importExecuteBtn.addEventListener('click', () => { soundManager.playSound('click'); executeImport(); });
 
     // Edit WhatsApp number
     async function editWhatsapp() {
@@ -670,4 +670,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make functions available globally for modal close buttons
     window.openModal = openModal;
     window.closeModal = closeModal;
-}); 
+});

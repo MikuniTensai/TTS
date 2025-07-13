@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tab switching functionality
     categoryTabs.forEach(tab => {
         tab.addEventListener('click', () => {
+            soundManager.playSound('click');
             const category = tab.dataset.category;
             if (category !== currentCategory) {
                 // Update active tab
@@ -297,4 +298,4 @@ document.addEventListener('DOMContentLoaded', () => {
             userNicknameSpan.textContent = 'Tidak Masuk';
         }
     });
-}); 
+});

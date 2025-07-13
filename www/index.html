@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/themes.css">
     <title>TTS Game</title>
     <style>
         body {
@@ -99,8 +100,45 @@
     <script src="js/firebase-init.js"></script>
 
     <script src="cordova.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/theme-manager.js"></script>
     <script src="js/index.js"></script>
-
+    
+    <script>
+        // Add click sound to menu buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, setting up sound for menu buttons');
+            
+            const menuButtons = document.querySelectorAll('.menu-button');
+            console.log('Found menu buttons:', menuButtons.length);
+            
+            menuButtons.forEach((button, index) => {
+                button.addEventListener('click', (e) => {
+                    console.log(`Button ${index} clicked:`, button.textContent.trim());
+                    
+                    if (window.soundManager) {
+                        console.log('SoundManager available, playing click sound');
+                        window.soundManager.playSound('click');
+                    } else {
+                        console.error('SoundManager not available!');
+                    }
+                });
+            });
+            
+            // Test sound manager availability
+            setTimeout(() => {
+                if (window.soundManager) {
+                    console.log('SoundManager status:', {
+                        enabled: window.soundManager.soundEnabled,
+                        unlocked: window.soundManager.isUnlocked,
+                        sounds: Object.keys(window.soundManager.sounds)
+                    });
+                } else {
+                    console.error('SoundManager not initialized after 1 second');
+                }
+            }, 1000);
+        });
+    </script>
 
 </body>
 </html>

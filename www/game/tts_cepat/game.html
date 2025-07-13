@@ -43,6 +43,8 @@
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover, user-scalable=no">
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../../css/themes.css">
+        <link rel="stylesheet" href="../../css/animation-effects.css">
         <link rel="manifest" href="manifest.json">
         <meta name="theme-color" content="#4a90e2">
         <title>TTS Game</title>
@@ -75,7 +77,7 @@
                             <option value="default">Default</option>
                             <option value="dark">Dark Mode</option>
                             <option value="colorful">Colorful</option>
-                            <option value="ocean">Ocean</option>
+                            <option value="minimalist">Minimalist</option>
                         </select>
                     </div>
                     <div class="setting-item">
@@ -91,6 +93,18 @@
                         <label>
                             <input type="checkbox" id="sound-toggle"> Suara
                         </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Sound Pack:</label>
+                        <select id="sound-pack-select">
+                            <option value="default">Default</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Animation Effects:</label>
+                        <select id="animation-effects-select">
+                            <option value="default">Default</option>
+                        </select>
                     </div>
                     <div class="setting-item">
                         <label>
@@ -155,6 +169,9 @@
         <script defer src="../../js/firebase-init.js"></script>
         <script defer src="kbbi.js"></script>
         <script defer src="themes.js"></script>
+        <script defer src="../../js/theme-manager.js"></script>
+        <script defer src="../../js/sound-pack-manager.js"></script>
+        <script defer src="../../js/animation-effects-manager.js"></script>
         <script defer src="sound.js"></script>
         <script defer src="animations.js"></script>
 

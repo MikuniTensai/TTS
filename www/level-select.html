@@ -139,6 +139,7 @@
         </div>
     </div>
 
+    <script src="js/sound.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const levelsGrid = document.getElementById('levels-grid');
@@ -147,6 +148,16 @@
             // Get completed levels from localStorage
             const completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
             const maxUnlockedLevel = Math.max(1, ...completedLevels) + 1;
+            
+            // Add click sound to back button
+            const backButton = document.querySelector('.back-button');
+            if (backButton) {
+                backButton.addEventListener('click', () => {
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                });
+            }
             
             for (let i = 1; i <= maxLevels; i++) {
                 const levelButton = document.createElement('div');
@@ -159,11 +170,17 @@
                     levelButton.classList.add('completed');
                     levelButton.innerHTML = `${i}<span class="check-icon">✓</span>`;
                     levelButton.addEventListener('click', () => {
+                        if (window.soundManager) {
+                            window.soundManager.playSound('click');
+                        }
                         window.location.href = `game/tts_cepat/index.html?level=${i}`;
                     });
                 } else if (isUnlocked) {
                     levelButton.textContent = `${i}`;
                     levelButton.addEventListener('click', () => {
+                        if (window.soundManager) {
+                            window.soundManager.playSound('click');
+                        }
                         window.location.href = `game/tts_cepat/index.html?level=${i}`;
                     });
                 } else {
@@ -176,4 +193,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
