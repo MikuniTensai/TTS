@@ -59,11 +59,11 @@
                 <button class="back-button">&larr;</button>
                 <h2>Level <span id="level-number">1</span></h2>
                 <div class="top-bar-buttons">
-                    <button class="inventory-button" onclick="toggleInventoryPopup()">
+                    <button class="inventory-button" onclick="window.soundManager && window.soundManager.playSound('click'); toggleInventoryPopup()">
                         📦
                         <span id="inventory-badge" class="badge hidden"></span>
                     </button>
-                    <button class="settings-button" onclick="toggleSettings()">⚙️</button>
+                    <button class="settings-button" onclick="window.soundManager && window.soundManager.playSound('click'); toggleSettings()">⚙️</button>
                 </div>
             </div>
             
@@ -121,7 +121,7 @@
                             <input type="checkbox" id="auto-submit-toggle"> Auto Submit
                         </label>
                     </div>
-                    <button onclick="toggleSettings()" class="close-settings">Tutup</button>
+                    <button onclick="window.soundManager && window.soundManager.playSound('click'); toggleSettings()" class="close-settings">Tutup</button>
                 </div>
             </div>
 
@@ -152,7 +152,7 @@
             <div class="popup-content">
                 <div class="popup-header">
                     <h3>Inventory Anda</h3>
-                    <button class="close-popup" onclick="toggleInventoryPopup()">&times;</button>
+                    <button class="close-popup" onclick="window.soundManager && window.soundManager.playSound('click'); toggleInventoryPopup()">&times;</button>
                 </div>
                 <div id="popup-inventory-items" class="popup-body">
                     <!-- Items will be populated by JavaScript -->

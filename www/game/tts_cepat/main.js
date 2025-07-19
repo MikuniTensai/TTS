@@ -17,17 +17,844 @@
  * under the License.
  */
 
+// Global variables that need to be accessible by functions outside DOMContentLoaded
+let shuffleCount = 2;
+let hintCount = 1;
+let inventory = { shuffle: 0, hint: 0 }; // Player inventory
+
+// Ad tracking per level
+let levelAdUsage = {
+    shuffleAdsUsed: 0, // Max 1 per level
+    hintAdsUsed: 0     // Max 2 per level
+};
+let currentInput = []; // { letter: 'A', tileIndex: 0 }
+let foundWords = [];
+let currentLevelId = 1;
+let currentScore = 0;
+let bonusWords = [];
+let isLevelAlreadyCompleted = false; // Track if level was already completed
+let levelData = null;
+
+// Global DOM element references
+let letterBankContainer;
+let gridContainer;
+let currentWordContainer;
+let foundWordsContainer;
+let levelNumberElement;
+let shuffleButton;
+let clearButton;
+let hintButton;
+let backButton;
+let scoreDisplay;
+
+// Global managers
+let themeManager;
+let settingsManager;
+let animationManager;
+
+// Global utility functions
+function normalizeLevel(levelId) {
+    const parsed = parseInt(levelId, 10);
+    const minLevel = window.TTS_CONFIG?.MIN_LEVEL_ID || 1;
+    if (isNaN(parsed) || parsed < minLevel) {
+        console.warn(`Invalid level ID: ${levelId}, defaulting to ${minLevel}`);
+        return minLevel;
+    }
+    return parsed;
+}
+
+// saveCompletedLevel function is now defined globally above
+
+async function updateGlobalLeaderboard() {
+    try {
+        console.log("=== Starting leaderboard update ===");
+        
+        // Get current scores and levels from localStorage with validation
+        let scores = {};
+        let completedLevels = [];
+        
+        try {
+            const scoresData = localStorage.getItem('tts-scores');
+            const levelsData = localStorage.getItem('tts-completed-levels');
+            
+            if (scoresData) {
+                const parsedScores = JSON.parse(scoresData);
+                if (typeof parsedScores === 'object' && parsedScores !== null) {
+                    scores = parsedScores;
+                } else {
+                    console.warn('Scores data is not a valid object, using empty object');
+                }
+            }
+            
+            if (levelsData) {
+                const parsedLevels = JSON.parse(levelsData);
+                if (Array.isArray(parsedLevels)) {
+                    completedLevels = parsedLevels;
+                } else {
+                    console.warn('Completed levels data is not an array, using empty array');
+                }
+            }
+        } catch (parseError) {
+            console.error('Error parsing localStorage data:', parseError);
+            // Continue with empty data rather than failing completely
+        }
+        
+        console.log("Local scores:", scores);
+        console.log("Completed levels:", completedLevels);
+        
+        // Debug: Check individual score values with normalization
+        console.log("=== Score Details ===");
+        Object.entries(scores).forEach(([levelId, score]) => {
+            const normalizedLevel = normalizeLevel(levelId);
+            console.log(`Level ${levelId} -> ${normalizedLevel}: ${score} (type: ${typeof score})`);
+        });
+        
+        // Calculate totals with validation and normalization
+        let totalScore = 0;
+        Object.entries(scores).forEach(([levelId, score]) => {
+            const normalizedLevel = normalizeLevel(levelId);
+            const numScore = Number(score);
+            console.log(`Processing level ${normalizedLevel}, score: ${score} -> ${numScore} (valid: ${!isNaN(numScore) && numScore >= 0})`);
+            if (!isNaN(numScore) && numScore >= 0) {
+                totalScore += numScore;
+            }
+        });
+        
+        // Find highest completed level with validation
+        let highestLevel = 0;
+        if (completedLevels.length > 0) {
+            const validLevels = completedLevels
+                .map(level => normalizeLevel(level))
+                .filter(level => level > 0);
+            
+            if (validLevels.length > 0) {
+                highestLevel = Math.max(...validLevels);
+            }
+        }
+        
+        console.log("=== Final Calculations ===");
+        console.log("Total score calculated:", totalScore);
+        console.log("Highest level completed:", highestLevel);
+        
+        // Validate final data
+        if (totalScore < 0 || highestLevel < 0) {
+            throw new Error(`Invalid data: score=${totalScore}, level=${highestLevel}`);
+        }
+        
+        // Additional check: ensure we have meaningful data
+        if (totalScore === 0 && highestLevel === 0 && Object.keys(scores).length > 0) {
+            console.warn("⚠️ Warning: Data exists but calculated values are 0");
+            console.warn("Scores object:", scores);
+            console.warn("Completed levels:", completedLevels);
+        }
+        
+        // Submit to Firebase using the helper function from firebase-init.js
+        // Wait for Firebase to be available with timeout
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        while (typeof window.submitScoreToLeaderboard !== 'function' && attempts < maxAttempts) {
+            console.log(`Waiting for Firebase to load... (attempt ${attempts + 1}/${maxAttempts})`);
+            await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+            attempts++;
+        }
+        
+        if (typeof window.submitScoreToLeaderboard !== 'function') {
+            throw new Error('Firebase submission function not available after waiting');
+        }
+        
+        console.log("Submitting to Firebase...");
+        await window.submitScoreToLeaderboard(totalScore, highestLevel);
+        
+        console.log("✅ Leaderboard update successful!");
+        return true;
+        
+    } catch (error) {
+        console.error("❌ Leaderboard update failed:", error);
+        console.error("Error type:", error.constructor.name);
+        console.error("Error message:", error.message);
+        
+        // Store failed submission for retry with error handling
+        try {
+            const failedSubmissions = JSON.parse(localStorage.getItem('tts-failed-submissions') || '[]');
+            failedSubmissions.push({
+                timestamp: Date.now(),
+                scores: localStorage.getItem('tts-scores'),
+                completedLevels: localStorage.getItem('tts-completed-levels'),
+                error: error.message
+            });
+            localStorage.setItem('tts-failed-submissions', JSON.stringify(failedSubmissions));
+            console.log('Stored failed submission for retry');
+        } catch (storageError) {
+            console.error('Error storing failed submission:', storageError);
+        }
+        
+        return false;
+    }
+}
+
+// Global functions that need to be accessible outside DOMContentLoaded
+function renderLetterBank() {
+    letterBankContainer.innerHTML = '';
+    const letters = [...levelData.random_letters];
+    
+    // Calculate optimal tile size based on screen width and number of letters
+    calculateTileSize(letters.length);
+    
+    // Enhanced Fisher-Yates shuffle with multiple passes for better randomization
+    for (let pass = 0; pass < 3; pass++) {
+        for (let i = letters.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [letters[i], letters[j]] = [letters[j], letters[i]];
+        }
+    }
+
+    letters.forEach((letter, index) => {
+        const tile = document.createElement('div');
+        tile.classList.add('letter-tile');
+        tile.textContent = letter;
+        tile.dataset.tileIndex = index;
+        tile.addEventListener('click', () => handleLetterClick(letter, tile));
+        letterBankContainer.appendChild(tile);
+    });
+}
+
+function calculateTileSize(letterCount) {
+    const bankContainer = letterBankContainer;
+    const availableWidth = window.innerWidth - 70; // Account for margins and padding (35px * 2)
+    const minGap = 1;
+    const maxGap = 2;
+    const minTileSize = 16;
+    const maxTileSize = 30;
+    
+    // Calculate optimal tile size with more conservative approach
+    let tileSize = Math.floor((availableWidth - (letterCount - 1) * minGap) / letterCount);
+    
+    // Apply scaling based on letter count to prevent oversizing
+    if (letterCount <= 4) {
+        tileSize = Math.min(tileSize, 30); // Max 30px for few letters
+    } else if (letterCount <= 6) {
+        tileSize = Math.min(tileSize, 25); // Max 25px for medium count
+    } else if (letterCount <= 8) {
+        tileSize = Math.min(tileSize, 22); // Max 22px for more letters
+    } else {
+        tileSize = Math.min(tileSize, 20); // Max 20px for many letters
+    }
+    
+    // Ensure tile size is within bounds
+    tileSize = Math.max(minTileSize, Math.min(maxTileSize, tileSize));
+    
+    // Calculate gap based on remaining space, more conservative
+    const totalTileWidth = tileSize * letterCount;
+    const remainingSpace = availableWidth - totalTileWidth;
+    let gap = letterCount > 1 ? remainingSpace / (letterCount - 1) : 0;
+    gap = Math.max(minGap, Math.min(maxGap, gap));
+    
+    // Double check total width doesn't exceed available space
+    const totalWidth = (tileSize * letterCount) + (gap * (letterCount - 1));
+    if (totalWidth > availableWidth) {
+        // Reduce tile size if still too wide
+        tileSize = Math.floor((availableWidth - (letterCount - 1) * minGap) / letterCount);
+        gap = minGap;
+    }
+    
+    // Calculate input box size based on tile size and letter count
+    calculateInputSize(tileSize, letterCount);
+    
+    // Update CSS custom properties
+    document.documentElement.style.setProperty('--tile-size', `${tileSize}px`);
+    document.documentElement.style.setProperty('--tile-gap', `${gap}px`);
+    
+    // Update letter bank gap
+    if (bankContainer) {
+        bankContainer.style.gap = `${gap}px`;
+    }
+}
+
+function calculateInputSize(tileSize, letterCount) {
+    // Base input height should be proportional to tile size but smaller
+    const inputHeight = Math.max(25, Math.min(40, tileSize * 0.8));
+    
+    // Font size should be proportional to both tile size and available space
+    const baseFontSize = Math.max(12, Math.min(18, tileSize * 0.35));
+    
+    // Adjust font size based on letter count for better fit
+    let fontSize = baseFontSize;
+    if (letterCount > 8) {
+        fontSize = baseFontSize * 0.9;
+    }
+    if (letterCount > 12) {
+        fontSize = baseFontSize * 0.8;
+    }
+    
+    // Update CSS custom properties
+    document.documentElement.style.setProperty('--input-height', `${inputHeight}px`);
+    document.documentElement.style.setProperty('--input-font-size', `${fontSize}px`);
+}
+
+function updateActionButtonsUI() {
+    const shuffleBtn = document.getElementById('shuffle-button');
+    const hintBtn = document.getElementById('hint-button');
+
+    // Update Shuffle Button
+    if (shuffleCount <= 0) {
+        // Show ad icon if no shuffles left and ads available
+        if (levelAdUsage.shuffleAdsUsed < 1 && window.AdMobManager && window.AdMobManager.isInitialized()) {
+            shuffleBtn.innerHTML = '📺 Acak';
+            shuffleBtn.disabled = false; // Always enable like menu buttons
+            shuffleBtn.classList.remove('disabled');
+        } else {
+            shuffleBtn.textContent = `Acak (0)`;
+            shuffleBtn.disabled = true;
+            shuffleBtn.classList.add('disabled');
+        }
+    } else {
+        shuffleBtn.textContent = `Acak (${shuffleCount})`;
+        shuffleBtn.disabled = false;
+        shuffleBtn.classList.remove('disabled');
+    }
+
+    // Update Hint Button
+    if (hintCount <= 0) {
+        // Show ad icon if no hints left and ads available
+        if (levelAdUsage.hintAdsUsed < 2 && window.AdMobManager && window.AdMobManager.isInitialized()) {
+            hintBtn.innerHTML = '📺 Hint';
+            hintBtn.disabled = false; // Always enable like menu buttons
+            hintBtn.classList.remove('disabled');
+        } else {
+            hintBtn.textContent = `Hint (0)`;
+            hintBtn.disabled = true;
+            hintBtn.classList.add('disabled');
+        }
+    } else {
+        hintBtn.textContent = `Hint (${hintCount})`;
+        hintBtn.disabled = false;
+        hintBtn.classList.remove('disabled');
+    }
+}
+
+function handleLetterClick(letter, tile) {
+    if (tile.classList.contains('used')) return;
+
+    animationManager.bounceElement(tile);
+    soundManager.playSound('click');
+
+    tile.classList.add('used');
+    currentInput.push({ letter, tile });
+    updateCurrentWordUI();
+
+    // Automatic submission check if enabled
+    if (settingsManager.getSetting('autoSubmit')) {
+    const word = currentInput.map(item => item.letter).join('');
+    const isCorrect = levelData.words.includes(word) && !foundWords.includes(word);
+    
+    if (isCorrect) {
+        // Check if it's a prefix for any other valid (and not yet found) words
+        const isPrefix = levelData.words.some(w => w.length > word.length && w.startsWith(word) && !foundWords.includes(w));
+        
+        if (!isPrefix) {
+            setTimeout(() => handleSubmit(), 200);
+            }
+        } else {
+            // Check for KBBI bonus words
+            checkKBBIBonus(word);
+        }
+    }
+}
+
+function updateCurrentWordUI() {
+    currentWordContainer.textContent = currentInput.map(item => item.letter).join('');
+}
+
+// Cache DOM elements to improve performance
+let cachedUsedTiles = null;
+let lastUsedTilesUpdate = 0;
+const CACHE_DURATION = window.TTS_CONFIG?.DOM_CACHE_DURATION || 1000; // Cache duration from config
+
+function clearInput() {
+    try {
+        currentInput = [];
+        updateCurrentWordUI();
+        
+        // Use cached tiles if available and recent
+        const now = Date.now();
+        if (cachedUsedTiles && (now - lastUsedTilesUpdate) < CACHE_DURATION) {
+            cachedUsedTiles.forEach(tile => {
+                if (tile && tile.classList) {
+                    tile.classList.remove('used');
+                }
+            });
+        } else {
+            // Refresh cache
+            const usedTiles = document.querySelectorAll('.letter-tile.used');
+            cachedUsedTiles = Array.from(usedTiles);
+            lastUsedTilesUpdate = now;
+            
+            cachedUsedTiles.forEach(tile => {
+                if (tile && tile.classList) {
+                    tile.classList.remove('used');
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error in clearInput:', error);
+        // Fallback to simple clear
+        currentInput = [];
+        if (typeof updateCurrentWordUI === 'function') {
+            updateCurrentWordUI();
+        }
+    }
+}
+
+// Input validation and sanitization
+function validateAndSanitizeInput(input) {
+    if (!input || !Array.isArray(input)) {
+        console.warn('Invalid input provided to validateAndSanitizeInput');
+        return '';
+    }
+    
+    const word = input.map(item => {
+        if (!item || typeof item.letter !== 'string') {
+            console.warn('Invalid letter item:', item);
+            return '';
+        }
+        return item.letter.toUpperCase().trim();
+    }).join('');
+    
+    // Sanitize: only allow alphabetic characters
+    return word.replace(/[^A-Z]/g, '');
+}
+
+function handleSubmit() {
+    try {
+        const word = validateAndSanitizeInput(currentInput);
+        if (word.length === 0) return;
+
+        // Validate levelData exists
+        if (!levelData || !Array.isArray(levelData.words)) {
+            console.error('Level data is invalid or missing');
+            return;
+        }
+
+        if (levelData.words.includes(word) && !foundWords.includes(word)) {
+        foundWords.push(word);
+        
+        // Only add score if level wasn't already completed
+        if (!isLevelAlreadyCompleted) {
+            currentScore += word.length; // Score based on word length
+        }
+        
+        // Animate word reveal
+        const wordCoords = getWordCoordinates(word);
+        if (wordCoords.length > 0) {
+            // Convert coordinates to DOM elements
+            const wordCells = wordCoords.map(coord => {
+                return gridContainer.querySelector(`[data-row='${coord.r}'][data-col='${coord.c}']`);
+            }).filter(cell => cell !== null); // Filter out any null elements
+            
+            if (wordCells.length > 0) {
+                animationManager.revealWord(wordCells, word);
+            }
+        }
+        
+        revealWordInGrid(word);
+        updateFoundWordsUI();
+        updateScoreDisplay();
+        checkWinCondition();
+        clearInput();
+        
+            soundManager.playSound('success');
+        } else {
+            // Check for KBBI bonus
+            checkKBBIBonus(word);
+            
+            // Wrong word animation
+            if (animationManager && typeof animationManager.shakeElement === 'function') {
+                animationManager.shakeElement(currentWordContainer);
+            }
+            if (soundManager && typeof soundManager.playSound === 'function') {
+                soundManager.playSound('error');
+            }
+            // Add some feedback for wrong word
+            if (currentWordContainer) {
+                currentWordContainer.classList.add('shake');
+                setTimeout(() => {
+                    if (currentWordContainer) {
+                        currentWordContainer.classList.remove('shake');
+                    }
+                }, 500);
+            }
+            clearInput();
+        }
+    } catch (error) {
+        console.error('Error in handleSubmit:', error);
+        clearInput(); // Ensure UI is reset even on error
+    }
+}
+
+function getWordCoordinates(word) {
+    const wordChars = word.split('');
+    const coords = [];
+
+    // Find horizontal match
+    for(let r = 0; r < levelData.grid.length; r++) {
+        for (let c = 0; c <= levelData.grid[r].length - word.length; c++) {
+            let match = true;
+            for(let i = 0; i < word.length; i++) { if (levelData.grid[r][c+i] !== wordChars[i]) { match = false; break; } }
+            const isExactWord = (c === 0 || levelData.grid[r][c-1] === '1') && (c + word.length === levelData.grid[r].length || levelData.grid[r][c+word.length] === '1');
+            if (match && isExactWord) {
+                for(let i = 0; i < word.length; i++) { coords.push({ r, c: c + i }); }
+                return coords;
+            }
+        }
+    }
+
+    // Find vertical match
+    for(let c = 0; c < levelData.grid[0].length; c++) {
+        for (let r = 0; r <= levelData.grid.length - word.length; r++) {
+            let match = true;
+            for(let i = 0; i < word.length; i++) { if (levelData.grid[r+i][c] !== wordChars[i]) { match = false; break; } }
+            const isExactWord = (r === 0 || levelData.grid[r-1][c] === '1') && (r + word.length === levelData.grid.length || levelData.grid[r+word.length][c] === '1');
+            if (match && isExactWord) {
+                for(let i = 0; i < word.length; i++) { coords.push({ r: r + i, c }); }
+                return coords;
+            }
+        }
+    }
+    return [];
+}
+
+function revealWordInGrid(word) {
+    const coords = getWordCoordinates(word);
+    coords.forEach(coord => {
+        const cell = gridContainer.querySelector(`[data-row='${coord.r}'][data-col='${coord.c}']`);
+        if(cell) {
+            cell.textContent = levelData.grid[coord.r][coord.c];
+            cell.classList.add('revealed');
+        }
+    });
+}
+
+function updateFoundWordsUI() {
+    foundWordsContainer.innerHTML = '';
+    foundWords.forEach(word => {
+        const wordSpan = document.createElement('span');
+        wordSpan.textContent = word;
+        foundWordsContainer.appendChild(wordSpan);
+    });
+}
+
+function checkWinCondition() {
+    if (foundWords.length === levelData.words.length) {
+        // Only save score if this is the first time completing the level
+        if (!isLevelAlreadyCompleted) {
+        saveCompletedLevel(currentLevelId);
+            saveScore(currentLevelId, currentScore);
+            
+            // --- UI UPDATE ---
+            // Don't wait for the submission. Run it in the background.
+            // This makes the UI feel instant for the user.
+            updateGlobalLeaderboard().catch(err => {
+                console.error("Background submission failed:", err);
+                // The retry mechanism will handle this later.
+            });
+        }
+        
+        // Show interstitial ad before level complete animation
+        if (window.AdMobManager && window.AdMobManager.isInitialized() && window.AdMobManager.isInterstitialReady()) {
+            console.log('Showing interstitial ad after level completion');
+            window.AdMobManager.showInterstitialAd();
+            
+            // Delay level complete animation to allow ad to show
+            setTimeout(() => {
+                animationManager.levelComplete();
+            }, 1000);
+        } else {
+            // No ad available, proceed normally
+            animationManager.levelComplete();
+        }
+        
+        // The level complete overlay in animations.js already handles navigation
+        // No need for additional confirm dialog
+    }
+}
+
+function updateScoreDisplay() {
+    if (scoreDisplay) {
+        if (isLevelAlreadyCompleted) {
+            scoreDisplay.textContent = `Skor Total: ${currentScore} (Level sudah selesai)`;
+            scoreDisplay.style.color = '#888'; // Gray out the score
+        } else {
+            scoreDisplay.textContent = `Skor Total: ${currentScore}`;
+            scoreDisplay.style.color = ''; // Reset to default color
+        }
+    }
+}
+
+function saveScore(levelId, score) {
+    try {
+        console.log(`=== Saving Score ===`);
+        console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
+        console.log(`Score: ${score} (type: ${typeof score})`);
+        
+        // Normalize and validate inputs
+        const normalizedLevel = normalizeLevel(levelId);
+        const numScore = Number(score);
+        
+        const maxScore = window.TTS_CONFIG?.MAX_SCORE_VALUE || 999999;
+        if (isNaN(numScore) || numScore < 0 || numScore > maxScore) {
+            console.error(`Invalid score: ${score} (must be between 0 and ${maxScore})`);
+            return;
+        }
+        
+        console.log(`Normalized Level: ${normalizedLevel}, Score: ${numScore}`);
+        
+        // Get and validate existing scores
+        let scores = {};
+        try {
+            const scoresData = localStorage.getItem('tts-scores');
+            if (scoresData) {
+                const parsedScores = JSON.parse(scoresData);
+                if (typeof parsedScores === 'object' && parsedScores !== null) {
+                    scores = parsedScores;
+                } else {
+                    console.warn('Existing scores data is not valid, using empty object');
+                }
+            }
+        } catch (parseError) {
+            console.error('Error parsing existing scores:', parseError);
+            scores = {};
+        }
+        
+        console.log("Current scores before save:", scores);
+        
+        // Use normalized level as string key for consistent storage
+        const levelKey = String(normalizedLevel);
+        
+        if (!scores[levelKey] || scores[levelKey] < numScore) {
+            scores[levelKey] = numScore;
+            try {
+                localStorage.setItem('tts-scores', JSON.stringify(scores));
+                console.log(`✅ Score saved successfully for level ${levelKey}: ${numScore}`);
+                console.log("Updated scores:", scores);
+            } catch (storageError) {
+                console.error('Error saving scores to localStorage:', storageError);
+            }
+        } else {
+            console.log(`Score not saved - existing score ${scores[levelKey]} is higher than or equal to ${numScore}`);
+        }
+    } catch (error) {
+        console.error('Error in saveScore:', error);
+    }
+}
+
+function loadScore(levelId) {
+    try {
+        // Normalize level ID for consistent lookup
+        const normalizedLevel = normalizeLevel(levelId);
+        const levelKey = String(normalizedLevel);
+        
+        // Get and validate scores data
+        let scores = {};
+        try {
+            const scoresData = localStorage.getItem('tts-scores');
+            if (scoresData) {
+                const parsedScores = JSON.parse(scoresData);
+                if (typeof parsedScores === 'object' && parsedScores !== null) {
+                    scores = parsedScores;
+                }
+            }
+        } catch (parseError) {
+            console.error('Error parsing scores in loadScore:', parseError);
+        }
+        
+        const score = scores[levelKey] || 0;
+        console.log(`Loading score for level ${normalizedLevel}: ${score}`);
+        return score;
+    } catch (error) {
+        console.error('Error in loadScore:', error);
+        return 0;
+    }
+}
+
+function calculateTotalScore() {
+    try {
+        // Get and validate scores data
+        let scores = {};
+        try {
+            const scoresData = localStorage.getItem('tts-scores');
+            if (scoresData) {
+                const parsedScores = JSON.parse(scoresData);
+                if (typeof parsedScores === 'object' && parsedScores !== null) {
+                    scores = parsedScores;
+                } else {
+                    console.warn('Scores data is not a valid object in calculateTotalScore');
+                }
+            }
+        } catch (parseError) {
+            console.error('Error parsing scores in calculateTotalScore:', parseError);
+        }
+        
+        let total = 0;
+        Object.entries(scores).forEach(([levelId, score]) => {
+            const normalizedLevel = normalizeLevel(levelId);
+            const numScore = Number(score);
+            if (!isNaN(numScore) && numScore >= 0) {
+                total += numScore;
+                console.log(`Adding to total - Level ${normalizedLevel}: ${numScore}`);
+            } else {
+                console.warn(`Invalid score for level ${levelId}: ${score}`);
+            }
+        });
+        
+        console.log(`Total calculated score: ${total}`);
+        return total;
+    } catch (error) {
+        console.error('Error in calculateTotalScore:', error);
+        return 0;
+    }
+}
+
+function checkKBBIBonus(word) {
+    const minWordLength = window.TTS_CONFIG?.MIN_WORD_LENGTH || 3;
+    if (word.length < minWordLength) {
+        console.log(`Word too short for KBBI check (minimum: ${minWordLength})`);
+        return;
+    }
+
+    console.log("=== KBBI Check ===");
+    console.log("Checking word:", word);
+    console.log("KBBI Database exists?", typeof window.KBBI_DATABASE_SET !== 'undefined');
+    
+    // Check if word exists in KBBI database
+    if (window.KBBI_DATABASE_SET && window.KBBI_DATABASE_SET.has(word)) {
+        console.log("✅ Word found in KBBI!");
+        
+        // Don't add duplicate bonus words
+        if (bonusWords.includes(word)) {
+            console.log("❌ Already found this bonus word");
+            return;
+        }
+        
+        bonusWords.push(word);
+        
+        // Only add score if level wasn't already completed
+        if (!isLevelAlreadyCompleted) {
+            currentScore += 1; // Bonus point
+        }
+        
+        const bonusSpan = document.createElement('span');
+        bonusSpan.textContent = word;
+        bonusSpan.classList.add('bonus-word');
+        foundWordsContainer.appendChild(bonusSpan);
+        
+        updateScoreDisplay();
+        animationManager.createParticleEffect(bonusSpan, '#ff6b6b');
+        soundManager.playSound('bonus');
+        
+        if (isLevelAlreadyCompleted) {
+            showBonusMessage(word, true); // Pass true to indicate no points awarded
+        } else {
+            showBonusMessage(word, false);
+        }
+    } else {
+        console.log("❌ Not a bonus word");
+    }
+    console.log("=== End KBBI Check ===");
+}
+
+function showBonusMessage(word, noPoints = false) {
+    const message = document.createElement('div');
+    if (noPoints) {
+        message.textContent = `Bonus! "${word}" ditemukan di KBBI (no poin - level sudah selesai)`;
+    } else {
+        message.textContent = `Bonus! "${word}" ditemukan di KBBI (+1 poin)`;
+    }
+    message.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        z-index: 1500;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    `;
+    
+    document.body.appendChild(message);
+    
+    message.animate([
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
+    ], { duration: 300, easing: 'ease-out' });
+    
+    const bonusMessageDuration = (window.TTS_CONFIG?.NOTIFICATION_DURATION || 3000) - 1000; // Slightly shorter than notifications
+    setTimeout(() => {
+        message.animate([
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' }
+        ], { duration: 300 }).onfinish = () => {
+            message.remove();
+        };
+    }, bonusMessageDuration);
+}
+
+function saveCompletedLevel(levelId) {
+    try {
+        console.log(`=== Saving Completed Level ===`);
+        console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
+        
+        // Normalize level ID to ensure consistency
+        const numLevelId = normalizeLevel(levelId);
+        console.log(`Normalized Level ID: ${numLevelId}`);
+        
+        // Validate and parse localStorage data
+        let completedLevels;
+        try {
+            completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
+            if (!Array.isArray(completedLevels)) {
+                console.warn('Completed levels data is not an array, resetting to empty array');
+                completedLevels = [];
+            }
+        } catch (parseError) {
+            console.error('Error parsing completed levels from localStorage:', parseError);
+            completedLevels = [];
+        }
+        
+        console.log("Current completed levels before save:", completedLevels);
+        
+        if (!completedLevels.includes(numLevelId)) {
+            completedLevels.push(numLevelId);
+            try {
+                localStorage.setItem('tts-completed-levels', JSON.stringify(completedLevels));
+                console.log(`✅ Level ${numLevelId} saved as completed`);
+                console.log("Updated completed levels:", completedLevels);
+            } catch (storageError) {
+                console.error('Error saving to localStorage:', storageError);
+            }
+        } else {
+            console.log(`Level ${numLevelId} already marked as completed`);
+        }
+    } catch (error) {
+        console.error('Error in saveCompletedLevel:', error);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    const gridContainer = document.getElementById('grid-container');
-    const letterBankContainer = document.getElementById('letter-bank');
-    const currentWordContainer = document.getElementById('current-word');
-    const foundWordsContainer = document.getElementById('found-words');
-    const levelNumberElement = document.getElementById('level-number');
-    const shuffleButton = document.getElementById('shuffle-button');
-    const clearButton = document.getElementById('clear-button');
-    const hintButton = document.getElementById('hint-button');
-    const backButton = document.querySelector('.back-button');
-    const scoreDisplay = document.getElementById('score-display');
+    // Initialize global DOM element references
+    gridContainer = document.getElementById('grid-container');
+    letterBankContainer = document.getElementById('letter-bank');
+    currentWordContainer = document.getElementById('current-word');
+    foundWordsContainer = document.getElementById('found-words');
+    levelNumberElement = document.getElementById('level-number');
+    shuffleButton = document.getElementById('shuffle-button');
+    clearButton = document.getElementById('clear-button');
+    hintButton = document.getElementById('hint-button');
+    backButton = document.querySelector('.back-button');
+    scoreDisplay = document.getElementById('score-display');
     
     // --- KBBI Database Conversion ---
     // The kbbi.js file loads the database as an Array.
@@ -55,21 +882,12 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("=== End KBBI Debug ===");
     // --- End of Conversion ---
 
-    let levelData = null;
-    let currentInput = []; // { letter: 'A', tileIndex: 0 }
-    let foundWords = [];
-    let currentLevelId = 1;
-    let currentScore = 0;
-    let bonusWords = [];
-    let isLevelAlreadyCompleted = false; // Track if level was already completed
-    let shuffleCount = 2;
-    let hintCount = 1;
-    let inventory = { shuffle: 0, hint: 0 }; // Player inventory
+    // Variables are now declared globally above
     
-    // Initialize managers
-    const themeManager = new ThemeManager();
-    const settingsManager = new SettingsManager();
-    const animationManager = new AnimationManager();
+    // Initialize global managers
+    themeManager = new ThemeManager();
+    settingsManager = new SettingsManager();
+    animationManager = new AnimationManager();
     // soundManager is already initialized globally in sound.js
     
     // Apply initial settings
@@ -83,16 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
     soundManager.setSoundEnabled(soundEnabled);
     console.log('SoundManager soundEnabled after setting:', soundManager.soundEnabled);
 
-    // Utility function to ensure consistent level ID handling
-    function normalizeLevel(levelId) {
-        const parsed = parseInt(levelId, 10);
-        const minLevel = window.TTS_CONFIG?.MIN_LEVEL_ID || 1;
-        if (isNaN(parsed) || parsed < minLevel) {
-            console.warn(`Invalid level ID: ${levelId}, defaulting to ${minLevel}`);
-            return minLevel;
-        }
-        return parsed;
-    }
+    // normalizeLevel function is now defined globally above
     
     // Get level from URL parameter
     function getLevelFromURL() {
@@ -115,32 +924,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateActionButtonsUI() {
-        const shuffleButton = document.getElementById('shuffle-button');
-        const hintButton = document.getElementById('hint-button');
-
-        // Update Shuffle Button
-        shuffleButton.textContent = `Acak (${shuffleCount})`;
-        if (shuffleCount <= 0) {
-            shuffleButton.disabled = true;
-            shuffleButton.classList.add('disabled');
-        } else {
-            shuffleButton.disabled = false;
-            shuffleButton.classList.remove('disabled');
-        }
-
-        // Update Hint Button
-        hintButton.textContent = `Hint (${hintCount})`;
-        if (hintCount <= 0) {
-            hintButton.disabled = true;
-            hintButton.classList.add('disabled');
-        } else {
-            hintButton.disabled = false;
-            hintButton.classList.remove('disabled');
-        }
-    }
+    // updateActionButtonsUI is now defined globally above
 
     function toggleInventoryPopup() {
+        // Play click sound
+        if (window.soundManager) {
+            window.soundManager.playSound('click');
+        }
+        
         const popup = document.getElementById('inventory-popup');
         if (popup) {
             popup.classList.toggle('hidden');
@@ -229,6 +1020,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (itemType === 'hint') {
             hintCount++;
             inventory.hint--;
+            soundManager.playSound('click');
             showInventoryMessage('💡 Extra Hint digunakan!');
         }
 
@@ -367,47 +1159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Save completed level to localStorage with proper validation
-    function saveCompletedLevel(levelId) {
-        try {
-            console.log(`=== Saving Completed Level ===`);
-            console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
-            
-            // Normalize level ID to ensure consistency
-            const numLevelId = normalizeLevel(levelId);
-            console.log(`Normalized Level ID: ${numLevelId}`);
-            
-            // Validate and parse localStorage data
-            let completedLevels;
-            try {
-                completedLevels = JSON.parse(localStorage.getItem('tts-completed-levels') || '[]');
-                if (!Array.isArray(completedLevels)) {
-                    console.warn('Completed levels data is not an array, resetting to empty array');
-                    completedLevels = [];
-                }
-            } catch (parseError) {
-                console.error('Error parsing completed levels from localStorage:', parseError);
-                completedLevels = [];
-            }
-            
-            console.log("Current completed levels before save:", completedLevels);
-            
-            if (!completedLevels.includes(numLevelId)) {
-                completedLevels.push(numLevelId);
-                try {
-                    localStorage.setItem('tts-completed-levels', JSON.stringify(completedLevels));
-                    console.log(`✅ Level ${numLevelId} saved as completed`);
-                    console.log("Updated completed levels:", completedLevels);
-                } catch (storageError) {
-                    console.error('Error saving to localStorage:', storageError);
-                }
-            } else {
-                console.log(`Level ${numLevelId} already marked as completed`);
-            }
-        } catch (error) {
-            console.error('Error in saveCompletedLevel:', error);
-        }
-    }
+
 
     async function loadLevel(levelId) {
         try {
@@ -428,6 +1180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             levelData = await response.json();
             currentLevelId = levelData.id;
+            window.currentLevelId = currentLevelId; // Make available globally for animations
             foundWords = [];
             bonusWords = [];
             isLevelAlreadyCompleted = isLevelCompleted(levelId); // Check if level was already completed
@@ -439,6 +1192,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reset counts for new level
             shuffleCount = 2;
             hintCount = 1;
+            
+            // Reset ad usage for new level
+            levelAdUsage = {
+                shuffleAdsUsed: 0,
+                hintAdsUsed: 0
+            };
+            
             updateActionButtonsUI();
 
             // Load inventory
@@ -525,383 +1285,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderLetterBank() {
-        letterBankContainer.innerHTML = '';
-        const letters = [...levelData.random_letters];
-        
-        // Calculate optimal tile size based on screen width and number of letters
-        calculateTileSize(letters.length);
-        
-        // Fisher-Yates shuffle
-        for (let i = letters.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [letters[i], letters[j]] = [letters[j], letters[i]];
-        }
+    // All functions (renderLetterBank, calculateTileSize, calculateInputSize, handleLetterClick, updateCurrentWordUI, clearInput, validateAndSanitizeInput, handleSubmit, getWordCoordinates) are now defined globally above
 
-        letters.forEach((letter, index) => {
-            const tile = document.createElement('div');
-            tile.classList.add('letter-tile');
-            tile.textContent = letter;
-            tile.dataset.tileIndex = index;
-            tile.addEventListener('click', () => handleLetterClick(letter, tile));
-            letterBankContainer.appendChild(tile);
-        });
-    }
-    
-    function calculateTileSize(letterCount) {
-        const bankContainer = letterBankContainer;
-        const availableWidth = window.innerWidth - 70; // Account for margins and padding (35px * 2)
-        const minGap = 1;
-        const maxGap = 2;
-        const minTileSize = 16;
-        const maxTileSize = 30;
-        
-        // Calculate optimal tile size with more conservative approach
-        let tileSize = Math.floor((availableWidth - (letterCount - 1) * minGap) / letterCount);
-        
-        // Apply scaling based on letter count to prevent oversizing
-        if (letterCount <= 4) {
-            tileSize = Math.min(tileSize, 30); // Max 30px for few letters
-        } else if (letterCount <= 6) {
-            tileSize = Math.min(tileSize, 25); // Max 25px for medium count
-        } else if (letterCount <= 8) {
-            tileSize = Math.min(tileSize, 22); // Max 22px for more letters
-        } else {
-            tileSize = Math.min(tileSize, 20); // Max 20px for many letters
-        }
-        
-        // Ensure tile size is within bounds
-        tileSize = Math.max(minTileSize, Math.min(maxTileSize, tileSize));
-        
-        // Calculate gap based on remaining space, more conservative
-        const totalTileWidth = tileSize * letterCount;
-        const remainingSpace = availableWidth - totalTileWidth;
-        let gap = letterCount > 1 ? remainingSpace / (letterCount - 1) : 0;
-        gap = Math.max(minGap, Math.min(maxGap, gap));
-        
-        // Double check total width doesn't exceed available space
-        const totalWidth = (tileSize * letterCount) + (gap * (letterCount - 1));
-        if (totalWidth > availableWidth) {
-            // Reduce tile size if still too wide
-            tileSize = Math.floor((availableWidth - (letterCount - 1) * minGap) / letterCount);
-            gap = minGap;
-        }
-        
-        // Calculate input box size based on tile size and letter count
-        calculateInputSize(tileSize, letterCount);
-        
-        // Update CSS custom properties
-        document.documentElement.style.setProperty('--tile-size', `${tileSize}px`);
-        document.documentElement.style.setProperty('--tile-gap', `${gap}px`);
-        
-        // Update letter bank gap
-        if (bankContainer) {
-            bankContainer.style.gap = `${gap}px`;
-        }
-    }
-    
-    function calculateInputSize(tileSize, letterCount) {
-        // Base input height should be proportional to tile size but smaller
-        const inputHeight = Math.max(25, Math.min(40, tileSize * 0.8));
-        
-        // Font size should be proportional to both tile size and available space
-        const baseFontSize = Math.max(12, Math.min(18, tileSize * 0.35));
-        
-        // Adjust font size based on letter count for better fit
-        let fontSize = baseFontSize;
-        if (letterCount > 8) {
-            fontSize = baseFontSize * 0.9;
-        }
-        if (letterCount > 12) {
-            fontSize = baseFontSize * 0.8;
-        }
-        
-        // Update CSS custom properties
-        document.documentElement.style.setProperty('--input-height', `${inputHeight}px`);
-        document.documentElement.style.setProperty('--input-font-size', `${fontSize}px`);
-    }
-
-    function handleLetterClick(letter, tile) {
-        if (tile.classList.contains('used')) return;
-
-        animationManager.bounceElement(tile);
-        soundManager.playSound('click');
-
-        tile.classList.add('used');
-        currentInput.push({ letter, tile });
-        updateCurrentWordUI();
-
-        // Automatic submission check if enabled
-        if (settingsManager.getSetting('autoSubmit')) {
-        const word = currentInput.map(item => item.letter).join('');
-        const isCorrect = levelData.words.includes(word) && !foundWords.includes(word);
-        
-        if (isCorrect) {
-            // Check if it's a prefix for any other valid (and not yet found) words
-            const isPrefix = levelData.words.some(w => w.length > word.length && w.startsWith(word) && !foundWords.includes(w));
-            
-            if (!isPrefix) {
-                setTimeout(() => handleSubmit(), 200);
-                }
-            } else {
-                // Check for KBBI bonus words
-                checkKBBIBonus(word);
-            }
-        }
-    }
-    
-    function updateCurrentWordUI() {
-        currentWordContainer.textContent = currentInput.map(item => item.letter).join('');
-    }
-
-    // Cache DOM elements to improve performance
-    let cachedUsedTiles = null;
-    let lastUsedTilesUpdate = 0;
-    const CACHE_DURATION = window.TTS_CONFIG?.DOM_CACHE_DURATION || 1000; // Cache duration from config
-    
-    function clearInput() {
-        try {
-            currentInput = [];
-            updateCurrentWordUI();
-            
-            // Use cached tiles if available and recent
-            const now = Date.now();
-            if (cachedUsedTiles && (now - lastUsedTilesUpdate) < CACHE_DURATION) {
-                cachedUsedTiles.forEach(tile => {
-                    if (tile && tile.classList) {
-                        tile.classList.remove('used');
-                    }
-                });
-            } else {
-                // Refresh cache
-                const usedTiles = document.querySelectorAll('.letter-tile.used');
-                cachedUsedTiles = Array.from(usedTiles);
-                lastUsedTilesUpdate = now;
-                
-                cachedUsedTiles.forEach(tile => {
-                    if (tile && tile.classList) {
-                        tile.classList.remove('used');
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('Error in clearInput:', error);
-            // Fallback to simple clear
-            currentInput = [];
-            if (typeof updateCurrentWordUI === 'function') {
-                updateCurrentWordUI();
-            }
-        }
-    }
-
-    // Input validation and sanitization
-    function validateAndSanitizeInput(input) {
-        if (!input || !Array.isArray(input)) {
-            console.warn('Invalid input provided to validateAndSanitizeInput');
-            return '';
-        }
-        
-        const word = input.map(item => {
-            if (!item || typeof item.letter !== 'string') {
-                console.warn('Invalid letter item:', item);
-                return '';
-            }
-            return item.letter.toUpperCase().trim();
-        }).join('');
-        
-        // Sanitize: only allow alphabetic characters
-        return word.replace(/[^A-Z]/g, '');
-    }
-
-    function handleSubmit() {
-        try {
-            const word = validateAndSanitizeInput(currentInput);
-            if (word.length === 0) return;
-
-            // Validate levelData exists
-            if (!levelData || !Array.isArray(levelData.words)) {
-                console.error('Level data is invalid or missing');
+    function useHint() {
+        // Function to actually show hint
+        const showHint = () => {
+            const remainingWords = levelData.words.filter(w => !foundWords.includes(w));
+            if (remainingWords.length === 0) {
+                alert("Semua kata telah ditemukan!");
                 return;
             }
 
-            if (levelData.words.includes(word) && !foundWords.includes(word)) {
-            foundWords.push(word);
-            
-            // Only add score if level wasn't already completed
-            if (!isLevelAlreadyCompleted) {
-                currentScore += word.length; // Score based on word length
-            }
-            
-            // Animate word reveal
-            const wordCells = getWordCoordinates(word);
-            if (wordCells.length > 0) {
-                animationManager.revealWord(wordCells, word);
-            }
-            
-            revealWordInGrid(word);
-            updateFoundWordsUI();
-            updateScoreDisplay();
-            checkWinCondition();
-            clearInput();
-            
-                soundManager.playSound('success');
+            let hintableCoords = [];
+            remainingWords.forEach(word => {
+                hintableCoords.push(...getWordCoordinates(word));
+            });
+
+            const revealedCells = [...gridContainer.querySelectorAll('.revealed')].map(cell => ({ r: parseInt(cell.dataset.row), c: parseInt(cell.dataset.col) }));
+
+            const finalHintableCoords = hintableCoords.filter(coord => 
+                !revealedCells.some(rc => rc.r === coord.r && rc.c === coord.c)
+            );
+
+            if (finalHintableCoords.length > 0) {
+                const hintCoord = finalHintableCoords[Math.floor(Math.random() * finalHintableCoords.length)];
+                const cellElement = gridContainer.querySelector(`[data-row='${hintCoord.r}'][data-col='${hintCoord.c}']`);
+                if (cellElement) {
+                    cellElement.textContent = levelData.grid[hintCoord.r][hintCoord.c];
+                    cellElement.classList.add('revealed');
+                    updateActionButtonsUI();
+                }
             } else {
-                // Check for KBBI bonus
-                checkKBBIBonus(word);
-                
-                // Wrong word animation
-                if (animationManager && typeof animationManager.shakeElement === 'function') {
-                    animationManager.shakeElement(currentWordContainer);
-                }
-                if (soundManager && typeof soundManager.playSound === 'function') {
-                    soundManager.playSound('error');
-                }
-                // Add some feedback for wrong word
-                if (currentWordContainer) {
-                    currentWordContainer.classList.add('shake');
-                    setTimeout(() => {
-                        if (currentWordContainer) {
-                            currentWordContainer.classList.remove('shake');
-                        }
-                    }, 500);
-                }
-                clearInput();
+                alert("Tidak ada petunjuk lagi.");
             }
-        } catch (error) {
-            console.error('Error in handleSubmit:', error);
-            clearInput(); // Ensure UI is reset even on error
-        }
-    }
-    
-    function getWordCoordinates(word) {
-        const wordChars = word.split('');
-        const coords = [];
-
-        // Find horizontal match
-        for(let r = 0; r < levelData.grid.length; r++) {
-            for (let c = 0; c <= levelData.grid[r].length - word.length; c++) {
-                let match = true;
-                for(let i = 0; i < word.length; i++) { if (levelData.grid[r][c+i] !== wordChars[i]) { match = false; break; } }
-                const isExactWord = (c === 0 || levelData.grid[r][c-1] === '1') && (c + word.length === levelData.grid[r].length || levelData.grid[r][c+word.length] === '1');
-                if (match && isExactWord) {
-                    for(let i = 0; i < word.length; i++) { coords.push({ r, c: c + i }); }
-                    return coords;
-                }
-            }
-        }
-
-        // Find vertical match
-        for(let c = 0; c < levelData.grid[0].length; c++) {
-            for (let r = 0; r <= levelData.grid.length - word.length; r++) {
-                let match = true;
-                for(let i = 0; i < word.length; i++) { if (levelData.grid[r+i][c] !== wordChars[i]) { match = false; break; } }
-                const isExactWord = (r === 0 || levelData.grid[r-1][c] === '1') && (r + word.length === levelData.grid.length || levelData.grid[r+word.length][c] === '1');
-                if (match && isExactWord) {
-                    for(let i = 0; i < word.length; i++) { coords.push({ r: r + i, c }); }
-                    return coords;
-                }
-            }
-        }
-        return [];
-    }
-
-    function useHint() {
-        if (hintCount <= 0) return; // Exit if no hints left
-
-        const remainingWords = levelData.words.filter(w => !foundWords.includes(w));
-        if (remainingWords.length === 0) {
-            alert("Semua kata telah ditemukan!");
+        };
+        
+        // If we have hint count, use it normally
+        if (hintCount > 0) {
+            hintCount--;
+            showHint();
             return;
         }
-
-        let hintableCoords = [];
-        remainingWords.forEach(word => {
-            hintableCoords.push(...getWordCoordinates(word));
-        });
-
-        const revealedCells = [...gridContainer.querySelectorAll('.revealed')].map(cell => ({ r: parseInt(cell.dataset.row), c: parseInt(cell.dataset.col) }));
-
-        const finalHintableCoords = hintableCoords.filter(coord => 
-            !revealedCells.some(rc => rc.r === coord.r && rc.c === coord.c)
-        );
-
-        if (finalHintableCoords.length > 0) {
-            const hintCoord = finalHintableCoords[Math.floor(Math.random() * finalHintableCoords.length)];
-            const cellElement = gridContainer.querySelector(`[data-row='${hintCoord.r}'][data-col='${hintCoord.c}']`);
-            if (cellElement) {
-                cellElement.textContent = levelData.grid[hintCoord.r][hintCoord.c];
-                cellElement.classList.add('revealed');
-                
-                hintCount--; // Decrement only on successful hint
-                updateActionButtonsUI();
-            }
-        } else {
-            alert("Tidak ada petunjuk lagi.");
+        
+        // If no hint count but ads available
+        if (hintCount <= 0 && levelAdUsage.hintAdsUsed < 2 && window.AdMobManager && window.AdMobManager.isInitialized()) {
+            // Reset counter and show rewarded ad like menu buttons
+            window.AdMobManager.resetAdCounter();
+            window.AdMobManager.showRewardedAd(() => {
+                // Callback when reward is earned
+                levelAdUsage.hintAdsUsed++;
+                hintCount++;
+                hintCount--; // Use it immediately
+                showHint();
+            });
         }
     }
 
-    function revealWordInGrid(word) {
-        const coords = getWordCoordinates(word);
-        coords.forEach(coord => {
-            const cell = gridContainer.querySelector(`[data-row='${coord.r}'][data-col='${coord.c}']`);
-            if(cell) {
-                cell.textContent = levelData.grid[coord.r][coord.c];
-                cell.classList.add('revealed');
-            }
-        });
-    }
 
-    function updateFoundWordsUI() {
-        foundWordsContainer.innerHTML = '';
-        foundWords.forEach(word => {
-            const wordSpan = document.createElement('span');
-            wordSpan.textContent = word;
-            foundWordsContainer.appendChild(wordSpan);
-        });
-    }
-
-    function checkWinCondition() {
-        if (foundWords.length === levelData.words.length) {
-            // Only save score if this is the first time completing the level
-            if (!isLevelAlreadyCompleted) {
-            saveCompletedLevel(currentLevelId);
-                saveScore(currentLevelId, currentScore);
-                
-                // --- UI UPDATE ---
-                // Don't wait for the submission. Run it in the background.
-                // This makes the UI feel instant for the user.
-                updateGlobalLeaderboard().catch(err => {
-                    console.error("Background submission failed:", err);
-                    // The retry mechanism will handle this later.
-                });
-            }
-            
-            animationManager.levelComplete();
-            
-            // Show the next level prompt after animation
-            const overlayDelay = window.TTS_CONFIG?.LOADING_OVERLAY_DELAY || 500;
-            setTimeout(() => {
-                const nextLevel = parseInt(currentLevelId, 10) + 1;
-                let message;
-                
-                if (isLevelAlreadyCompleted) {
-                    message = `Level ${currentLevelId} selesai ulang!\n\nLevel ini sudah pernah diselesaikan sebelumnya, jadi tidak ada poin tambahan.\nSkor Total: ${currentScore}\n\nLanjut ke Level ${nextLevel}?`;
-                } else {
-                    message = `Level ${currentLevelId} selesai!\nSkor Total: ${currentScore}\n\nSkor sedang dikirim ke leaderboard.\nLanjut ke Level ${nextLevel}?`;
-                }
-                
-                if (confirm(message)) {
-                    // Stop any ongoing sounds before loading next level
-                    if (window.soundManager && typeof window.soundManager.stopAllSounds === 'function') {
-                        window.soundManager.stopAllSounds();
-                    }
-                    window.location.href = `game.html?level=${nextLevel}`;
-                } else {
-                    window.location.href = '../../level-select.html';
-                }
-            }, overlayDelay); // Delay for the win animation to be appreciated
-        }
-    }
     
     // Helper function to create loading overlay
     function createLoadingOverlay(title, message) {
@@ -971,6 +1411,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
+            // Wait for Firebase to be available before retry
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            while (typeof window.submitScoreToLeaderboard !== 'function' && attempts < maxAttempts) {
+                console.log(`Waiting for Firebase to load for retry... (attempt ${attempts + 1}/${maxAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                attempts++;
+            }
+            
+            if (typeof window.submitScoreToLeaderboard !== 'function') {
+                console.log("❌ Firebase still not available for retry, skipping...");
+                return;
+            }
+            
             console.log("Attempting retry submission...");
             const success = await updateGlobalLeaderboard();
             
@@ -1034,348 +1489,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, notificationDuration);
     }
 
-    async function updateGlobalLeaderboard() {
-        try {
-            console.log("=== Starting leaderboard update ===");
-            
-            // Get current scores and levels from localStorage with validation
-            let scores = {};
-            let completedLevels = [];
-            
-            try {
-                const scoresData = localStorage.getItem('tts-scores');
-                const levelsData = localStorage.getItem('tts-completed-levels');
-                
-                if (scoresData) {
-                    const parsedScores = JSON.parse(scoresData);
-                    if (typeof parsedScores === 'object' && parsedScores !== null) {
-                        scores = parsedScores;
-                    } else {
-                        console.warn('Scores data is not a valid object, using empty object');
-                    }
-                }
-                
-                if (levelsData) {
-                    const parsedLevels = JSON.parse(levelsData);
-                    if (Array.isArray(parsedLevels)) {
-                        completedLevels = parsedLevels;
-                    } else {
-                        console.warn('Completed levels data is not an array, using empty array');
-                    }
-                }
-            } catch (parseError) {
-                console.error('Error parsing localStorage data:', parseError);
-                // Continue with empty data rather than failing completely
-            }
-            
-            console.log("Local scores:", scores);
-            console.log("Completed levels:", completedLevels);
-            
-            // Debug: Check individual score values with normalization
-            console.log("=== Score Details ===");
-            Object.entries(scores).forEach(([levelId, score]) => {
-                const normalizedLevel = normalizeLevel(levelId);
-                console.log(`Level ${levelId} -> ${normalizedLevel}: ${score} (type: ${typeof score})`);
-            });
-            
-            // Calculate totals with validation and normalization
-            let totalScore = 0;
-            Object.entries(scores).forEach(([levelId, score]) => {
-                const normalizedLevel = normalizeLevel(levelId);
-                const numScore = Number(score);
-                console.log(`Processing level ${normalizedLevel}, score: ${score} -> ${numScore} (valid: ${!isNaN(numScore) && numScore >= 0})`);
-                if (!isNaN(numScore) && numScore >= 0) {
-                    totalScore += numScore;
-                }
-            });
-            
-            // Find highest completed level with validation
-            let highestLevel = 0;
-            if (completedLevels.length > 0) {
-                const validLevels = completedLevels
-                    .map(level => normalizeLevel(level))
-                    .filter(level => level > 0);
-                
-                if (validLevels.length > 0) {
-                    highestLevel = Math.max(...validLevels);
-                }
-            }
-            
-            console.log("=== Final Calculations ===");
-            console.log("Total score calculated:", totalScore);
-            console.log("Highest level completed:", highestLevel);
-            
-            // Validate final data
-            if (totalScore < 0 || highestLevel < 0) {
-                throw new Error(`Invalid data: score=${totalScore}, level=${highestLevel}`);
-            }
-            
-            // Additional check: ensure we have meaningful data
-            if (totalScore === 0 && highestLevel === 0 && Object.keys(scores).length > 0) {
-                console.warn("⚠️ Warning: Data exists but calculated values are 0");
-                console.warn("Scores object:", scores);
-                console.warn("Completed levels:", completedLevels);
-            }
-            
-            // Submit to Firebase using the helper function from firebase-init.js
-            if (typeof window.submitScoreToLeaderboard !== 'function') {
-                throw new Error('Firebase submission function not available');
-            }
-            
-            console.log("Submitting to Firebase...");
-            await window.submitScoreToLeaderboard(totalScore, highestLevel);
-            
-            console.log("✅ Leaderboard update successful!");
-            return true;
-            
-        } catch (error) {
-            console.error("❌ Leaderboard update failed:", error);
-            console.error("Error type:", error.constructor.name);
-            console.error("Error message:", error.message);
-            
-            // Store failed submission for retry with error handling
-            try {
-                const failedSubmissions = JSON.parse(localStorage.getItem('tts-failed-submissions') || '[]');
-                failedSubmissions.push({
-                    timestamp: Date.now(),
-                    scores: localStorage.getItem('tts-scores'),
-                    completedLevels: localStorage.getItem('tts-completed-levels'),
-                    error: error.message
-                });
-                localStorage.setItem('tts-failed-submissions', JSON.stringify(failedSubmissions));
-                console.log('Stored failed submission for retry');
-            } catch (storageError) {
-                console.error('Error storing failed submission:', storageError);
-            }
-            
-            return false;
-        }
-    }
+    // updateGlobalLeaderboard function is now defined globally above
 
-    // KBBI bonus check function
-    function checkKBBIBonus(word) {
-        const minWordLength = window.TTS_CONFIG?.MIN_WORD_LENGTH || 3;
-        if (word.length < minWordLength) {
-            console.log(`Word too short for KBBI check (minimum: ${minWordLength})`);
-            return;
-        }
 
-        console.log("=== KBBI Check ===");
-        console.log("Checking word:", word);
-        console.log("KBBI Database exists?", typeof window.KBBI_DATABASE_SET !== 'undefined');
-        
-        // Check if word exists in KBBI database
-        if (window.KBBI_DATABASE_SET && window.KBBI_DATABASE_SET.has(word)) {
-            console.log("✅ Word found in KBBI!");
-            
-            // Don't add duplicate bonus words
-            if (bonusWords.includes(word)) {
-                console.log("❌ Already found this bonus word");
-                return;
-            }
-            
-            bonusWords.push(word);
-            
-            // Only add score if level wasn't already completed
-            if (!isLevelAlreadyCompleted) {
-                currentScore += 1; // Bonus point
-            }
-            
-            const bonusSpan = document.createElement('span');
-            bonusSpan.textContent = word;
-            bonusSpan.classList.add('bonus-word');
-            foundWordsContainer.appendChild(bonusSpan);
-            
-            updateScoreDisplay();
-            animationManager.createParticleEffect(bonusSpan, '#ff6b6b');
-            soundManager.playSound('bonus');
-            
-            if (isLevelAlreadyCompleted) {
-                showBonusMessage(word, true); // Pass true to indicate no points awarded
-            } else {
-                showBonusMessage(word, false);
-            }
-        } else {
-            console.log("❌ Not a bonus word");
-        }
-        console.log("=== End KBBI Check ===");
-    }
     
-    function showBonusMessage(word, noPoints = false) {
-        const message = document.createElement('div');
-        if (noPoints) {
-            message.textContent = `Bonus! "${word}" ditemukan di KBBI (no poin - level sudah selesai)`;
-        } else {
-            message.textContent = `Bonus! "${word}" ditemukan di KBBI (+1 poin)`;
-        }
-        message.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            z-index: 1500;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        `;
-        
-        document.body.appendChild(message);
-        
-        message.animate([
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
-            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
-        ], { duration: 300, easing: 'ease-out' });
-        
-        const bonusMessageDuration = (window.TTS_CONFIG?.NOTIFICATION_DURATION || 3000) - 1000; // Slightly shorter than notifications
-        setTimeout(() => {
-            message.animate([
-                { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-                { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' }
-            ], { duration: 300 }).onfinish = () => {
-                message.remove();
-            };
-        }, bonusMessageDuration);
-    }
-    
-    function updateScoreDisplay() {
-        if (scoreDisplay) {
-            if (isLevelAlreadyCompleted) {
-                scoreDisplay.textContent = `Skor Total: ${currentScore} (Level sudah selesai)`;
-                scoreDisplay.style.color = '#888'; // Gray out the score
-            } else {
-                scoreDisplay.textContent = `Skor Total: ${currentScore}`;
-                scoreDisplay.style.color = ''; // Reset to default color
-            }
-        }
-    }
-    
-    function saveScore(levelId, score) {
-        try {
-            console.log(`=== Saving Score ===`);
-            console.log(`Level ID: ${levelId} (type: ${typeof levelId})`);
-            console.log(`Score: ${score} (type: ${typeof score})`);
-            
-            // Normalize and validate inputs
-            const normalizedLevel = normalizeLevel(levelId);
-            const numScore = Number(score);
-            
-            const maxScore = window.TTS_CONFIG?.MAX_SCORE_VALUE || 999999;
-            if (isNaN(numScore) || numScore < 0 || numScore > maxScore) {
-                console.error(`Invalid score: ${score} (must be between 0 and ${maxScore})`);
-                return;
-            }
-            
-            console.log(`Normalized Level: ${normalizedLevel}, Score: ${numScore}`);
-            
-            // Get and validate existing scores
-            let scores = {};
-            try {
-                const scoresData = localStorage.getItem('tts-scores');
-                if (scoresData) {
-                    const parsedScores = JSON.parse(scoresData);
-                    if (typeof parsedScores === 'object' && parsedScores !== null) {
-                        scores = parsedScores;
-                    } else {
-                        console.warn('Existing scores data is not valid, using empty object');
-                    }
-                }
-            } catch (parseError) {
-                console.error('Error parsing existing scores:', parseError);
-                scores = {};
-            }
-            
-            console.log("Current scores before save:", scores);
-            
-            // Use normalized level as string key for consistent storage
-            const levelKey = String(normalizedLevel);
-            
-            if (!scores[levelKey] || scores[levelKey] < numScore) {
-                scores[levelKey] = numScore;
-                try {
-                    localStorage.setItem('tts-scores', JSON.stringify(scores));
-                    console.log(`✅ Score saved successfully for level ${levelKey}: ${numScore}`);
-                    console.log("Updated scores:", scores);
-                } catch (storageError) {
-                    console.error('Error saving scores to localStorage:', storageError);
-                }
-            } else {
-                console.log(`Score not saved - existing score ${scores[levelKey]} is higher than or equal to ${numScore}`);
-            }
-        } catch (error) {
-            console.error('Error in saveScore:', error);
-        }
-    }
-    
-    function loadScore(levelId) {
-        try {
-            // Normalize level ID for consistent lookup
-            const normalizedLevel = normalizeLevel(levelId);
-            const levelKey = String(normalizedLevel);
-            
-            // Get and validate scores data
-            let scores = {};
-            try {
-                const scoresData = localStorage.getItem('tts-scores');
-                if (scoresData) {
-                    const parsedScores = JSON.parse(scoresData);
-                    if (typeof parsedScores === 'object' && parsedScores !== null) {
-                        scores = parsedScores;
-                    }
-                }
-            } catch (parseError) {
-                console.error('Error parsing scores in loadScore:', parseError);
-            }
-            
-            const score = scores[levelKey] || 0;
-            console.log(`Loading score for level ${normalizedLevel}: ${score}`);
-            return score;
-        } catch (error) {
-            console.error('Error in loadScore:', error);
-            return 0;
-        }
-    }
 
-    // Calculate total cumulative score from all completed levels with validation
-    function calculateTotalScore() {
-        try {
-            // Get and validate scores data
-            let scores = {};
-            try {
-                const scoresData = localStorage.getItem('tts-scores');
-                if (scoresData) {
-                    const parsedScores = JSON.parse(scoresData);
-                    if (typeof parsedScores === 'object' && parsedScores !== null) {
-                        scores = parsedScores;
-                    } else {
-                        console.warn('Scores data is not a valid object in calculateTotalScore');
-                    }
-                }
-            } catch (parseError) {
-                console.error('Error parsing scores in calculateTotalScore:', parseError);
-            }
-            
-            let total = 0;
-            Object.entries(scores).forEach(([levelId, score]) => {
-                const normalizedLevel = normalizeLevel(levelId);
-                const numScore = Number(score);
-                if (!isNaN(numScore) && numScore >= 0) {
-                    total += numScore;
-                    console.log(`Adding to total - Level ${normalizedLevel}: ${numScore}`);
-                } else {
-                    console.warn(`Invalid score for level ${levelId}: ${score}`);
-                }
-            });
-            
-            console.log(`Total calculated score: ${total}`);
-            return total;
-        } catch (error) {
-            console.error('Error in calculateTotalScore:', error);
-            return 0;
-        }
-    }
     
     // Event Listeners
     clearButton.addEventListener('click', () => {
@@ -1385,7 +1503,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     shuffleButton.addEventListener('click', () => {
         shuffleLetters();
-        soundManager.playSound('click');
     });
     
     hintButton.addEventListener('click', () => {
@@ -1434,8 +1551,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
             if (diffX > 0) {
                 // Swipe left - shuffle
-                renderLetterBank();
-                soundManager.playSound('click');
+                shuffleLetters();
             } else {
                 // Swipe right - clear
                 clearInput();
@@ -1643,12 +1759,20 @@ document.addEventListener('DOMContentLoaded', () => {
     window.useInventoryItem = useInventoryItem;
     window.toggleInventoryPopup = toggleInventoryPopup;
     
+    // Make updateActionButtonsUI globally accessible for AdMob callbacks
+    window.updateActionButtonsUI = updateActionButtonsUI;
+    
     // Initial Load
     loadLevel(getLevelFromURL());
 });
 
 // Global functions for settings panel
 function toggleSettings() {
+    // Play click sound
+    if (window.soundManager) {
+        window.soundManager.playSound('click');
+    }
+    
     const panel = document.getElementById('settings-panel');
     const isHidden = panel.classList.contains('hidden');
     
@@ -1800,9 +1924,29 @@ function loadSettingsUI() {
 }
 
 function shuffleLetters() {
-    if (shuffleCount <= 0) return;
-    shuffleCount--;
-    renderLetterBank();
-    soundManager.playSound('click');
-    updateActionButtonsUI();
+    // If we have shuffle count, use it normally
+    if (shuffleCount > 0) {
+        shuffleCount--;
+        renderLetterBank();
+        soundManager.playSound('click');
+        updateActionButtonsUI();
+        return;
+    }
+    
+    // If no shuffle count but ads available
+    if (shuffleCount <= 0 && levelAdUsage.shuffleAdsUsed < 1 && window.AdMobManager && window.AdMobManager.isInitialized()) {
+        // Reset counter and show interstitial ad like menu buttons
+        window.AdMobManager.resetAdCounter();
+        window.AdMobManager.showInterstitialAd();
+        
+        levelAdUsage.shuffleAdsUsed++;
+        // Add shuffle after ad
+        setTimeout(() => {
+            shuffleCount++;
+            shuffleCount--; // Use it immediately
+            renderLetterBank();
+            soundManager.playSound('click');
+            updateActionButtonsUI();
+        }, 1000);
+    }
 }

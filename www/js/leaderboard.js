@@ -4,10 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const editNicknameBtn = document.getElementById('edit-nickname-btn');
     const categoryTabs = document.querySelectorAll('.tab-btn');
     const podiumContainer = document.getElementById('podium-container');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search');
+    const userPositionSection = document.getElementById('user-position-section');
+    const userPositionItem = document.getElementById('user-position-item');
+    const searchResultsSection = document.getElementById('search-results-section');
+    const searchResultsList = document.getElementById('search-results-list');
 
     let currentUserId = null;
     let currentCategory = 'score'; // 'score' or 'level'
     let allUsers = []; // Cache all users data
+    let isSearchMode = false;
+    let searchQuery = '';
 
     // Tab switching functionality
     categoryTabs.forEach(tab => {
@@ -20,10 +28,126 @@ document.addEventListener('DOMContentLoaded', () => {
                 tab.classList.add('active');
                 
                 currentCategory = category;
-                renderLeaderboard();
+                if (isSearchMode) {
+                    performSearch(searchQuery);
+                } else {
+                    renderLeaderboard();
+                }
             }
         });
     });
+
+    // Search functionality
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        searchQuery = query;
+        
+        if (query.length === 0) {
+            clearSearch();
+        } else {
+            performSearch(query);
+        }
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+        soundManager.playSound('click');
+        clearSearch();
+    });
+
+    // Function to clear search
+    function clearSearch() {
+        searchInput.value = '';
+        searchQuery = '';
+        isSearchMode = false;
+        searchResultsSection.style.display = 'none';
+        renderLeaderboard();
+    }
+
+    // Function to perform search
+    function performSearch(query) {
+        if (!query || allUsers.length === 0) {
+            clearSearch();
+            return;
+        }
+
+        isSearchMode = true;
+        const searchResults = allUsers.filter(user => 
+            user.nickname.toLowerCase().includes(query.toLowerCase())
+        );
+
+        // Sort search results based on current category
+        if (currentCategory === 'score') {
+            searchResults.sort((a, b) => {
+                if (b.totalScore !== a.totalScore) {
+                    return b.totalScore - a.totalScore;
+                }
+                return b.highestLevelCompleted - a.highestLevelCompleted;
+            });
+        } else {
+            searchResults.sort((a, b) => {
+                if (b.highestLevelCompleted !== a.highestLevelCompleted) {
+                    return b.highestLevelCompleted - a.highestLevelCompleted;
+                }
+                return b.totalScore - a.totalScore;
+            });
+        }
+
+        renderSearchResults(searchResults);
+    }
+
+    // Function to render search results
+    function renderSearchResults(searchResults) {
+        // Hide normal leaderboard and user position
+        leaderboardList.style.display = 'none';
+        userPositionSection.style.display = 'none';
+        podiumContainer.style.display = 'none';
+        
+        // Show search results
+        searchResultsSection.style.display = 'block';
+        
+        if (searchResults.length === 0) {
+            searchResultsList.innerHTML = '<div class="no-results">Tidak ada pemain yang ditemukan dengan nama "' + searchQuery + '"</div>';
+            return;
+        }
+
+        // Get full sorted list to determine actual ranks
+        let fullSortedUsers = [...allUsers];
+        if (currentCategory === 'score') {
+            fullSortedUsers.sort((a, b) => {
+                if (b.totalScore !== a.totalScore) {
+                    return b.totalScore - a.totalScore;
+                }
+                return b.highestLevelCompleted - a.highestLevelCompleted;
+            });
+        } else {
+            fullSortedUsers.sort((a, b) => {
+                if (b.highestLevelCompleted !== a.highestLevelCompleted) {
+                    return b.highestLevelCompleted - a.highestLevelCompleted;
+                }
+                return b.totalScore - a.totalScore;
+            });
+        }
+
+        let html = '';
+        searchResults.forEach((user, index) => {
+            // Find actual rank in full leaderboard
+            const actualRank = fullSortedUsers.findIndex(u => u.id === user.id) + 1;
+            const displayValue = currentCategory === 'score' 
+                ? user.totalScore.toLocaleString()
+                : `Level ${user.highestLevelCompleted}`;
+            const levelDisplay = user.highestLevelCompleted > 0 ? `(Lv. ${user.highestLevelCompleted})` : '';
+            
+            html += `
+                <div class="search-result-item ${user.isCurrentUser ? 'is-user' : ''}">
+                    <span class="rank">${actualRank}.</span>
+                    <span class="nickname">${user.nickname} <span class="level-indicator">${levelDisplay}</span></span>
+                    <span class="score">${displayValue}</span>
+                </div>
+            `;
+        });
+        
+        searchResultsList.innerHTML = html;
+    }
 
     // Function to update podium display
     function updatePodium(topUsers) {
@@ -70,6 +194,11 @@ document.addEventListener('DOMContentLoaded', () => {
             leaderboardList.innerHTML = '<div class="loading">Belum ada data di leaderboard.</div>';
             return;
         }
+
+        // Show normal leaderboard elements
+        leaderboardList.style.display = 'block';
+        podiumContainer.style.display = 'block';
+        searchResultsSection.style.display = 'none';
 
         // Sort users based on current category
         let sortedUsers = [...allUsers];
@@ -120,7 +249,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         leaderboardList.innerHTML = html;
+        
+        // Show user position if not in top 10
+        showUserPosition(sortedUsers);
+        
         console.log(`✅ Leaderboard rendered successfully (${currentCategory} category)`);
+    }
+
+    // Function to show user position if not in top 10
+    function showUserPosition(sortedUsers) {
+        if (!currentUserId) {
+            userPositionSection.style.display = 'none';
+            return;
+        }
+
+        // Find current user's position
+        const userIndex = sortedUsers.findIndex(user => user.id === currentUserId);
+        
+        if (userIndex === -1) {
+            // User not found in leaderboard
+            userPositionSection.style.display = 'none';
+            return;
+        }
+
+        const userRank = userIndex + 1;
+        
+        // Only show user position if they're not in top 10
+        if (userRank > 10) {
+            const currentUser = sortedUsers[userIndex];
+            const displayValue = currentCategory === 'score' 
+                ? currentUser.totalScore.toLocaleString()
+                : `Level ${currentUser.highestLevelCompleted}`;
+            const levelDisplay = currentUser.highestLevelCompleted > 0 ? `(Lv. ${currentUser.highestLevelCompleted})` : '';
+            
+            userPositionItem.innerHTML = `
+                <span class="rank">${userRank}.</span>
+                <span class="nickname">${currentUser.nickname} <span class="level-indicator">${levelDisplay}</span></span>
+                <span class="score">${displayValue}</span>
+            `;
+            
+            userPositionSection.style.display = 'block';
+        } else {
+            // User is in top 10, don't show separate position
+            userPositionSection.style.display = 'none';
+        }
     }
 
     // Function to fetch and display the leaderboard

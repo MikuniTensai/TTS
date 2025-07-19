@@ -30,7 +30,8 @@
       "cordova-plugin-splashscreen": {},
       "emi-indo-cordova-plugin-admob": {
         "ADMOB_APP_ID": "ca-app-pub-8770525488772470~9010728347"
-      }
+      },
+      "cordova-plugin-statusbar": {}
     }
   },
   "dependencies": {
@@ -42,6 +43,7 @@
   "devDependencies": {
     "cordova": "^12.0.0",
     "cordova-android": "^14.0.1",
-    "emi-indo-cordova-plugin-admob": "^2.0.0"
+    "emi-indo-cordova-plugin-admob": "^2.0.0",
+    "cordova-plugin-statusbar": "^4.0.0"
   }
 }

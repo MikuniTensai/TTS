@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/themes.css">
     <title>Pilih Level - TTS Game</title>
     <style>
         body {
@@ -16,6 +17,7 @@
             flex-direction: column;
             padding: 20px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
         .level-container {
             text-align: center;
@@ -31,11 +33,13 @@
             border: none;
             cursor: pointer;
             color: #333;
+            transition: all 0.3s ease;
         }
         h1 {
             font-size: 2.2em;
             margin-bottom: 30px;
             color: #333;
+            transition: all 0.3s ease;
         }
         .levels-grid {
             display: grid;
@@ -55,7 +59,7 @@
             text-decoration: none;
             color: #333;
             font-weight: bold;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -130,7 +134,7 @@
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.location.href='index.html'">&larr;</button>
+    <button class="back-button" onclick="window.soundManager && window.soundManager.playSound('click'); window.location.href='index.html'">&larr;</button>
     
     <div class="level-container">
         <h1>Pilih Level</h1>
@@ -140,6 +144,7 @@
     </div>
 
     <script src="js/sound.js"></script>
+    <script src="js/theme-manager.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const levelsGrid = document.getElementById('levels-grid');

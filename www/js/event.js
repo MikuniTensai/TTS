@@ -125,29 +125,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Social media sharing functions
     window.shareToWhatsApp = function(title, description, url) {
+        if (window.soundManager) {
+            window.soundManager.playSound('click');
+        }
         const text = `🎮 ${title}\n\n${description}\n\nMainkan sekarang: ${url}`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
         window.open(whatsappUrl, '_blank');
     };
 
     window.shareToFacebook = function(title, url) {
+        if (window.soundManager) {
+            window.soundManager.playSound('click');
+        }
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
         window.open(facebookUrl, '_blank', 'width=600,height=400');
     };
 
     window.shareToTwitter = function(title, description, url) {
+        if (window.soundManager) {
+            window.soundManager.playSound('click');
+        }
         const text = `🎮 ${title} - ${description}`;
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
         window.open(twitterUrl, '_blank', 'width=600,height=400');
     };
 
     window.shareToTelegram = function(title, description, url) {
+        if (window.soundManager) {
+            window.soundManager.playSound('click');
+        }
         const text = `🎮 ${title}\n\n${description}\n\nMainkan sekarang: ${url}`;
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
         window.open(telegramUrl, '_blank');
     };
 
     window.copyEventLink = function(title, description, url) {
+        if (window.soundManager) {
+            window.soundManager.playSound('click');
+        }
         const text = `🎮 ${title}\n\n${description}\n\nMainkan sekarang: ${url}`;
         
         if (navigator.clipboard) {

@@ -155,12 +155,22 @@ class AnimationManager {
         }
         cells.forEach((cell, index) => {
             setTimeout(() => {
-                cell.classList.add('revealed');
-                cell.style.animation = 'revealCell 0.3s ease-out forwards';
-                this.bounceElement(cell);
+                // Validate cell exists, is an element, and has classList
+                if (!cell || !cell.nodeType || cell.nodeType !== Node.ELEMENT_NODE || !cell.classList) {
+                    console.warn('Invalid cell element in revealWord:', cell);
+                    return;
+                }
                 
-                // Play sound effect using the new manager
-                soundManager.playSound('reveal');
+                try {
+                    cell.classList.add('revealed');
+                    cell.style.animation = 'revealCell 0.3s ease-out forwards';
+                    this.bounceElement(cell);
+                    
+                    // Play sound effect using the new manager
+                    soundManager.playSound('reveal');
+                } catch (error) {
+                    console.error('Error in revealWord animation:', error, cell);
+                }
             }, index * 100);
         });
         
@@ -180,6 +190,10 @@ class AnimationManager {
         const container = document.querySelector('.game-container');
         if (!container) return;
         
+        // Get current level for next level button
+        const currentLevel = window.currentLevelId || 1;
+        const nextLevel = currentLevel + 1;
+        
         // Create success overlay
         const overlay = document.createElement('div');
         overlay.className = 'success-overlay';
@@ -187,6 +201,10 @@ class AnimationManager {
             <div class="success-content">
                 <h2>🎉 Level Selesai! 🎉</h2>
                 <p>Selamat! Anda berhasil menyelesaikan level ini.</p>
+                <div class="level-complete-buttons">
+                    <button class="next-level-btn" onclick="window.location.href='index.html?level=${nextLevel}'">Level Berikutnya</button>
+                    <button class="back-to-select-btn" onclick="window.location.href='../../level-select.html'">Pilih Level</button>
+                </div>
             </div>
         `;
         overlay.style.cssText = `
@@ -211,6 +229,39 @@ class AnimationManager {
             text-align: center;
             transform: scale(0.5);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        `;
+        
+        // Style the buttons
+        const buttonsContainer = overlay.querySelector('.level-complete-buttons');
+        buttonsContainer.style.cssText = `
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        `;
+        
+        const nextBtn = overlay.querySelector('.next-level-btn');
+        nextBtn.style.cssText = `
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        `;
+        
+        const backBtn = overlay.querySelector('.back-to-select-btn');
+        backBtn.style.cssText = `
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
         `;
         
         document.body.appendChild(overlay);
@@ -242,15 +293,46 @@ class AnimationManager {
         this.playSound('levelComplete');
         this.vibrate(300);
         
-        // Remove overlay after delay
+        // Don't auto-remove overlay, let user choose next action
+        // Add click sound to buttons
+        nextBtn.addEventListener('click', () => {
+            if (window.soundManager) {
+                window.soundManager.playSound('click');
+            }
+        });
+        
+        backBtn.addEventListener('click', () => {
+            if (window.soundManager) {
+                window.soundManager.playSound('click');
+            }
+        });
+        
+        // Add hover effects
+        nextBtn.addEventListener('mouseenter', () => {
+            nextBtn.style.transform = 'scale(1.05)';
+        });
+        nextBtn.addEventListener('mouseleave', () => {
+            nextBtn.style.transform = 'scale(1)';
+        });
+        
+        backBtn.addEventListener('mouseenter', () => {
+            backBtn.style.transform = 'scale(1.05)';
+        });
+        backBtn.addEventListener('mouseleave', () => {
+            backBtn.style.transform = 'scale(1)';
+        });
+        
+        // Optional: Auto-remove after longer delay if no interaction
         setTimeout(() => {
-            overlay.animate([
-                { opacity: 1 },
-                { opacity: 0 }
-            ], { duration: 300 }).onfinish = () => {
-                overlay.remove();
-            };
-        }, 2500);
+            if (overlay.parentNode) {
+                overlay.animate([
+                    { opacity: 1 },
+                    { opacity: 0 }
+                ], { duration: 300 }).onfinish = () => {
+                    overlay.remove();
+                };
+            }
+        }, 10000); // 10 seconds
     }
 
     // Method to play sound effects
@@ -374,4 +456,4 @@ if (document.readyState === 'loading') {
 }
 
 // Export for use in main.js
-window.AnimationManager = AnimationManager; 
+window.AnimationManager = AnimationManager;

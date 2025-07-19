@@ -1025,16 +1025,16 @@ window.KBBI_DATABASE = [
     "AKAI",
     "AKAID",
     "AKAK",
-    "AKAL",
+    "AKAL", //Level 26
     "AKALASIA",
     "AKAMSI",
-    "AKAN",
+    "AKAN", //Level 27, 38
     "AKANAN",
     "AKANG",
     "AKAP",
     "AKAPELA",
     "AKAPNIA",
-    "AKAR",
+    "AKAR", //Level 29
     "AKARIDOFAG",
     "AKARIOSIT",
     "AKARIOT",
@@ -1075,9 +1075,9 @@ window.KBBI_DATABASE = [
     "AKHBAR",
     "AKHERAT",
     "AKHI",
-    "AKHIR",
-    "AKHIRAN",
-    "AKHIRAT",
+    "AKHIR", //Level 27, 29
+    "AKHIRAN", //Level 27, 28
+    "AKHIRAT", //Level 29
     "AKHIRNYA",
     "AKHIRULKALAM",
     "AKHIRUSANAH",
@@ -1347,11 +1347,11 @@ window.KBBI_DATABASE = [
     "ALAK",
     "ALAKRIMA",
     "ALALIA",
-    "ALAM", //Level 17
+    "ALAM", //Level 17, 24, 25
     "ALAMA",
     "ALAMAH",
     "ALAMAI",
-    "ALAMAK",
+    "ALAMAK", //Level 25
     "ALAMANDA",
     "ALAMAS",
     "ALAMAT",
@@ -1806,8 +1806,9 @@ window.KBBI_DATABASE = [
     "AMAHATUA",
     "AMAI",
     "AMAK",
+    "AMAK", //Level 24
     "AMAKSOFOBIA",
-    "AMAL", //Level 18
+    "AMAL", //Level 18, 24, 25
     "AMALAKA",
     "AMALAKI",
     "AMALAN",
@@ -2242,7 +2243,7 @@ window.KBBI_DATABASE = [
     "ANAHAR",
     "ANAHEHA",
     "ANAHIDA",
-    "ANAK", // Used in level 9 & 19
+    "ANAK", // Used in level 9, 19, 27
     "ANAKALANG",
     "ANAKAN",
     "ANAKANDA",
@@ -3297,7 +3298,7 @@ window.KBBI_DATABASE = [
     "ARABIKA",
     "ARAFAH",
     "ARAGONIT",
-    "ARAH",
+    "ARAH", //Level 23
     "ARAHAN",
     "ARAHAT",
     "ARAI",
@@ -3515,7 +3516,7 @@ window.KBBI_DATABASE = [
     "ARTEROSKLEROSIS",
     "ARTESIS",
     "ARTETIS",
-    "ARTI",
+    "ARTI", //Level 29
     "ARTIA",
     "ARTIAN",
     "ARTICOK",
@@ -5170,7 +5171,7 @@ window.KBBI_DATABASE = [
     "BARTENDER",
     "BARTER",
     "BARTOLOMEUS",
-    "BARU",
+    "BARU", //Level 46
     "BARUA",
     "BARUANGAN",
     "BARUASA",
@@ -5557,7 +5558,7 @@ window.KBBI_DATABASE = [
     "BEJIBUN",
     "BEJO",
     "BEK",
-    "BEKA",
+    "BEKA", //Level 45
     "BEKADU",
     "BEKAH",
     "BEKAKAK",
@@ -5579,7 +5580,7 @@ window.KBBI_DATABASE = [
     "BEKEL",
     "BEKEN",
     "BEKER",
-    "BEKERJA",
+    "BEKERJA", //Level 45
     "BEKERLAPAN",
     "BEKERLING",
     "BEKERLIP",
@@ -5607,7 +5608,7 @@ window.KBBI_DATABASE = [
     "BEKUKU",
     "BEKUKUNG",
     "BEL",
-    "BELA",
+    "BELA", //Level 44
     "BELABAR",
     "BELABAS",
     "BELACAK",
@@ -5623,7 +5624,7 @@ window.KBBI_DATABASE = [
     "BELAHONG",
     "BELAI",
     "BELAIAN",
-    "BELAJAR",
+    "BELAJAR", //Level 44
     "BELAK",
     "BELAKA",
     "BELAKANG",
@@ -5665,7 +5666,7 @@ window.KBBI_DATABASE = [
     "BELANTIK",
     "BELANTIKA",
     "BELANTUK",
-    "BELAR",
+    "BELAR", //Level 44
     "BELARAK",
     "BELARUSIA",
     "BELAS",
@@ -5965,7 +5966,7 @@ window.KBBI_DATABASE = [
     "BENING",
     "BENITAN",
     "BENJANG",
-    "BENJOL",
+    "BENJOL", //Level 30
     "BENJOLAN",
     "BENJUT",
     "BENKAP",
@@ -8223,7 +8224,7 @@ window.KBBI_DATABASE = [
     "BERMAGANG",
     "BERMAGNET",
     "BERMAGNITUDO",
-    "BERMAIN",
+    "BERMAIN", //Level 42
     "BERMAKAM",
     "BERMAKMUM",
     "BERMAKNA",
@@ -10121,13 +10122,13 @@ window.KBBI_DATABASE = [
     "BIMSUH",
     "BIMTEK",
     "BIN",
-    "BINA", //Level 4
+    "BINA", //Level 4, 42
     "BINAAN",
     "BINABUTAN",
     "BINAHONG",
     "BINAL",
     "BINANG",
-    "BINAR",
+    "BINAR", //Level 46
     "BINARA",
     "BINARAGA",
     "BINARAGAWAN",
@@ -10348,7 +10349,7 @@ window.KBBI_DATABASE = [
     "BIPOLARITAS",
     "BIPOLISENTRISME",
     "BIPRISMA",
-    "BIR",
+    "BIR", //Level 42
     "BIRA",
     "BIRAH",
     "BIRAHI",
@@ -19457,7 +19458,7 @@ window.KBBI_DATABASE = [
     "GUK",
     "GUKAKAS",
     "GUL",
-    "GULA",
+    "GULA", //Level 37
     "GULAH",
     "GULAI",
     "GULALI",
@@ -19751,7 +19752,7 @@ window.KBBI_DATABASE = [
     "HALMA",
     "HALMAHERA",
     "HALMIROLISIS",
-    "HALO",
+    "HALO", //Level 40
     "HALOBION",
     "HALOFILI",
     "HALOFIT",
@@ -19906,7 +19907,7 @@ window.KBBI_DATABASE = [
     "HARFIAH",
     "HARGA",
     "HARGANAS",
-    "HARI",
+    "HARI", //Level 22, 27, 29
     "HARIAN",
     "HARIBAAN",
     "HARIMAU",
@@ -19939,7 +19940,7 @@ window.KBBI_DATABASE = [
     "HARTAL",
     "HARTAWAN",
     "HARTIB",
-    "HARU",
+    "HARU", //Level 39
     "HARUAN",
     "HARUM",
     "HARUN",
@@ -21983,7 +21984,7 @@ window.KBBI_DATABASE = [
     "IRAK",
     "IRAM",
     "IRAMA",
-    "IRAN",
+    "IRAN", //Level 42
     "IRAS",
     "IRASAN",
     "IRASIONAL",
@@ -22248,7 +22249,7 @@ window.KBBI_DATABASE = [
     "IWUR",
     "IYA",
     "IZAH",
-    "IZIN",
+    "IZIN", //Level 21
     "J",
     "JAAT",
     "JAB",
@@ -22377,7 +22378,7 @@ window.KBBI_DATABASE = [
     "JALANGAN",
     "JALANGKOTE",
     "JALANGKUNG",
-    "JALAR",
+    "JALAR", //Level 41, 44
     "JALARAN",
     "JALEN",
     "JALI",
@@ -22540,7 +22541,7 @@ window.KBBI_DATABASE = [
     "JAPRI",
     "JAPU",
     "JAPUK",
-    "JARA",
+    "JARA", //Level 41, 44
     "JARAB",
     "JARAH",
     "JARAHAN",
@@ -22911,7 +22912,7 @@ window.KBBI_DATABASE = [
     "JEPRETAN",
     "JEPUN",
     "JEPUT",
-    "JERA",
+    "JERA", //Level 45
     "JERABAI",
     "JERADIK",
     "JERAFAH",
@@ -23609,14 +23610,14 @@ window.KBBI_DATABASE = [
     "KAIMAT",
     "KAIMBULAWA",
     "KAIMO",
-    "KAIN", // Level 20
+    "KAIN", // Level 20, 28
     "KAING",
     "KAINIT",
     "KAINOFOBIA",
     "KAIRUI",
     "KAIS",
     "KAISAR",
-    "KAIT",
+    "KAIT", //Level 29
     "KAITAN",
     "KAIY",
     "KAJA",
@@ -23672,7 +23673,7 @@ window.KBBI_DATABASE = [
     "KAKUMINAL",
     "KAKUS",
     "KAL",
-    "KALA", //Level 20
+    "KALA", //Level 20, 25
     "KALAARUM",
     "KALABENDA",
     "KALABENDU",
@@ -24101,7 +24102,7 @@ window.KBBI_DATABASE = [
     "KANTOLA",
     "KANTON",
     "KANTONG",
-    "KANTOR",
+    "KANTOR", //Level 30
     "KANTORAN",
     "KANTU",
     "KANTUK",
@@ -25761,7 +25762,7 @@ window.KBBI_DATABASE = [
     "KELARASAN",
     "KELARI",
     "KELARUTAN",
-    "KELAS",
+    "KELAS", //Level 40
     "KELASA",
     "KELASAH",
     "KELASAK",
@@ -26043,10 +26044,10 @@ window.KBBI_DATABASE = [
     "KELUANG",
     "KELUANGAN",
     "KELUANGSA",
-    "KELUAR",
+    "KELUAR", //Level 37
     "KELUARAN",
     "KELUARBIASAAN",
-    "KELUARGA",
+    "KELUARGA", //Level 37
     "KELUASAN",
     "KELUBAK",
     "KELUBI",
@@ -26719,7 +26720,7 @@ window.KBBI_DATABASE = [
     "KEPLESET",
     "KEPLOK",
     "KEPLOKAN",
-    "KEPO",
+    "KEPO", //Level 32,33
     "KEPODANG",
     "KEPOH",
     "KEPOK",
@@ -26727,7 +26728,7 @@ window.KBBI_DATABASE = [
     "KEPOLARAN",
     "KEPOLISIAN",
     "KEPOLOSAN",
-    "KEPOMPONG",
+    "KEPOMPONG", //Level 33
     "KEPONAKAN",
     "KEPONGAHAN",
     "KEPOPULERAN",
@@ -27057,7 +27058,7 @@ window.KBBI_DATABASE = [
     "KERIUT",
     "KERIWAYATAN",
     "KERIWIL",
-    "KERJA",
+    "KERJA", //Level 45
     "KERJAAN",
     "KERJANG",
     "KERJANTARA",
@@ -28165,7 +28166,7 @@ window.KBBI_DATABASE = [
     "KIAMAT",
     "KIAMBANG",
     "KIAMBOI",
-    "KIAN",
+    "KIAN", //Level 28
     "KIANG",
     "KIANI",
     "KIAP",
@@ -28360,7 +28361,7 @@ window.KBBI_DATABASE = [
     "KINGKIP",
     "KINGKIT",
     "KINGKONG",
-    "KINI", //Level 20
+    "KINI", //Level 20, 28
     "KININE",
     "KINJA",
     "KINJAT",
@@ -28405,7 +28406,7 @@ window.KBBI_DATABASE = [
     "KIPU",
     "KIPUNJIN",
     "KIR",
-    "KIRA",
+    "KIRA", //Level 29
     "KIRAAH",
     "KIRAAN",
     "KIRAAT",
@@ -28468,7 +28469,7 @@ window.KBBI_DATABASE = [
     "KISUT",
     "KISWAH",
     "KIT",
-    "KITA",
+    "KITA", //Level 29
     "KITAB",
     "KITABULLAH",
     "KITANG",
@@ -28849,7 +28850,7 @@ window.KBBI_DATABASE = [
     "KOKURIKULER",
     "KOKUS",
     "KOL",
-    "KOLA",
+    "KOLA", //Level 40
     "KOLAB",
     "KOLABORASI",
     "KOLABORATIF",
@@ -29109,7 +29110,7 @@ window.KBBI_DATABASE = [
     "KOMPONEN",
     "KOMPONG",
     "KOMPONIS",
-    "KOMPOR",
+    "KOMPOR", //Level 30
     "KOMPOS",
     "KOMPOSER",
     "KOMPOSISI",
@@ -29424,7 +29425,7 @@ window.KBBI_DATABASE = [
     "KONTINYU",
     "KONTOID",
     "KONTOL",
-    "KONTRA",
+    "KONTRA", //Level 30
     "KONTRABANDE",
     "KONTRABAS",
     "KONTRADIKSI",
@@ -29467,14 +29468,14 @@ window.KBBI_DATABASE = [
     "KONVERTER",
     "KONVERTIBEL",
     "KONVEYOR",
-    "KONVOI",
+    "KONVOI", //Level 30
     "KONVOLUSI",
     "KONVULSAN",
     "KONVULSI",
     "KONYAK",
     "KONYAL",
     "KONYAN",
-    "KONYOL",
+    "KONYOL", //Level 30
     "KOOPERASI",
     "KOOPERATIF",
     "KOOPERATIVISME",
@@ -29507,7 +29508,7 @@ window.KBBI_DATABASE = [
     "KOPELING",
     "KOPELRIM",
     "KOPEPODA",
-    "KOPER",
+    "KOPER", //Level 32
     "KOPERASI",
     "KOPERATIF",
     "KOPERATIVISME",
@@ -30819,7 +30820,7 @@ window.KBBI_DATABASE = [
     "LALU",
     "LALUAN",
     "LAM",
-    "LAMA", //Level 17 & 18
+    "LAMA", //Level 17 , 18, 25
     "LAMAHOLOT",
     "LAMAK",
     "LAMAN",
@@ -31127,7 +31128,7 @@ window.KBBI_DATABASE = [
     "LAPUN",
     "LAPUR",
     "LAR",
-    "LARA",
+    "LARA", //Level 41, 44
     "LARAH",
     "LARAI",
     "LARAK",
@@ -31142,7 +31143,7 @@ window.KBBI_DATABASE = [
     "LARGHETTO",
     "LARGISIMO",
     "LARGO",
-    "LARI",
+    "LARI", //Level 46
     "LARIAN",
     "LARIH",
     "LARIK",
@@ -31182,7 +31183,7 @@ window.KBBI_DATABASE = [
     "LASINIA",
     "LASIT",
     "LASKAR",
-    "LASO",
+    "LASO", //Level 40
     "LASPARAGINASE",
     "LASROL",
     "LASUH",
@@ -31931,8 +31932,8 @@ window.KBBI_DATABASE = [
     "LIBRA",
     "LIBRASI",
     "LIBRETO",
-    "LIBUR",
-    "LIBURAN",
+    "LIBUR", //Level 46
+    "LIBURAN", //Level 46
     "LICAK",
     "LICAU",
     "LICI",
@@ -32567,7 +32568,7 @@ window.KBBI_DATABASE = [
     "LUANGAN",
     "LUAP",
     "LUAPAN",
-    "LUAR",
+    "LUAR", //Level 37
     "LUARAN",
     "LUAS",
     "LUASA",
@@ -32673,7 +32674,7 @@ window.KBBI_DATABASE = [
     "LUMUT",
     "LUN",
     "LUNAK",
-    "LUNAR",
+    "LUNAR", //Level 46
     "LUNAS",
     "LUNASAN",
     "LUNAU",
@@ -32927,7 +32928,7 @@ window.KBBI_DATABASE = [
     "MAGRUR",
     "MAGUN",
     "MAH", // Used in level 10
-    "MAHA",
+    "MAHA", //Level 39
     "MAHABAH",
     "MAHABERAT",
     "MAHABHARATA",
@@ -32943,7 +32944,7 @@ window.KBBI_DATABASE = [
     "MAHAKARYA",
     "MAHAKUASA",
     "MAHAKUDUS",
-    "MAHAL",
+    "MAHAL", //Level 24, 26
     "MAHALIGAI",
     "MAHALUAS",
     "MAHAMEN",
@@ -32951,7 +32952,7 @@ window.KBBI_DATABASE = [
     "MAHANG",
     "MAHAPARANA",
     "MAHAPATIH",
-    "MAHAR",
+    "MAHAR", //Level 23
     "MAHARAJA",
     "MAHARAJALELA",
     "MAHARANA",
@@ -33011,7 +33012,7 @@ window.KBBI_DATABASE = [
     "MAIESIOFILIA",
     "MAILOT",
     "MAIMUN",
-    "MAIN", //Level 7
+    "MAIN", //Level 7, 42
     "MAINAN",
     "MAIR",
     "MAIRASI",
@@ -33057,16 +33058,16 @@ window.KBBI_DATABASE = [
     "MAJUSI",
     "M.AK.",
     "MAK",
-    "MAKA",
+    "MAKA", //Level 25, 26
     "MAKADAM",
     "MAKADASANG",
     "MAKADOK",
     "MAKAKAWIN",
-    "MAKALAH",
+    "MAKALAH", //Level 26
     "MAKALANGKANG",
     "MAKAM",
-    "MAKAN", //Level 2
-    "MAKANAN",
+    "MAKAN", //Level 2,38
+    "MAKANAN", //Level 38
     "MAKANTAH",
     "MAKANTUH",
     "MAKANYA",
@@ -33343,7 +33344,7 @@ window.KBBI_DATABASE = [
     "MAMUJU",
     "MAMUT",
     "MAN",
-    "MANA", //Level 17
+    "MANA", //Level 17, 38, 43
     "MANADO",
     "MANAGEMEN",
     "MANAGER",
@@ -33599,7 +33600,7 @@ window.KBBI_DATABASE = [
     "MARA", //Level 16
     "MARABAHAYA",
     "MARADIKA",
-    "MARAH", // Used in level 10
+    "MARAH", // Used in level 10, 23
     "MARAHAN",
     "MARAJA",
     "MARAK",
@@ -43952,7 +43953,7 @@ window.KBBI_DATABASE = [
     "MESIAS",
     "MESIGIT",
     "MESIK",
-    "MESIN",
+    "MESIN", //Level 21
     "MESINISASI",
     "MESIR",
     "MESIU",
@@ -44509,7 +44510,7 @@ window.KBBI_DATABASE = [
     "MISDINAR",
     "MISEL",
     "MISELIUM",
-    "MISI",
+    "MISI", //Level 21
     "MISIL",
     "MISINTERPRETASI",
     "MISIOLOGI",
@@ -45531,7 +45532,7 @@ window.KBBI_DATABASE = [
     "NAHWU",
     "NAIB",
     "NAIF",
-    "NAIK",
+    "NAIK", //Level 28
     "NAIM",
     "NAIRA",
     "NAJAM",
@@ -45560,7 +45561,7 @@ window.KBBI_DATABASE = [
     "NALIH",
     "NALURI",
     "NALURIAH",
-    "NAMA", // Level 2 & 18
+    "NAMA", // Level 2, 18, 38, 39, 43
     "NAMABALU",
     "NAMASKARA",
     "NAMATAD",
@@ -47979,7 +47980,7 @@ window.KBBI_DATABASE = [
     "PAPUS",
     "PAPUYU",
     "PAR",
-    "PARA",
+    "PARA", //Level 41
     "PARAB",
     "PARABAN",
     "PARABASIS",
@@ -48803,7 +48804,7 @@ window.KBBI_DATABASE = [
     "PELAHAP",
     "PELAHLAR",
     "PELAIF",
-    "PELAJAR",
+    "PELAJAR", //Level 41
     "PELAJARAN",
     "PELAJU",
     "PELAK",
@@ -55150,7 +55151,7 @@ window.KBBI_DATABASE = [
     "POLUTIF",
     "POLWAN",
     "POLWIL",
-    "POM",
+    "POM", //Level 33
     "POMAD",
     "POMADE",
     "POMAL",
@@ -55210,14 +55211,14 @@ window.KBBI_DATABASE = [
     "POPERA",
     "POPI",
     "POPNAS",
-    "POPOK",
+    "POPOK", //Level 33
     "POPOKAN",
     "POPONDI",
     "POPOR",
     "POPULAR",
     "POPULARISASI",
     "POPULARITAS",
-    "POPULASI",
+    "POPULASI", //Level 34
     "POPULER",
     "POPULIS",
     "POPULISME",
@@ -56072,8 +56073,8 @@ window.KBBI_DATABASE = [
     "PUKUL",
     "PUKULAN",
     "PUL",
-    "PULA",
-    "PULAI",
+    "PULA", //Level 34
+    "PULAI", //Level 34
     "PULAN",
     "PULANG",
     "PULANGAN",
@@ -56499,7 +56500,7 @@ window.KBBI_DATABASE = [
     "RAFIK",
     "RAFINAT",
     "RAFLESIA",
-    "RAGA",
+    "RAGA", //Level 37
     "RAGAM",
     "RAGANG",
     "RAGANGAN",
@@ -56534,7 +56535,7 @@ window.KBBI_DATABASE = [
     "RAHIMAKALLAH",
     "RAHIMAKUMULLAH",
     "RAHMAN",
-    "RAHMAT",
+    "RAHMAT", //Level 23
     "RAHMATULLAH",
     "RAHOP",
     "RAHOPS",
@@ -56543,12 +56544,12 @@ window.KBBI_DATABASE = [
     "RAHUM",
     "RAI",
     "RAIB",
-    "RAIH",
+    "RAIH", //Level 22
     "RAIHAN",
     "RAIMUNA",
     "RAIRAN",
     "RAIS",
-    "RAJA",
+    "RAJA", //Level 41, 44, 45
     "RAJAB",
     "RAJABIAH",
     "RAJAH",
@@ -56615,7 +56616,7 @@ window.KBBI_DATABASE = [
     "RAMA", //Level 16
     "RAMADAN",
     "RAMADHAN",
-    "RAMAH",
+    "RAMAH", //Level 23
     "RAMAI",
     "RAMAL",
     "RAMALAN", //Level 17
@@ -56885,7 +56886,7 @@ window.KBBI_DATABASE = [
     "RASYID",
     "RASYWAH",
     "RAT",
-    "RATA",
+    "RATA", //Level 29
     "RATAH",
     "RATAHAN",
     "RATAK",
@@ -57749,7 +57750,7 @@ window.KBBI_DATABASE = [
     "RHO",
     "RHS.",
     "RI",
-    "RIA",
+    "RIA", //Level 42
     "RIADAH",
     "RIADAT",
     "RIAH",
@@ -57993,7 +57994,7 @@ window.KBBI_DATABASE = [
     "ROJENG",
     "ROJENGAN",
     "ROJOL",
-    "ROK",
+    "ROK", //Level 32
     "ROKADE",
     "ROKER",
     "ROKET",
@@ -58229,8 +58230,8 @@ window.KBBI_DATABASE = [
     "RUKYATULHILAL",
     "RUM",
     "RUMA",
-    "RUMAH", // Used in level 10
-    "RUMAHAN",
+    "RUMAH", // Used in level 10, 39
+    "RUMAHAN", //Level 39
     "RUMAJA",
     "RUMAL",
     "RUMANGSANG",
@@ -59945,7 +59946,7 @@ window.KBBI_DATABASE = [
     "SEKOCI",
     "SEKODI",
     "SEKOI",
-    "SEKOLAH",
+    "SEKOLAH", //Level 40
     "SEKOLAHAN",
     "SEKOMENG",
     "SEKON",
@@ -60028,7 +60029,7 @@ window.KBBI_DATABASE = [
     "SEKUTUK",
     "SEKWILDA",
     "SEL",
-    "SELA",
+    "SELA", //Level 40
     "SELABAR",
     "SELABER",
     "SELABERAK",
@@ -60486,7 +60487,7 @@ window.KBBI_DATABASE = [
     "SEMESTER",
     "SEMESTERAN",
     "SEMESTINYA",
-    "SEMI",
+    "SEMI", //Level 21
     "SEMIAKUATIK",
     "SEMIANG",
     "SEMIARTS",
@@ -62109,7 +62110,7 @@ window.KBBI_DATABASE = [
     "SINI",
     "SINIAN",
     "SINIAR",
-    "SINIS",
+    "SINIS", //Level 21
     "SINISME",
     "SINISTROFOBIA",
     "SINJAI",
@@ -65488,7 +65489,7 @@ window.KBBI_DATABASE = [
     "TEMAK",
     "TEMALANG",
     "TEMALI",
-    "TEMAN",
+    "TEMAN", //Level 43
     "TEMANGAU",
     "TEMANGGA",
     "TEMANGGUNG",
@@ -71480,11 +71481,11 @@ window.KBBI_DATABASE = [
     "ZINK",
     "ZINKOGRAFI",
     "ZION",
-    "ZIONIS",
-    "ZIONISME",
+    "ZIONIS", //Level 21
+    "ZIONISME", //Level 21
     "ZIPUR",
     "ZIRAFAH",
-    "ZIRAH",
+    "ZIRAH", //Level 22
     "ZIRBAD",
     "ZIRKON",
     "ZIRKONIA",
@@ -71534,7 +71535,7 @@ window.KBBI_DATABASE = [
     "ZOOGONIDANGIUM",
     "ZOOLATRI",
     "ZOOLOGI",
-    "ZOOM",
+    "ZOOM", //Level 21
     "ZOOMANIAK",
     "ZOOMETER",
     "ZOOMETRI",

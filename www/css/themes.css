@@ -343,6 +343,819 @@
     background: #f5f5f5;
 }
 
+/* Main Menu Theme Styles */
+/* Dark Theme for Main Menu */
+.theme-dark body {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .menu-container h1 {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .menu-button {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+    border: 2px solid #555 !important;
+}
+
+.theme-dark .menu-button:hover {
+    background-color: #444 !important;
+}
+
+.theme-dark .menu-button.disabled {
+    background-color: #222 !important;
+    color: #666 !important;
+    border-color: #444 !important;
+}
+
+/* Colorful Theme for Main Menu */
+.theme-colorful body {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 10s ease infinite !important;
+    color: #333 !important;
+}
+
+.theme-colorful .menu-container h1 {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .menu-button {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: 3px solid #ff6b6b !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .menu-button:hover {
+    background: linear-gradient(135deg, #4ecdc4, #45b7d1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .menu-button.disabled {
+    background: #ccc !important;
+    color: #888 !important;
+    border-color: #aaa !important;
+    box-shadow: none !important;
+}
+
+/* Minimalist Theme for Main Menu */
+.theme-minimalist body {
+    background-color: #fafafa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .menu-container h1 {
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .menu-button {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .menu-button:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.theme-minimalist .menu-button.disabled {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Level Select Theme Styles */
+/* Dark Theme for Level Select */
+.theme-dark .back-button {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .level-container h1 {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .level-button {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+    border: 2px solid #555 !important;
+}
+
+.theme-dark .level-button:hover {
+    background-color: #444 !important;
+}
+
+.theme-dark .level-button.locked {
+    background-color: #222 !important;
+    color: #666 !important;
+    border-color: #444 !important;
+}
+
+.theme-dark .level-button.completed {
+    background-color: #2E7D32 !important;
+    border-color: #4CAF50 !important;
+}
+
+.theme-dark .level-button.completed:hover {
+    background-color: #388E3C !important;
+}
+
+/* Colorful Theme for Level Select */
+.theme-colorful .back-button {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .level-container h1 {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .level-button {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: 3px solid #ff6b6b !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .level-button:hover {
+    background: linear-gradient(135deg, #4ecdc4, #45b7d1) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .level-button.locked {
+    background: #ccc !important;
+    color: #888 !important;
+    border-color: #aaa !important;
+    box-shadow: none !important;
+}
+
+.theme-colorful .level-button.completed {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+    border-color: #4CAF50 !important;
+}
+
+.theme-colorful .level-button.completed:hover {
+    background: linear-gradient(135deg, #feca57, #96ceb4) !important;
+}
+
+/* Minimalist Theme for Level Select */
+.theme-minimalist .back-button {
+    color: #333 !important;
+}
+
+.theme-minimalist .level-container h1 {
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .level-button {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .level-button:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.theme-minimalist .level-button.locked {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+.theme-minimalist .level-button.completed {
+    background-color: #e8f5e8 !important;
+    border-color: #4CAF50 !important;
+    color: #2E7D32 !important;
+}
+
+.theme-minimalist .level-button.completed:hover {
+    background-color: #d4edda !important;
+}
+
+/* Account & Event Pages Theme Styles */
+/* Dark Theme for Account & Event */
+.theme-dark .account-app,
+.theme-dark .event-app {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .top-bar {
+    background-color: #333 !important;
+    border-bottom: 1px solid #555 !important;
+}
+
+.theme-dark .top-bar h1,
+.theme-dark .back-button,
+.theme-dark .refresh-button {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .account-section,
+.theme-dark .event-container {
+    background-color: #333 !important;
+    border: 1px solid #555 !important;
+}
+
+.theme-dark .action-button {
+    background-color: #444 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #666 !important;
+}
+
+.theme-dark .action-button:hover {
+    background-color: #555 !important;
+}
+
+.theme-dark .action-button.primary {
+    background-color: #0066cc !important;
+    border-color: #0066cc !important;
+}
+
+.theme-dark .action-button.danger {
+    background-color: #cc0000 !important;
+    border-color: #cc0000 !important;
+}
+
+/* Colorful Theme for Account & Event */
+.theme-colorful .account-app,
+.theme-colorful .event-app {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 10s ease infinite !important;
+    color: #333 !important;
+}
+
+.theme-colorful .top-bar {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    border-bottom: 3px solid #ff6b6b !important;
+}
+
+.theme-colorful .top-bar h1,
+.theme-colorful .back-button,
+.theme-colorful .refresh-button {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .account-section,
+.theme-colorful .event-container {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 3px solid #ff6b6b !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .action-button {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .action-button:hover {
+    background: linear-gradient(135deg, #4ecdc4, #45b7d1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-colorful .action-button.secondary {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+}
+
+.theme-colorful .action-button.danger {
+    background: linear-gradient(135deg, #ff6b6b, #e74c3c) !important;
+}
+
+/* Minimalist Theme for Account & Event */
+.theme-minimalist .account-app,
+.theme-minimalist .event-app {
+    background-color: #fafafa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .top-bar {
+    background-color: white !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.theme-minimalist .top-bar h1,
+.theme-minimalist .back-button,
+.theme-minimalist .refresh-button {
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .account-section,
+.theme-minimalist .event-container {
+    background-color: white !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .action-button {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .action-button:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.theme-minimalist .action-button.primary {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #6c757d !important;
+}
+
+.theme-minimalist .action-button.danger {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border-color: #dc3545 !important;
+}
+
+/* Leaderboard Theme Styles */
+/* Dark Theme for Leaderboard */
+.theme-dark .leaderboard-app {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .category-tabs {
+    background-color: #333 !important;
+    border-bottom: 1px solid #555 !important;
+}
+
+.theme-dark .tab-btn {
+    background-color: #444 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #666 !important;
+}
+
+.theme-dark .tab-btn.active {
+    background-color: #0066cc !important;
+    border-color: #0066cc !important;
+}
+
+.theme-dark .search-container input {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.theme-dark .podium-container,
+.theme-dark .leaderboard-item {
+    background-color: #333 !important;
+    border: 1px solid #555 !important;
+}
+
+.theme-dark .podium-item {
+    background-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Colorful Theme for Leaderboard */
+.theme-colorful .leaderboard-app {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 10s ease infinite !important;
+    color: #333 !important;
+}
+
+.theme-colorful .category-tabs {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    border-bottom: 3px solid #ff6b6b !important;
+}
+
+.theme-colorful .tab-btn {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .tab-btn.active {
+    background: linear-gradient(135deg, #45b7d1, #96ceb4) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .search-container input {
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .search-container input::placeholder {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.theme-colorful .podium-container,
+.theme-colorful .leaderboard-item {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 3px solid #ff6b6b !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .podium-item {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    font-weight: bold !important;
+}
+
+/* Minimalist Theme for Leaderboard */
+.theme-minimalist .leaderboard-app {
+    background-color: #fafafa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .category-tabs {
+    background-color: white !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.theme-minimalist .tab-btn {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .tab-btn.active {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #6c757d !important;
+}
+
+.theme-minimalist .search-container input {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .podium-container,
+.theme-minimalist .leaderboard-item {
+    background-color: white !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .podium-item {
+    background-color: #f8f9fa !important;
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+/* Game Level Selection Theme Styles */
+/* Dark Theme for Game Level Selection */
+.theme-dark .level-container {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .level-container h1 {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .back-button {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .level-button {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+    border-color: #555 !important;
+}
+
+.theme-dark .level-button:hover {
+    background-color: #444 !important;
+}
+
+.theme-dark .level-button.locked {
+    background-color: #222 !important;
+    color: #666 !important;
+    border-color: #444 !important;
+}
+
+.theme-dark .level-button.completed {
+    background-color: #2d5a2d !important;
+    border-color: #4CAF50 !important;
+}
+
+.theme-dark .level-button.completed:hover {
+    background-color: #3d6a3d !important;
+}
+
+/* Colorful Theme for Game Level Selection */
+.theme-colorful .level-container {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 10s ease infinite !important;
+    color: #333 !important;
+}
+
+.theme-colorful .level-container h1 {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .back-button {
+    color: white !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .level-button {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+    color: white !important;
+    border: 3px solid #ff6b6b !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .level-button:hover {
+    background: linear-gradient(135deg, #86be94, #eeba47) !important;
+    transform: scale(1.05) !important;
+}
+
+.theme-colorful .level-button.locked {
+    background: linear-gradient(135deg, #ccc, #999) !important;
+    color: #666 !important;
+    border-color: #aaa !important;
+}
+
+.theme-colorful .level-button.completed {
+    background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    border-color: #2e7d32 !important;
+    color: white !important;
+}
+
+.theme-colorful .level-button.completed:hover {
+    background: linear-gradient(135deg, #45a049, #3d8b40) !important;
+}
+
+/* Minimalist Theme for Game Level Selection */
+.theme-minimalist .level-container {
+    background-color: #fafafa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .level-container h1 {
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .back-button {
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .level-button {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .level-button:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.theme-minimalist .level-button.locked {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+.theme-minimalist .level-button.completed {
+    background-color: #d4edda !important;
+    border-color: #c3e6cb !important;
+    color: #155724 !important;
+}
+
+.theme-minimalist .level-button.completed:hover {
+    background-color: #c3e6cb !important;
+}
+
+/* Game Main Page Theme Styles */
+/* Dark Theme for Game Main Page */
+.theme-dark .game-container {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .top-bar {
+    background-color: #333 !important;
+    border-bottom: 1px solid #555 !important;
+}
+
+.theme-dark .top-bar h2,
+.theme-dark .back-button,
+.theme-dark .inventory-button,
+.theme-dark .settings-button {
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .settings-panel {
+    background-color: #333 !important;
+    border: 1px solid #555 !important;
+}
+
+.theme-dark .settings-content {
+    background-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .setting-item label,
+.theme-dark .setting-item select,
+.theme-dark .setting-item input {
+    color: #e0e0e0 !important;
+    background-color: #333 !important;
+    border-color: #555 !important;
+}
+
+.theme-dark .close-settings {
+    background-color: #0066cc !important;
+    color: white !important;
+}
+
+.theme-dark .found-words-container,
+.theme-dark .word-input-container,
+.theme-dark .letter-bank-container {
+    background-color: #333 !important;
+    color: #e0e0e0 !important;
+}
+
+.theme-dark .action-buttons button {
+    background-color: #444 !important;
+    color: #e0e0e0 !important;
+    border-color: #666 !important;
+}
+
+.theme-dark .action-buttons button:hover {
+    background-color: #555 !important;
+}
+
+/* Colorful Theme for Game Main Page */
+.theme-colorful .game-container {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 10s ease infinite !important;
+    color: #333 !important;
+}
+
+.theme-colorful .top-bar {
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4) !important;
+    border-bottom: 3px solid #ff6b6b !important;
+}
+
+.theme-colorful .top-bar h2,
+.theme-colorful .back-button,
+.theme-colorful .inventory-button,
+.theme-colorful .settings-button {
+    color: white !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .settings-panel {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 3px solid #ff6b6b !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .settings-content {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+    color: white !important;
+}
+
+.theme-colorful .setting-item label {
+    color: white !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .setting-item select,
+.theme-colorful .setting-item input {
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .close-settings {
+    background: linear-gradient(135deg, #45b7d1, #96ceb4) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.theme-colorful .found-words-container,
+.theme-colorful .word-input-container,
+.theme-colorful .letter-bank-container {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #ff6b6b !important;
+    color: #333 !important;
+}
+
+.theme-colorful .action-buttons button {
+    background: linear-gradient(135deg, #96ceb4, #feca57) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-colorful .action-buttons button:hover {
+    background: linear-gradient(135deg, #86be94, #eeba47) !important;
+    transform: scale(1.05) !important;
+}
+
+/* Minimalist Theme for Game Main Page */
+.theme-minimalist .game-container {
+    background-color: #fafafa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .top-bar {
+    background-color: white !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.theme-minimalist .top-bar h2,
+.theme-minimalist .back-button,
+.theme-minimalist .inventory-button,
+.theme-minimalist .settings-button {
+    color: #333 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .settings-panel {
+    background-color: white !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .settings-content {
+    background-color: #f8f9fa !important;
+    color: #333 !important;
+}
+
+.theme-minimalist .setting-item label,
+.theme-minimalist .setting-item select,
+.theme-minimalist .setting-item input {
+    color: #333 !important;
+    background-color: white !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .close-settings {
+    background-color: #6c757d !important;
+    color: white !important;
+    border: none !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .found-words-container,
+.theme-minimalist .word-input-container,
+.theme-minimalist .letter-bank-container {
+    background-color: white !important;
+    border: 1px solid #e0e0e0 !important;
+    color: #333 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-minimalist .action-buttons button {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e0e0e0 !important;
+    font-weight: 300 !important;
+}
+
+.theme-minimalist .action-buttons button:hover {
+    background-color: #f5f5f5 !important;
+}
+
 /* Additional Minimalist Theme Styles */
 body.minimalist {
     background: #ffffff;

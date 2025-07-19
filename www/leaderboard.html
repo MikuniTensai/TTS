@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" href="css/leaderboard.css">
+    <link rel="stylesheet" href="css/themes.css">
     <title>Leaderboard</title>
 
 </head>
@@ -24,6 +25,14 @@
         <div class="category-tabs">
             <button class="tab-btn active" data-category="score">Top Score</button>
             <button class="tab-btn" data-category="level">Top Level</button>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Cari nama pemain..." autocomplete="off">
+                <button id="clear-search" class="clear-btn">✕</button>
+            </div>
         </div>
         
         <!-- Top 3 Podium -->
@@ -57,6 +66,22 @@
         <div id="leaderboard-list">
             <div class="loading">Memuat data...</div>
         </div>
+        
+        <!-- User Position (if not in top 10) -->
+        <div id="user-position-section" style="display: none;">
+            <div class="section-divider">
+                <span>Posisi Anda</span>
+            </div>
+            <div id="user-position-item"></div>
+        </div>
+        
+        <!-- Search Results -->
+        <div id="search-results-section" style="display: none;">
+            <div class="section-divider">
+                <span>Hasil Pencarian</span>
+            </div>
+            <div id="search-results-list"></div>
+        </div>
     </div>
 
 
@@ -69,15 +94,35 @@
     <!-- Scripts -->
     <script src="js/firebase-init.js"></script>
     <script src="js/sound.js"></script>
+    <script src="js/theme-manager.js"></script>
     <script src="js/account-manager.js"></script>
+    <script src="js/admob.js"></script>
     <script src="js/leaderboard.js"></script>
     
     <script>
-        // Add click sound to buttons
+        // Add click sound to buttons and show ad on page load
         document.addEventListener('DOMContentLoaded', () => {
             const backButton = document.querySelector('.back-button');
             const editButton = document.querySelector('#edit-nickname-btn');
             const tabButtons = document.querySelectorAll('.tab-btn');
+            
+            // Show ad when leaderboard page loads
+            setTimeout(() => {
+                if (window.AdMobManager && window.AdMobManager.isInitialized()) {
+                    console.log('Leaderboard page loaded - showing ad');
+                    // Reset counter and show ad
+                    window.AdMobManager.resetAdCounter();
+                    window.AdMobManager.showInterstitialAd();
+                } else {
+                    console.log('AdMobManager not ready, will try again');
+                    setTimeout(() => {
+                        if (window.AdMobManager) {
+                            window.AdMobManager.resetAdCounter();
+                            window.AdMobManager.showInterstitialAd();
+                        }
+                    }, 2000);
+                }
+            }, 2000);
             
             if (backButton) {
                 backButton.addEventListener('click', () => {
@@ -102,6 +147,16 @@
                     }
                 });
             });
+            
+            // Add sound to search input focus
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('focus', () => {
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                });
+            }
         });
     </script>
 

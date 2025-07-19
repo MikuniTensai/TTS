@@ -16,6 +16,7 @@
             margin: 0;
             background-color: #f0f0f0;
             flex-direction: column;
+            transition: all 0.3s ease;
         }
         .menu-container {
             text-align: center;
@@ -23,6 +24,7 @@
         h1 {
             font-size: 3em;
             margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
         .menu-button {
             display: block;
@@ -38,6 +40,7 @@
             color: #333;
             font-weight: bold;
             position: relative;
+            transition: all 0.3s ease;
         }
         .menu-button:hover {
             background-color: #ddd;
@@ -75,7 +78,7 @@
         <div id="main-menu">
             <div class="menu-container">
                 <h1>TTS Game</h1>
-                <a href="level-select.html" class="menu-button">Play</a>
+                <a href="level-select.html" class="menu-button" id="play-button">Play</a>
                 <a href="shop.html" class="menu-button">Shop</a>
                 <a href="leaderboard.html" class="menu-button">Leaderboard</a>
                 <a href="event.html" class="menu-button" id="event-menu">
@@ -83,6 +86,7 @@
                     <span id="event-notification" class="event-notification" style="display: none;">!</span>
                 </a>
                 <a href="account.html" class="menu-button">Account</a>
+                <a href="credits.html" class="menu-button">Credits</a>
             </div>
         </div>
 
@@ -102,28 +106,165 @@
     <script src="cordova.js"></script>
     <script src="js/sound.js"></script>
     <script src="js/theme-manager.js"></script>
+    <script src="js/admob.js"></script>
     <script src="js/index.js"></script>
     
     <script>
-        // Add click sound to menu buttons
+        // Add click sound to menu buttons and handle ads for all menus
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, setting up sound for menu buttons');
+            console.log('DOM loaded, setting up sound and ads for menu buttons');
             
             const menuButtons = document.querySelectorAll('.menu-button');
+            const playButton = document.getElementById('play-button');
+            const leaderboardButton = document.querySelector('a[href="leaderboard.html"]');
+            const accountButton = document.querySelector('a[href="account.html"]');
+            const eventButton = document.querySelector('a[href="event.html"]');
+            const shopButton = document.querySelector('a[href="shop.html"]');
+            const creditsButton = document.querySelector('a[href="credits.html"]');
+            
             console.log('Found menu buttons:', menuButtons.length);
             
-            menuButtons.forEach((button, index) => {
-                button.addEventListener('click', (e) => {
-                    console.log(`Button ${index} clicked:`, button.textContent.trim());
+            // Show ad when main menu loads
+            setTimeout(() => {
+                if (window.AdMobManager && window.AdMobManager.isInitialized()) {
+                    console.log('Main menu loaded - showing ad');
+                    // Reset counter and show ad
+                    window.AdMobManager.resetAdCounter();
+                    window.AdMobManager.showInterstitialAd();
+                } else {
+                    console.log('AdMobManager not ready, will try again');
+                    setTimeout(() => {
+                        if (window.AdMobManager) {
+                            window.AdMobManager.resetAdCounter();
+                            window.AdMobManager.showInterstitialAd();
+                        }
+                    }, 2000);
+                }
+            }, 2000);
+            
+            // Handle Play button with ad
+            if (playButton) {
+                playButton.addEventListener('click', (e) => {
+                    e.preventDefault();
                     
+                    console.log('Play button clicked - showing ad first');
+                    
+                    // Play click sound
                     if (window.soundManager) {
-                        console.log('SoundManager available, playing click sound');
                         window.soundManager.playSound('click');
-                    } else {
-                        console.error('SoundManager not available!');
+                    }
+                    
+                    // Reset counter and show ad
+                    if (window.AdMobManager) {
+                        window.AdMobManager.resetAdCounter();
+                        window.AdMobManager.showInterstitialAd();
+                    }
+                    
+                    // Navigate to level select after delay
+                    setTimeout(() => {
+                        window.location.href = 'level-select.html';
+                    }, 1000);
+                });
+            }
+            
+            // Handle Leaderboard button with ad
+            if (leaderboardButton) {
+                leaderboardButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    console.log('Leaderboard button clicked - showing ad first');
+                    
+                    // Play click sound
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                    
+                    // Reset counter and show ad
+                    if (window.AdMobManager) {
+                        window.AdMobManager.resetAdCounter();
+                        window.AdMobManager.showInterstitialAd();
+                    }
+                    
+                    // Navigate to leaderboard after delay
+                    setTimeout(() => {
+                        window.location.href = 'leaderboard.html';
+                    }, 1000);
+                });
+            }
+            
+            // Handle Account button with ad
+            if (accountButton) {
+                accountButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    console.log('Account button clicked - showing ad first');
+                    
+                    // Play click sound
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                    
+                    // Reset counter and show ad
+                    if (window.AdMobManager) {
+                        window.AdMobManager.resetAdCounter();
+                        window.AdMobManager.showInterstitialAd();
+                    }
+                    
+                    // Navigate to account after delay
+                    setTimeout(() => {
+                        window.location.href = 'account.html';
+                    }, 1000);
+                });
+            }
+            
+            // Handle Event button with ad
+            if (eventButton) {
+                eventButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    console.log('Event button clicked - showing ad first');
+                    
+                    // Play click sound
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                    
+                    // Reset counter and show ad
+                    if (window.AdMobManager) {
+                        window.AdMobManager.resetAdCounter();
+                        window.AdMobManager.showInterstitialAd();
+                    }
+                    
+                    // Navigate to event after delay
+                    setTimeout(() => {
+                        window.location.href = 'event.html';
+                    }, 1000);
+                });
+            }
+            
+            // Handle Shop button normally (no ad)
+            if (shopButton) {
+                shopButton.addEventListener('click', (e) => {
+                    console.log('Shop button clicked');
+                    
+                    // Play click sound
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
                     }
                 });
-            });
+            }
+            
+            // Handle Credits button normally (no ad)
+            if (creditsButton) {
+                creditsButton.addEventListener('click', (e) => {
+                    console.log('Credits button clicked');
+                    
+                    // Play click sound
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                });
+            }
             
             // Test sound manager availability
             setTimeout(() => {

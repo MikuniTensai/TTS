@@ -5,12 +5,13 @@
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" href="css/leaderboard.css">
     <link rel="stylesheet" href="css/account.css">
+    <link rel="stylesheet" href="css/themes.css">
     <title>Account Management</title>
 </head>
 <body>
     <div class="account-app">
         <div class="top-bar">
-            <a href="index.html" class="back-button">
+            <a href="index.html" class="back-button" onclick="window.soundManager && window.soundManager.playSound('click')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M11.828 12l4.243 4.243-1.414 1.414L9 12l5.657-5.657 1.414 1.414L11.828 12z"></path>
                 </svg>
@@ -20,6 +21,8 @@
                 <span id="user-nickname">Loading...</span>
             </div>
         </div>
+        
+        <!-- Ad controls removed for automatic operation -->
 
         <!-- Initial Loading State -->
         <div id="initial-loading" class="loading-overlay">
@@ -218,10 +221,13 @@
     <!-- Scripts -->
     <script src="js/firebase-init.js"></script>
     <script src="js/sound.js"></script>
-    <script src="js/account-manager.js"></script>
+    <script src="js/theme-manager.js"></script>
+    <script src="js/admob.js"></script>
     <script src="js/account.js"></script>
     
     <!-- Debug console for troubleshooting -->
+    <div id="debug-console" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; padding: 10px; max-height: 200px; overflow-y: auto; font-size: 12px; z-index: 10000;"></div>
+
     <script>
         // Add debug console for development
         window.addEventListener('load', () => {
@@ -231,6 +237,33 @@
             console.log('window.db available:', typeof window.db !== 'undefined');
             console.log('Current user:', window.auth?.currentUser?.uid || 'None');
             console.log('========================');
+        });
+        
+        // Show ad when account page loads
+         // Function removed - ads now handled with auto-reset
+         
+         // Reset ad counter function removed for automatic operation
+         
+         // Test ad function removed - ads now show automatically
+        
+        // Show ad after page content is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.AdMobManager && window.AdMobManager.isInitialized()) {
+                    console.log('Account page loaded - showing ad');
+                    // Reset counter and show ad
+                    window.AdMobManager.resetAdCounter();
+                    window.AdMobManager.showInterstitialAd();
+                } else {
+                    console.log('AdMobManager not ready, will try again');
+                    setTimeout(() => {
+                        if (window.AdMobManager) {
+                            window.AdMobManager.resetAdCounter();
+                            window.AdMobManager.showInterstitialAd();
+                        }
+                    }, 2000);
+                }
+            }, 2000);
         });
     </script>
 </body>

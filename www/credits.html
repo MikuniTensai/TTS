@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/themes.css">
+    <title>Credits - TTS Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .credits-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            margin: 20px;
+        }
+        
+        .credits-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .developer-name {
+            font-size: 2em;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .version-info {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .back-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .credits-decoration {
+            font-size: 3em;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 480px) {
+            .credits-container {
+                padding: 30px 20px;
+            }
+            
+            .credits-title {
+                font-size: 2em;
+            }
+            
+            .developer-name {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="credits-container">
+        <div class="credits-decoration">🎮</div>
+        <h1 class="credits-title">Credits</h1>
+        
+        <div class="developer-name">Nitedreamworks</div>
+        
+        <div class="version-info">
+            <strong>Versi 1.0.4</strong>
+        </div>
+        
+        <a href="index.html" class="back-button" id="back-button">Kembali ke Menu</a>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Initialization -->
+    <script src="js/firebase-init.js"></script>
+    
+    <script src="cordova.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/theme-manager.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize theme manager
+            if (window.ThemeManager) {
+                const themeManager = new window.ThemeManager();
+                window.themeManager = themeManager;
+            }
+            
+            // Add click sound to back button
+            const backButton = document.getElementById('back-button');
+            if (backButton) {
+                backButton.addEventListener('click', () => {
+                    // Play click sound
+                    if (window.soundManager) {
+                        window.soundManager.playSound('click');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

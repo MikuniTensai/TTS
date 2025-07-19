@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" href="css/event.css">
+    <link rel="stylesheet" href="css/themes.css">
     <title>Event - TTS Game</title>
 
 </head>
@@ -22,6 +23,8 @@
                 </svg>
             </button>
         </div>
+        
+        <!-- Ad controls removed for automatic operation -->
         
         <div id="event-list" class="event-container">
             <div class="loading">
@@ -48,9 +51,17 @@
     <!-- Scripts -->
     <script src="js/firebase-init.js"></script>
     <script src="js/sound.js"></script>
+    <script src="js/theme-manager.js"></script>
+    <script src="js/admob.js"></script>
     <script src="js/event.js"></script>
     
     <script>
+        // Function removed - ads now handled with auto-reset
+        
+        // Reset ad counter function removed for automatic operation
+        
+        // Test ad function removed - ads now show automatically
+        
         // Add click sound to buttons
         document.addEventListener('DOMContentLoaded', () => {
             const backButton = document.querySelector('.back-button');
@@ -71,6 +82,24 @@
                     }
                 });
             }
+            
+            // Show ad after page content is loaded
+            setTimeout(() => {
+                if (window.AdMobManager && window.AdMobManager.isInitialized()) {
+                    console.log('Event page loaded - showing ad');
+                    // Reset counter and show ad
+                    window.AdMobManager.resetAdCounter();
+                    window.AdMobManager.showInterstitialAd();
+                } else {
+                    console.log('AdMobManager not ready, will try again');
+                    setTimeout(() => {
+                        if (window.AdMobManager) {
+                            window.AdMobManager.resetAdCounter();
+                            window.AdMobManager.showInterstitialAd();
+                        }
+                    }, 2000);
+                }
+            }, 2000);
         });
     </script>
     

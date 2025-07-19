@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="screen-orientation" content="landscape" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Cerita Kelasku - Game Edukasi Interaktif untuk Anak" />
+    <meta name="keywords" content="game edukasi, visual novel, cerita anak, pembelajaran interaktif" />
+    <meta name="author" content="Nite Dreamworks" />
+    <meta name="robots" content="index, follow" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Cerita Kelasku" />
+    <title>Cerita Kelasku - Game Edukasi</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" type="image/png" href="img/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="img/icon-192x192.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Sans:wght@400;500&display=swap"
+        rel="stylesheet" />
+</head>
+
+<body>
+    <div id="background" class="background"></div>
+
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <div id="loadingPercentage" class="loading-percentage">0%</div>
+    </div>
+
+    <div id="menu" class="menu hidden">
+        <div class="menu-decoration">
+            <img src="img/decoration.webp" alt="Decoration" class="decoration">
+        </div>
+        <div class="menu-narrative">"A journey of a thousand tales begins with a single choice..."</div>
+        <button onclick="showSeasonGrid()" data-tooltip="Begin your journey!">
+            <img src="img/start.webp" alt="Start" class="button-icon"> Start
+        </button>
+        <button onclick="showLoadMenu()" data-tooltip="Continue where you left off">
+            <img src="img/load.webp" alt="Load" class="button-icon"> Load
+        </button>
+        <button onclick="showGallery()" data-tooltip="View your unlocked endings">
+            <img src="img/gallery.webp" alt="Gallery" class="button-icon"> Gallery Ending <span class="badge">New!</span>
+        </button>
+        <button onclick="showCodex()" data-tooltip="Explore the lore">
+            <img src="img/codex.webp" alt="Codex" class="button-icon"> Codex
+        </button>
+        <button onclick="showMinigames()" data-tooltip="Play fun challenges">
+            <img src="img/minigames.webp" alt="Minigames" class="button-icon"> Minigames
+        </button>
+        <button onclick="toggleSettings()" data-tooltip="Adjust game settings">
+            <img src="img/setting.webp" alt="Settings" class="button-icon"> Settings
+        </button>
+        <button onclick="showLeaderboard()" data-tooltip="View global rankings">
+            🏆 Leaderboard
+        </button>
+        <button onclick="window.location.href='/credits/index.html'" data-tooltip="Meet the creators">
+            <img src="img/credits.webp" alt="Credits" class="button-icon"> Credits
+        </button>
+        <button onclick="showAdMobTest()" data-tooltip="Test AdMob functionality">
+            📱 Test AdMob
+        </button>
+    </div>
+
+    <div id="seasonGrid" class="season-grid hidden">
+        <h2>Pilih Season</h2>
+        <div id="seasonGridContent" class="season-grid-content"></div>
+        <button onclick="hideSeasonGrid()">Back</button>
+    </div>
+
+    <div id="settings" class="settings hidden">
+        <label>Volume BGM:
+            <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="1" /></label>
+        <label>Volume SFX:
+            <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="1" /></label>
+        <label>Text Speed:
+            <input type="range" id="textSpeed" min="10" max="100" step="10" value="50" /></label>
+        <button onclick="toggleSettings()">Close</button>
+    </div>
+
+    <div id="gallery" class="gallery hidden">
+        <h2>Unlocked Endings</h2>
+        <div id="galleryContent"></div>
+        <button onclick="hideGallery()">Back</button>
+    </div>
+
+    <div id="codex" class="codex hidden">
+        <h2>Codex</h2>
+        <div id="codexContent"></div>
+        <button onclick="hideCodex()">Back</button>
+    </div>
+
+    <div id="minigamesMenu" class="menu hidden">
+        <h2>Minigames</h2>
+        <div id="minigamesContent"></div>
+        <button onclick="hideMinigames()">Back</button>
+    </div>
+
+    <div id="admobTest" class="menu hidden">
+        <h2>AdMob Test</h2>
+        <div class="admob-buttons">
+            <button onclick="initializeAdMob()">Initialize AdMob</button>
+            <button onclick="loadBanner()">Load Banner</button>
+            <button onclick="showBanner()">Show Banner</button>
+            <button onclick="hideBanner()">Hide Banner</button>
+            <button onclick="removeBanner()">Remove Banner</button>
+            <button onclick="loadInterstitial()">Load Interstitial</button>
+            <button onclick="showInterstitial()">Show Interstitial</button>
+            <button onclick="loadRewarded()">Load Rewarded</button>
+            <button onclick="showRewarded()">Show Rewarded</button>
+        </div>
+        <div id="admobStatus" class="admob-status">Status: Not initialized</div>
+        
+        <!-- Log Area untuk debugging -->
+        <div class="admob-log-section">
+            <h3>Debug Log</h3>
+            <textarea id="admobLog" class="admob-log" readonly placeholder="Log akan muncul di sini..."></textarea>
+            <div class="log-controls">
+                <button onclick="clearAdMobLog()">Clear Log</button>
+                <button onclick="copyAdMobLog()">Copy Log</button>
+            </div>
+        </div>
+        
+        <button onclick="hideAdMobTest()">Back</button>
+    </div>
+
+    <div id="saveMenu" class="menu hidden">
+        <h2>Save Game</h2>
+        <div id="saveSlot1" class="save-slot" onclick="saveGame(1)"></div>
+        <div id="saveSlot2" class="save-slot" onclick="saveGame(2)"></div>
+        <div id="saveSlot3" class="save-slot" onclick="saveGame(3)"></div>
+        <button onclick="hideAllExcept(menuElement)">Back</button>
+    </div>
+
+    <div id="loadMenu" class="menu hidden">
+        <h2>Load Game</h2>
+        <div id="loadSlot1" class="load-slot" onclick="loadGame(1)"></div>
+        <div id="loadSlot2" class="load-slot" onclick="loadGame(2)"></div>
+        <div id="loadSlot3" class="load-slot" onclick="loadGame(3)"></div>
+        <button onclick="hideAllExcept(menuElement)">Back</button>
+    </div>
+
+    <div id="game" class="container hidden">
+        <div id="background-old" class="background"></div>
+        <div id="background-new" class="background"></div>
+        <div class="character left">
+            <img id="charLeft" src="" alt="Left" />
+        </div>
+        <div class="character right">
+            <img id="charRight" src="" alt="Right" />
+        </div>
+        <div class="dialog-box">
+            <div class="narrator-text">
+                <div id="speaker" class="speaker"></div>
+                <div id="text" class="text"></div>
+            </div>
+            <div class="buttons-container">
+                <div class="buttons">
+                    <button id="nextBtn" onclick="nextScene()">Next</button>
+                    <button onclick="showSaveMenu()">Save</button>
+                    <button onclick="showLoadMenu()">Load</button>
+                    <button onclick="showMenu()">Menu</button>
+                </div>
+            </div>
+            <div class="status-inventory">
+                <span id="status" class="status">Status: -</span>
+                <span id="inventory" class="inventory">Inventory: -</span>
+            </div>
+
+            <div id="choices" class="choices"></div>
+        </div>
+    </div>
+
+    <audio id="bgm" loop></audio>
+    <audio id="sfx"></audio>
+    <audio id="voice"></audio>
+    <!-- Audio khusus untuk menu -->
+    <audio id="menuBgm" loop>
+        <source src="audio/menu_bgm.aac" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+    <!-- Audio untuk suara tombol -->
+    <audio id="buttonClick" preload="auto">
+        <source src="audio/button_click.aac" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+    <!-- Audio untuk suara teks -->
+    <audio id="textSound" preload="auto">
+        <source src="audio/text_sound.aac" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Story scripts - Add your story files here -->
+    <!-- <script src="story_s1.js"></script> -->
+    
+    <!-- Firebase SDK - Optional for leaderboard functionality -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script> -->
+    
+    <!-- Firebase Configuration - Uncomment and configure for your project -->
+    <!--
+    <script>
+        // Firebase configuration for your project
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456",
+            measurementId: "G-XXXXXXXXXX"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Analytics (optional)
+        if (typeof firebase.analytics === 'function') {
+            firebase.analytics();
+        }
+        
+        // Get Firestore reference
+        const db = firebase.firestore();
+        
+        console.log('Firebase Firestore initialized successfully');
+    </script>
+    -->
+    
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="js/assetload.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/admob.js"></script>
+    <script>
+        // Preload aset menu
+        const menuAssets = ["img/menu_background.webp", "audio/menu_bgm.aac"];
+
+        function preloadMenuAssets() {
+            const loadPromises = menuAssets.map((src, index) => {
+                return new Promise((resolve, reject) => {
+                    if (src.endsWith(".png") || src.endsWith(".jpg") || src.endsWith(".webp")) {
+                        const img = new Image();
+                        img.onload = () => {
+                            console.log(`Aset gambar dimuat: ${src}`);
+                            updateLoadingProgress(index + 1, menuAssets.length);
+                            resolve();
+                        };
+                        img.onerror = () => {
+                            console.error(`Gagal memuat gambar: ${src}`);
+                            updateLoadingProgress(index + 1, menuAssets.length);
+                            resolve(); // Tetap lanjut meskipun gagal
+                        };
+                        img.src = src;
+                    } else if (src.endsWith(".aac")) {
+                        const audio = new Audio();
+                        audio.oncanplaythrough = () => {
+                            console.log(`Aset audio dimuat: ${src}`);
+                            updateLoadingProgress(index + 1, menuAssets.length);
+                            resolve();
+                        };
+                        audio.onerror = () => {
+                            console.error(`Gagal memuat audio: ${src}`);
+                            updateLoadingProgress(index + 1, menuAssets.length);
+                            resolve(); // Tetap lanjut meskipun gagal
+                        };
+                        audio.src = src;
+                        audio.load();
+                    }
+                });
+            });
+
+            return Promise.all(loadPromises);
+        }
+
+        function updateLoadingProgress(loaded, total) {
+            const percentage = Math.round((loaded / total) * 100);
+            const loadingPercentage = document.getElementById("loadingPercentage");
+            loadingPercentage.textContent = `${percentage}%`;
+        }
+
+        // Fungsi untuk menampilkan menu secara otomatis
+        function showMenuAutomatically() {
+            const menuElement = document.getElementById("menu");
+            const backgroundElement = document.getElementById("background");
+            const menuBgm = document.getElementById("menuBgm");
+            const bgmVolume = document.getElementById("bgmVolume");
+
+            // Tampilkan menu
+            hideAllExcept(menuElement);
+
+            // Set background untuk menu
+            backgroundElement.style.backgroundImage = "url('img/menu_background.webp')";
+            backgroundElement.style.opacity = "1"; // Pastikan background terlihat
+
+            // Inisialisasi menu BGM dalam mode mute untuk menghindari kebijakan auto-play
+            menuBgm.volume = 0; // Mulai dalam mode mute
+            menuBgm
+                .play()
+                .catch((err) =>
+                    console.error("Gagal memutar menu BGM (mute mode):", err)
+                );
+
+            // Set volume sesuai pengaturan setelah interaksi pengguna pertama
+            function enableAudioOnInteraction() {
+                menuBgm.volume = bgmVolume.value || 1.0;
+                console.log("Audio diaktifkan dengan volume:", menuBgm.volume);
+                // Hapus event listener setelah interaksi pertama
+                document.removeEventListener("click", enableAudioOnInteraction);
+                document.removeEventListener("touchstart", enableAudioOnInteraction);
+            }
+
+            // Tambahkan event listener untuk interaksi pengguna pertama
+            document.addEventListener("click", enableAudioOnInteraction);
+            document.addEventListener("touchstart", enableAudioOnInteraction);
+
+            // Modifikasi hideAllExcept untuk mengelola menu BGM
+            const originalHideAllExcept = hideAllExcept;
+            hideAllExcept = function (activeElement) {
+                originalHideAllExcept(activeElement);
+                if (activeElement === menuElement) {
+                    menuBgm
+                        .play()
+                        .catch((err) => console.error("Gagal memutar menu BGM:", err));
+                } else {
+                    menuBgm.pause();
+                    menuBgm.currentTime = 0; // Reset ke awal
+                }
+            };
+
+            // Pastikan volume menu BGM mengikuti pengaturan volume BGM
+            bgmVolume.onchange = function () {
+                menuBgm.volume = bgmVolume.value || 1.0;
+                bgm.volume = bgmVolume.value || 1.0;
+            };
+        }
+
+        // Muat aset menu saat halaman dimuat
+        window.onload = function () {
+            const loadingElement = document.getElementById("loading");
+
+            // Tampilkan loading screen
+            loadingElement.classList.remove("hidden");
+
+            preloadMenuAssets()
+                .then(() => {
+                    const loadingPercentage =
+                        document.getElementById("loadingPercentage");
+                    loadingPercentage.textContent = "100%";
+                    setTimeout(() => {
+                        loadingElement.classList.add("hidden");
+                        showMenuAutomatically(); // Tampilkan menu secara otomatis
+                    }, 500);
+                })
+                .catch((err) => {
+                    console.error("Gagal memuat aset menu:", err);
+                    const loadingPercentage =
+                        document.getElementById("loadingPercentage");
+                    loadingPercentage.textContent = "Error!";
+                    // Tetap tampilkan menu meskipun ada error
+                    setTimeout(() => {
+                        loadingElement.classList.add("hidden");
+                        showMenuAutomatically();
+                    }, 500);
+                });
+        };
+    </script>
+</body>
+
+</html>
